@@ -187,7 +187,7 @@ useEffect(() => {
 if(confirmRequest)
 {
   DeleteStudent();
-  fetchStudentsByClass()
+
 }
   },[confirmRequest])
 
@@ -203,6 +203,7 @@ const DeleteStudent = async () => {
       
       dispatch(setStatus("success"))
       dispatch(setAddText(response.message))
+      fetchStudentsByClass()
       
 
     } 

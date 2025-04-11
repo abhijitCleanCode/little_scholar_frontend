@@ -41,7 +41,7 @@ const TeacherDetails = () => {
   const confirmRequest = useSelector((state) => state.userData.confirmRequest);
   const showConfirmation = useSelector((state) => state.userData.showConfirmationModel);
   const dispatch = useDispatch();
-
+console.log(currentpage)
   useEffect(() => {
     document.title = "Teacher Details";
     dispatch(setCurrentPage(1));
@@ -63,15 +63,17 @@ const TeacherDetails = () => {
   const fetchTeachers = async () => {
     dispatch(setTeacherData([]));
     setLoading(true);
+    console.log(teachers)
     const response = await GetTeachersPages(url,currentpage);
     if (response.status === 200 || response.status === 204 || response.status === 201) {
       dispatch(setTeacherData(response.data.teachers));
-          setPaginationData({
-            currentPage: response.data.pagination.currentPage || 1,
-            totalItems: response.data.pagination.totalTeachers,
-            totalPages: response.data.pagination.totalPages,
-            totalItemsPerPage: response.data.pagination.teachersPerPage ||10,
-          });
+      setPaginationData({
+        currentPage: response.data.pagination.currentPage || 1,
+        totalItems: response.data.pagination.totalTeachers,
+        totalPages: response.data.pagination.totalPages,
+        totalItemsPerPage: response.data.pagination.teachersPerPage ||10,
+      });
+      console.log(teachers, 'from response')
           
         } else {
 
@@ -154,7 +156,7 @@ const TeacherDetails = () => {
 if(confirmRequest)
 {
   DeleteTeacher();
-  fetchTeachers()
+  
 }
   },[confirmRequest])
 
@@ -171,6 +173,7 @@ const DeleteTeacher = async () => {
       
       dispatch(setStatus("success"))
       dispatch(setAddText(response.message))
+      fetchTeachers()
       
 
     } 
