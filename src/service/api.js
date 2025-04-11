@@ -287,7 +287,7 @@ export const GetAllTeachersAPI = async (url) => {
 };
 
 export const DeleteTeacherAPI = async (url,payload,token)=>{
-  
+
   try{
     const endpoint = `${url}${DeleteTeacher}`;
     const response = await axios.delete(endpoint, {
@@ -298,6 +298,7 @@ export const DeleteTeacherAPI = async (url,payload,token)=>{
     });
     
     if (response.status === 200 || response.status === 201 || response.status === 204) {
+      
       return {
         status: response.status,
         data: response.data.data,
