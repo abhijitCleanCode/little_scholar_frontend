@@ -287,7 +287,7 @@ export const GetAllTeachersAPI = async (url) => {
 };
 
 export const DeleteTeacherAPI = async (url,payload,token)=>{
-  console.log("token:" ,token, "\n", "payload:",payload)
+  
   try{
     const endpoint = `${url}${DeleteTeacher}`;
     const response = await axios.delete(endpoint, {
@@ -678,7 +678,6 @@ export const GetStudentByClassAPI = async (url,classId) => {
         message: response.data.message
       };
     } else {
-      console.log(response.status)
       return {
         status: response.status,
         data: null,
@@ -781,7 +780,7 @@ export const GetStudentAttendanceByIDAPI = async (url, studentID) => {
 };
 
 export const DeleteStudentAPI = async (url, payload, token) => {
-  console.log("token:", token,"\n", "payload:", payload)
+ 
   try {
     const endpoint = `${url}${DeleteStudent}`;
     const response = await axios.delete(endpoint,{
@@ -806,8 +805,9 @@ export const DeleteStudentAPI = async (url, payload, token) => {
         message: response.data.message || "Failed to delete student"
       };
     }
-  } catch (err) {
-    console.log(err)
+  } catch (err) 
+  {
+  
     return {
       status: err.status,
       data: null,
@@ -842,7 +842,7 @@ export const GetGenderRatioAPI = async (url, token) => {
       };
     }
   } catch (err) {
-    console.log(err);
+   
     return {
       status: err.status,
       data: null,
@@ -1356,10 +1356,11 @@ export const CreateEventAPI = async (url, payload,token) => {
 export const DeleteEventAPI = async (url, eventIds,token) => {
   try {
     const endpoint = `${url}${DeleteEvent}`;
-    const response = await axios.delete(endpoint,eventIds, {
+    const response = await axios.delete(endpoint,{
       headers: {
         'Authorization': `Bearer ${token}`
-      }
+      },
+      data:eventIds
     });
     
     if (response.status === 200 || response.status === 201 || response.status === 204) {
@@ -1466,10 +1467,11 @@ export const GetAllAnnouncementsAPI = async (url, token) => {
 export const DeleteAnnouncementAPI = async (url, announcementIds, token) => {
   try {
     const endpoint = `${url}${DeleteAnnouncement}`;
-    const response = await axios.delete(endpoint,announcementIds, {
+    const response = await axios.delete(endpoint, {
       headers: {
         'Authorization': `Bearer ${token}`
-      }
+      },
+      data:announcementIds
     });
     
     if (response.status === 200 || response.status === 201 || response.status === 204) {

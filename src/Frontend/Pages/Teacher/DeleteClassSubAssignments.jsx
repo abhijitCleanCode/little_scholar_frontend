@@ -137,7 +137,7 @@ const DeleteClassSub = () => {
 if(confirmRequest)
 {
   DeleteSubject();
-  fetchSubjects()
+  
 }
   },[confirmRequest])
 
@@ -168,6 +168,7 @@ if(confirmRequest)
       
       dispatch(setStatus("success"))
       dispatch(setAddText(response.message))
+      fetchSubjects()
       
       // Reset selected IDs
       setSelectedClassId(null);

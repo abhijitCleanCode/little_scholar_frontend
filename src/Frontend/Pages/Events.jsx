@@ -155,9 +155,11 @@ const DeleteEvents = async()=>{
 
     if (response.status ===200 ||response.status ===201 || response.status ===204 ) {
       dispatch(setStatus("success"))
-      dispatch(setAddText(` Events deleted successfully`))
+      dispatch(setAddText(response.message))
       await fetchEvents();
-          } else {
+          } 
+          
+          else {
             dispatch(setStatus("error"))
             dispatch(setAddText(response.message))
       
@@ -176,6 +178,7 @@ const DeleteEvents = async()=>{
             dispatch(setShowConfirmationModel(false));
           }, 3000);
           dispatch(setConfirmRequest(false))
+          setSelectedEvents([])
 }
 
 useEffect( ()=>{
@@ -227,6 +230,7 @@ const DeleteAnnouncements = async ()=>{
             dispatch(setShowConfirmationModel(false));
           }, 3000);
           dispatch(setConfirmRequest(false))
+          setSelectedAnnouncements([])
    
 }
 
