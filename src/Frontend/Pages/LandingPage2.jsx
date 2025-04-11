@@ -29,7 +29,7 @@ const token= Cookies.get("token")
              to={token ? "/dashboard" : "/user-options"}
               className="border-2 border-purpleColor text-purpleColor px-6 py-2 rounded-full font-medium transition-all  hover:shadow-md"
             >
-              Login
+             {token?"Dashboard":"Login"} 
             </Link>
           </div>
         </div>
