@@ -22,6 +22,8 @@ const Confirmation = ({ message, note }) => {
     setIsVisible(false);
     setTimeout(() => {
       dispatch(setShowConfirmationModel(false));
+      dispatch(setConfirmRequest(false));
+      
     }, 300);
   };
 
