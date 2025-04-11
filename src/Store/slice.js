@@ -10,6 +10,7 @@ const dataSlice = createSlice({
     CurrentPage:1,
     eventsChanged:'',
     isStudentUpdate:false,
+    isTeacherUpdate:false,
     isLeaderboardUpdate:false,
     showLogoutConfirm:false,
     showConfirmationModel:false,
@@ -96,6 +97,9 @@ state.isLeaderboardUpdate= action.payload
     setIsStudentUpdate:(state,action)=>{
       state.isStudentUpdate=action.payload
     },
+    setIsTeacherUpdate:(state,action)=>{
+      state.isTeacherUpdate=action.payload
+    },
     setTeacherAttendanceData:(state,action)=>{
       state.TeacherAttendanceData = action.payload
     },
@@ -160,7 +164,7 @@ setTransactionUpdate:(state,action) =>{
 export const {setRole,setUser,setLoginData,setClassData,setStudentData,setTeacherData,setSubjectData,
   setEventData,setAnnouncementData,setStudentCount,setTeacherCount,
   setLeaderBoard,setCurrentPage,setTransactionData,setStudentFinanceData,
-  setOtherExpenseData,setStudentByClassData,setIsStudentUpdate,setTeacherAttendanceData,
+  setOtherExpenseData,setStudentByClassData,setIsStudentUpdate,setIsTeacherUpdate,setTeacherAttendanceData,
   setStudentAttendanceData ,updateStudentAttendance,setIsLeaderBoardUpdate,setGenderRatio,setShowLogoutConfirm,
   setShowConfirmationModel,setStatus,setAddText,setConfirmRequest,setLeaveData,
   setEventsChanged,setTransactionUpdate}

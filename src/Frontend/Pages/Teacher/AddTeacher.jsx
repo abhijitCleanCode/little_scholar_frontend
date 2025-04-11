@@ -3,17 +3,14 @@ import { useForm } from "react-hook-form";
 import Cookies from "js-cookie";
 import {
   Mail,
-  Lock,
   User,
   ArrowRight,
-  Eye,
-  EyeOff,
   Briefcase,
   IndianRupee,
 } from "lucide-react";
 import { toast } from 'react-toastify';
 import { RegisterTeacherAccount } from '../../../service/api';
-import { setTeacherData } from "../../../Store/slice";
+import { setTeacherData,setIsTeacherUpdate } from "../../../Store/slice";
 import { useSelector, useDispatch } from "react-redux";
 import Input from '../../Components/Elements/Input';
 import PasswordInput from '../../Components/Elements/PasswordInput';
@@ -52,8 +49,11 @@ const AddTeachers = () => {
     setLoading(true);
    
     const response = await RegisterTeacherAccount(url, token,data);
-    if (response.status === 200 || response.status === 204 || response.status === 201) {
-      dispatch(setTeacherData([...teachers, data]))
+    if (response.status === 200 || response.status === 204 || response.status === 201) 
+      {
+
+      // dispatch(setTeacherData([...teachers, data]))
+      dispatch(setIsTeacherUpdate(true))
       setShowToast(true);
       setToastMessage(response.message);
       setToastType("success");
@@ -70,8 +70,8 @@ const AddTeachers = () => {
                 Cookies.remove('token');
                 window.location.href = '/user-options';                      
               }
-      
-    }
+  }
+
     setLoading(false);
     reset();
   };

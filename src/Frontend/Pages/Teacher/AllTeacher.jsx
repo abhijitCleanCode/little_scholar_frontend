@@ -10,7 +10,8 @@ import {
 import AddTeachers from "../../Pages/Teacher/AddTeacher";
 import { useSelector, useDispatch } from "react-redux";
 import Cookies from 'js-cookie'
-import { setTeacherData,setCurrentPage,setConfirmRequest,setShowConfirmationModel,setStatus, setAddText  } from "../../../Store/slice";
+import { setTeacherData,setCurrentPage,setConfirmRequest,setShowConfirmationModel,setStatus, setAddText,setIsTeacherUpdate  } 
+from "../../../Store/slice";
 import { GetTeachersPages,DeleteTeacherAPI } from '../../../service/api';
 import Table from "../../Components/Elements/Table";
 import Pagination from "../../Components/Elements/Pagination";
@@ -40,8 +41,9 @@ const TeacherDetails = () => {
   const teachers = useSelector((state) => state.userData.TeacherData);
   const confirmRequest = useSelector((state) => state.userData.confirmRequest);
   const showConfirmation = useSelector((state) => state.userData.showConfirmationModel);
+  const IsTeacherUpdate = useSelector((state) => state.userData.isTeacherUpdate);
   const dispatch = useDispatch();
-console.log(currentpage)
+
   useEffect(() => {
     document.title = "Teacher Details";
     dispatch(setCurrentPage(1));
@@ -63,7 +65,6 @@ console.log(currentpage)
   const fetchTeachers = async () => {
     dispatch(setTeacherData([]));
     setLoading(true);
-    console.log(teachers)
     const response = await GetTeachersPages(url,currentpage);
     if (response.status === 200 || response.status === 204 || response.status === 201) {
       dispatch(setTeacherData(response.data.teachers));
@@ -73,7 +74,7 @@ console.log(currentpage)
         totalPages: response.data.pagination.totalPages,
         totalItemsPerPage: response.data.pagination.teachersPerPage ||10,
       });
-      console.log(teachers, 'from response')
+    
           
         } else {
 
@@ -93,6 +94,15 @@ console.log(currentpage)
       useEffect(() => {
       fetchTeachers();
   }, [currentpage]);
+
+      useEffect(() => {
+        if(IsTeacherUpdate)
+        {
+          fetchTeachers();
+          dispatch(setIsTeacherUpdate(false))
+
+        }
+  }, [IsTeacherUpdate]);
 
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
