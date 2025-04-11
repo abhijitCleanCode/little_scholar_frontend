@@ -12,7 +12,7 @@ import UpdateStudents from "../../Pages/Student/UpdateStudent";
 import ViewStudentDetails from '../../Pages/Student/ViewStudentsDetails/ViewStudentDetails';
 import { useSelector, useDispatch } from "react-redux";
 import Cookies from 'js-cookie'
-import { setStudentData, setCurrentPage,setIsStudentUpdate,setShowConfirmationModel,setStatus, setAddText  } from "../../../Store/slice"; 
+import { setStudentData, setCurrentPage,setIsStudentUpdate,setShowConfirmationModel,setStatus, setAddText,setConfirmRequest } from "../../../Store/slice"; 
 import { toast } from 'react-toastify';
 import {  GetAllClassesAPI,GetStudentByClassAPI,DeleteStudentAPI} from '../../../service/api';
 import Table from "../Elements/Table";
@@ -213,11 +213,11 @@ const DeleteStudent = async () => {
       dispatch(setAddText(response.message || "An error occoured, please try after sometime"))
       
       
-      // if (response.status === 401) {  
-      //   Cookies.remove('user');
-      //   Cookies.remove('token');
-      //   window.location.href = '/user-options';      
-      // }
+      if (response.status === 401) {  
+        Cookies.remove('user');
+        Cookies.remove('token');
+        window.location.href = '/user-options';      
+      }
     }
 
     
@@ -226,6 +226,7 @@ const DeleteStudent = async () => {
         dispatch(setStatus(''));
         dispatch(setAddText(''));
         dispatch(setShowConfirmationModel(false));
+        dispatch(setConfirmRequest(false))
       }, 3000);
 
 

@@ -10,7 +10,7 @@ import {
 import AddTeachers from "../../Pages/Teacher/AddTeacher";
 import { useSelector, useDispatch } from "react-redux";
 import Cookies from 'js-cookie'
-import { setTeacherData,setCurrentPage,setShowConfirmationModel,setStatus, setAddText  } from "../../../Store/slice";
+import { setTeacherData,setCurrentPage,setConfirmRequest,setShowConfirmationModel,setStatus, setAddText  } from "../../../Store/slice";
 import { GetTeachersPages,DeleteTeacherAPI } from '../../../service/api';
 import Table from "../../Components/Elements/Table";
 import Pagination from "../../Components/Elements/Pagination";
@@ -61,6 +61,7 @@ const TeacherDetails = () => {
   }, [showToast, toastMessage, toastType]);
 
   const fetchTeachers = async () => {
+    dispatch(setTeacherData([]));
     setLoading(true);
     const response = await GetTeachersPages(url,currentpage);
     if (response.status === 200 || response.status === 204 || response.status === 201) {
@@ -73,11 +74,13 @@ const TeacherDetails = () => {
           });
           
         } else {
+
           setError(response.message);
           setShowFailure(true);
           setShowToast(true);
           setToastMessage(response.message);
           setToastType("error");
+          dispatch(setTeacherData([]));
           setTimeout(() => {
             setShowFailure(false);
           }, 2000);
@@ -178,11 +181,11 @@ const DeleteTeacher = async () => {
       dispatch(setAddText(response.message || "An error occoured, please try after sometime"))
       
       
-      // if (response.status === 401) {  
-      //   Cookies.remove('user');
-      //   Cookies.remove('token');
-      //   window.location.href = '/user-options';      
-      // }
+      if (response.status === 401) {  
+        Cookies.remove('user');
+        Cookies.remove('token');
+        window.location.href = '/user-options';      
+      }
     }
 
     
@@ -191,6 +194,7 @@ const DeleteTeacher = async () => {
         dispatch(setStatus(''));
         dispatch(setAddText(''));
         dispatch(setShowConfirmationModel(false));
+        dispatch(setConfirmRequest(false))
       }, 3000);
 
 
@@ -339,7 +343,7 @@ showConfirmation && (
           data={teachers || []}
           checkboxSelection={false}
           actions={true}
-          onEdit={handleEditTeacher}
+          // onEdit={handleEditTeacher}
           onDelete={handleDeleteTeacher}
           extraClasses="m-4"
         />
