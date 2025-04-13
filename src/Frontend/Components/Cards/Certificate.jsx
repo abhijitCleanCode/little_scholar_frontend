@@ -4,8 +4,9 @@ import { Save, FileText, Download, School, Award, User, FileSignature } from 'lu
 import axios from 'axios';
 import { pdf,Page, Document, Text,View,Image } from '@react-pdf/renderer';
 import * as domToImage from 'dom-to-image';
-import { GetAllClass,GetAllClasses } from '../../Route';
-
+import { GetAllClass,GetAllClasses} from '../../Route';
+import {GetStudentByClassAPI} from '../../../service/api'
+import { toast } from 'react-toastify';
 
 const CertificateGenerator = () => {
   const [classes, setClasses] = useState([]);
@@ -18,9 +19,13 @@ const CertificateGenerator = () => {
   const [teacherName, setTeacherName] = useState('Mrs. Smith');
   const [principalSignature, setPrincipalSignature] = useState(null);
   const [teacherSignature, setTeacherSignature] = useState(null);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState("");
   const certificateRef = useRef(null);
   const [isLoading, setIsLoading] = useState(false);
   const url = import.meta.env.VITE_API_BASE_URL;
+
   useEffect(() => {
       document.title = "Generate Certificate";
   }, []);
@@ -38,6 +43,21 @@ const CertificateGenerator = () => {
     }
   }, [selectedClass]);
 
+
+ useEffect(() => {
+    if (showToast) {
+      toast[toastType](toastMessage, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    }
+  }, [showToast, toastMessage, toastType]);
+
+
   const fetchClasses = async () => {
     setIsLoading(true);
     try {
@@ -53,18 +73,29 @@ const CertificateGenerator = () => {
 
   const fetchStudents = async (classId) => {
     setIsLoading(true);
-    try {
-      const response = await axios.get(
-        `https://school-backend-ocze.onrender.com/api/v1/student/getstudentbyclassid/${classId}`
-      );
-      setStudents(response.data.data.students);
-      console.log(response.data.data.students)
-    } catch (error) {
-      console.error("Error fetching students:", error);
-      setStudents([]);
-    } finally {
+      const response = await GetStudentByClassAPI(url,classId)
+      if (response.status === 200 || response.status === 201 || response.status === 204)
+
+        {
+        setStudents(response.data.students);
+
+        }
+
+      else
+      
+      {
+        setShowToast(true);
+        setToastMessage(response.message);
+        setToastType("error");
+        setStudents([]);
+
+
+      }
+      
+    
+
       setIsLoading(false);
-    }
+    
   };
   const handleClassChange = (e) => {
     setSelectedClass(e.target.value);
@@ -146,7 +177,6 @@ const generatePDF = async () => {
   const getStudentName = () => {
     if (!selectedStudent) return '';
     const student = students.find(s => s._id === selectedStudent);
-    console.log(students)
     return student ? student.name : '';
   };
 

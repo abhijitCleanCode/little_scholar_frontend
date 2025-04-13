@@ -55,9 +55,9 @@
 
 
 // Subject endpoints
-    export const CreateSubject = 'subject/register'
-    export const GetAllSubjects = 'subject/getAllSubjects'
-    export const GetSubjectByClass = 'subject/getsubjectsbyclass'
+export const CreateSubject = 'subject/register'
+export const GetAllSubjects = 'subject/getAllSubjects'
+export const GetSubjectByClass = 'subject/getsubjectsbyclass'
 
 // Exam endpoints
 
