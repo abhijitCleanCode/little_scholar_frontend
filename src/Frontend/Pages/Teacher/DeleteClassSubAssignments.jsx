@@ -1,23 +1,21 @@
-
 import React, { useState, useEffect } from "react";
-import {
-
-  Loader,
-  ChevronLeft,
-  ChevronRight
-
-} from "lucide-react";
+import { Loader, ChevronLeft, ChevronRight } from "lucide-react";
 import Cookies from "js-cookie";
-import { toast } from 'react-toastify';
-import { setTeacherData,setShowConfirmationModel,setStatus, setAddText  } from "../../../Store/slice";
-import { GetAllTeachersAPI, GetAllSubjectsAPI } from '../../../service/api';
+import { toast } from "react-toastify";
+import {
+  setTeacherData,
+  setShowConfirmationModel,
+  setStatus,
+  setAddText,
+} from "../../../Store/slice";
+import { GetAllTeachersAPI, GetAllSubjectsAPI } from "../../../service/api";
 import { useSelector, useDispatch } from "react-redux";
-import Table from '../../Components/Elements/Table';
-import axios from 'axios';
-import Confirmation from "../../Components/Elements/ConfirmationModel"
+import Table from "../../Components/Elements/Table";
+import axios from "axios";
+import Confirmation from "../../Components/Elements/ConfirmationModel";
 
 const DeleteClassSub = () => {
-  const url = import.meta.env.VITE_API_BASE_URL;
+  const url = "https://little-scholar.onrender.com/api/v1/";
   const token = Cookies.get("token");
 
   const [allSubjects, setAllSubjects] = useState([]);
@@ -30,19 +28,21 @@ const DeleteClassSub = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [showAddSubject, setShowAddSubject] = useState(false);
   const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState('');
-  const [toastType, setToastType] = useState('');
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState("");
   // Variables for deletion
   const [selectedClassId, setSelectedClassId] = useState(null);
   const [selectedSubjectIds, setSelectedSubjectIds] = useState([]);
 
   const teachers = useSelector((state) => state.userData.TeacherData);
   const confirmRequest = useSelector((state) => state.userData.confirmRequest);
-  const showConfirmation = useSelector((state) => state.userData.showConfirmationModel);
+  const showConfirmation = useSelector(
+    (state) => state.userData.showConfirmationModel
+  );
   const dispatch = useDispatch();
 
   const subjectsPerPage = 10;
-  
+
   useEffect(() => {
     document.title = "Subject Details";
   }, []);
@@ -64,7 +64,11 @@ const DeleteClassSub = () => {
   useEffect(() => {
     const fetchTeachers = async () => {
       const response = await GetAllTeachersAPI(url);
-      if (response.status === 200 || response.status === 204 || response.status === 201) {
+      if (
+        response.status === 200 ||
+        response.status === 204 ||
+        response.status === 201
+      ) {
         dispatch(setTeacherData(response.data.teachers));
         if (response.data.teachers?.length > 0) {
           setSelectedTeacherId(response.data.teachers[0]._id);
@@ -91,22 +95,26 @@ const DeleteClassSub = () => {
   const fetchSubjects = async () => {
     setLoading(true);
 
-        // Fetch all subjects
-        const response = await GetAllSubjectsAPI(url);
-        
-        if (response.status === 200 || response.status === 204 || response.status === 201) {
-          setAllSubjects(response.data || []);
-        } else {
-          setError(response.message);
-          setShowToast(true);
-          setToastMessage(response.message);
-          setToastType("error");
-        }
-      
-      setLoading(false);
-    };
-    
-    useEffect(() => {
+    // Fetch all subjects
+    const response = await GetAllSubjectsAPI(url);
+
+    if (
+      response.status === 200 ||
+      response.status === 204 ||
+      response.status === 201
+    ) {
+      setAllSubjects(response.data || []);
+    } else {
+      setError(response.message);
+      setShowToast(true);
+      setToastMessage(response.message);
+      setToastType("error");
+    }
+
+    setLoading(false);
+  };
+
+  useEffect(() => {
     fetchSubjects();
   }, []);
 
@@ -114,121 +122,128 @@ const DeleteClassSub = () => {
   useEffect(() => {
     if (selectedTeacherId && allSubjects.length) {
       // Filter subjects that have the selected teacher
-      const teacherSubjects = allSubjects.filter(subject => 
-        subject.teacher && subject.teacher.some(teacher => teacher._id === selectedTeacherId)
+      const teacherSubjects = allSubjects.filter(
+        (subject) =>
+          subject.teacher &&
+          subject.teacher.some((teacher) => teacher._id === selectedTeacherId)
       );
-      
+
       setFilteredSubjects(teacherSubjects);
       setCurrentPage(1); // Reset to first page when changing filters
     }
   }, [selectedTeacherId, allSubjects]);
 
   const handleDeleteClick = (subject) => {
-    
-      setSelectedClassId(subject.class?._id);
-      setSelectedSubjectIds([subject._id]);
- 
+    setSelectedClassId(subject.class?._id);
+    setSelectedSubjectIds([subject._id]);
+
     dispatch(setShowConfirmationModel(true));
-    
-  
   };
 
-  useEffect(()=>{
-if(confirmRequest)
-{
-  DeleteSubject();
-  
-}
-  },[confirmRequest])
-
+  useEffect(() => {
+    if (confirmRequest) {
+      DeleteSubject();
+    }
+  }, [confirmRequest]);
 
   const DeleteSubject = async () => {
- 
     try {
-      if (!selectedTeacherId || !selectedClassId || selectedSubjectIds.length === 0) {
+      if (
+        !selectedTeacherId ||
+        !selectedClassId ||
+        selectedSubjectIds.length === 0
+      ) {
         setShowToast(true);
         setToastMessage("Missing required information for deletion");
         setToastType("error");
         return;
       }
 
-     const response = await axios.delete(`${url}teacher/${selectedTeacherData._id}/delete-assignments`, {
-        data: {
-          classesToRemove: [selectedClassId],
-          subjectsToRemove: selectedSubjectIds
-        },
-        headers: {
-          Authorization: `Bearer ${token}`
+      const response = await axios.delete(
+        `${url}teacher/${selectedTeacherData._id}/delete-assignments`,
+        {
+          data: {
+            classesToRemove: [selectedClassId],
+            subjectsToRemove: selectedSubjectIds,
+          },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-      });
-      
+      );
+
       // Update the UI by removing the deleted subject from both lists
-      setAllSubjects(prev => prev.filter(subject => !selectedSubjectIds.includes(subject._id)));
-      setFilteredSubjects(prev => prev.filter(subject => !selectedSubjectIds.includes(subject._id)));
-      
-      dispatch(setStatus("success"))
-      dispatch(setAddText(response.message))
-      fetchSubjects()
-      
+      setAllSubjects((prev) =>
+        prev.filter((subject) => !selectedSubjectIds.includes(subject._id))
+      );
+      setFilteredSubjects((prev) =>
+        prev.filter((subject) => !selectedSubjectIds.includes(subject._id))
+      );
+
+      dispatch(setStatus("success"));
+      dispatch(setAddText(response.message));
+      fetchSubjects();
+
       // Reset selected IDs
       setSelectedClassId(null);
       setSelectedSubjectIds([]);
-    } 
-    catch (error) {
-      console.log(error)
-      dispatch(setStatus("error"))
-      dispatch(setAddText(error.response?.data.message || "An error occoured, please try after sometime"))
-      
-      
-      if (error.response?.status === 401) {  
-        Cookies.remove('user');
-        Cookies.remove('token');
-        window.location.href = '/user-options';      
+    } catch (error) {
+      console.log(error);
+      dispatch(setStatus("error"));
+      dispatch(
+        setAddText(
+          error.response?.data.message ||
+            "An error occoured, please try after sometime"
+        )
+      );
+
+      if (error.response?.status === 401) {
+        Cookies.remove("user");
+        Cookies.remove("token");
+        window.location.href = "/user-options";
       }
-    }
-finally {
-    
+    } finally {
       setTimeout(() => {
-        dispatch(setStatus(''));
-        dispatch(setAddText(''));
+        dispatch(setStatus(""));
+        dispatch(setAddText(""));
         dispatch(setShowConfirmationModel(false));
       }, 3000);
     }
-
-    
   };
 
   const handleClassChange = (e) => {
     const teacherId = e.target.value;
     setSelectedTeacherId(teacherId);
-    const selectedTeacher = teachers.find(teacher => teacher._id === teacherId);
+    const selectedTeacher = teachers.find(
+      (teacher) => teacher._id === teacherId
+    );
     setSelectedTeacherData(selectedTeacher);
   };
 
   // Table column definitions
   const columns = [
     { field: "name", headerName: "Subject Name" },
-    { 
-      field: "class", 
+    {
+      field: "class",
       headerName: "Class",
-      renderCell: (row) => row.class?.className || "-"
+      renderCell: (row) => row.class?.className || "-",
     },
-    { 
-      field: "section", 
+    {
+      field: "section",
       headerName: "Section",
-      renderCell: (row) => row.class?.section || "-"
+      renderCell: (row) => row.class?.section || "-",
     },
-    { 
-      field: "syllabus", 
+    {
+      field: "syllabus",
       headerName: "Syllabus",
       renderCell: (row) => {
         if (!row.syllabus) return "-";
-        
+
         if (row.syllabus.length > 50) {
           return (
             <div>
               {row.syllabus.substring(0, 50)}...
-              <button 
+              <button
                 onClick={() => handleSyllabusClick(row.syllabus)}
                 className="text-purpleColor ml-2 hover:underline"
               >
@@ -238,8 +253,8 @@ finally {
           );
         }
         return row.syllabus;
-      }
-    }
+      },
+    },
   ];
 
   const searchFilteredSubjects = filteredSubjects?.filter(
@@ -256,7 +271,9 @@ finally {
     indexOfFirstSubject,
     indexOfLastSubject
   );
-  const totalPages = Math.ceil(searchFilteredSubjects?.length / subjectsPerPage);
+  const totalPages = Math.ceil(
+    searchFilteredSubjects?.length / subjectsPerPage
+  );
 
   const handleSyllabusClick = (syllabus) => {
     // Display full syllabus in a modal or new window
@@ -311,13 +328,14 @@ finally {
     <div className="sm:px-16 px-6 sm:py-16 py-10 min-h-screen">
       <div className="flex flex-col md:flex-row text-black-300 justify-between items-start md:items-center mb-6 p-2">
         <div className="mb-4 md:mb-0 text-left">
-          <h2 className="h2 text-2xl font-medium mb-2 text-left">Delete Classes-Subjects</h2>
+          <h2 className="h2 text-2xl font-medium mb-2 text-left">
+            Delete Classes-Subjects
+          </h2>
           <div className="flex items-center text-sm subtitle-2 text-left">
             <span className="mr-2">Academic /</span>
             <span>Delete Classes-Subjects</span>
           </div>
         </div>
-       
       </div>
 
       <div className="bg-white rounded-lg shadow-lg p-4">
@@ -333,7 +351,6 @@ finally {
               </option>
             ))}
           </select>
-          
         </div>
 
         {loading ? (
@@ -343,7 +360,7 @@ finally {
         ) : (
           <>
             {filteredSubjects.length > 0 ? (
-              <Table 
+              <Table
                 columns={columns}
                 data={currentSubjects}
                 actions={true}
@@ -359,8 +376,7 @@ finally {
           </>
         )}
       </div>
-{
-showConfirmation && (
+      {showConfirmation && (
         <div
           className={`
             fixed inset-0 flex items-center justify-center 
@@ -374,19 +390,19 @@ showConfirmation && (
           `}
           onClick={(e) => {
             if (e.target === e.currentTarget) {
-              dispatch(setShowConfirmationModel(false))
+              dispatch(setShowConfirmationModel(false));
               setSelectedExpenses(null);
             }
           }}
         >
-          <Confirmation 
+          <Confirmation
             message={`Are you sure you want to delete this subject assignment? This action cannot be undone.`}
-            note=""/>
+            note=""
+          />
         </div>
       )}
 
-
-{/* 
+      {/* 
       {searchFilteredSubjects?.length > 0 && (
         <div className="bottom-0 max-w-screen-xl border-t p-4 flex justify-between items-center">
           <div className="w-full flex justify-center items-center gap-2">

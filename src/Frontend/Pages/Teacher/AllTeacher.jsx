@@ -1,23 +1,23 @@
 import React, { useState, useEffect } from "react";
-import {
-  Search,
-  GraduationCap,
-  Plus,
-  Loader,
-  X,
-  Eye,
-} from "lucide-react";
+import { Search, GraduationCap, Plus, Loader, X, Eye } from "lucide-react";
 import AddTeachers from "../../Pages/Teacher/AddTeacher";
 import { useSelector, useDispatch } from "react-redux";
-import Cookies from 'js-cookie'
-import { setTeacherData,setCurrentPage,setConfirmRequest,setShowConfirmationModel,setStatus, setAddText,setIsTeacherUpdate  } 
-from "../../../Store/slice";
-import { GetTeachersPages,DeleteTeacherAPI } from '../../../service/api';
+import Cookies from "js-cookie";
+import {
+  setTeacherData,
+  setCurrentPage,
+  setConfirmRequest,
+  setShowConfirmationModel,
+  setStatus,
+  setAddText,
+  setIsTeacherUpdate,
+} from "../../../Store/slice";
+import { GetTeachersPages, DeleteTeacherAPI } from "../../../service/api";
 import Table from "../../Components/Elements/Table";
 import Pagination from "../../Components/Elements/Pagination";
-import ViewTeacherDetails from './ViewTeacherDetails/ViewTeacherDetails';
-import { toast } from 'react-toastify';
-import Confirmation from "../../Components/Elements/ConfirmationModel"
+import ViewTeacherDetails from "./ViewTeacherDetails/ViewTeacherDetails";
+import { toast } from "react-toastify";
+import Confirmation from "../../Components/Elements/ConfirmationModel";
 
 const TeacherDetails = () => {
   const [loading, setLoading] = useState(true);
@@ -27,21 +27,25 @@ const TeacherDetails = () => {
   const [showViewTeacher, setShowViewTeacher] = useState(false);
   const [selectedTeacher, setSelectedTeacher] = useState(null);
   const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState('');
-  const [toastType, setToastType] = useState('');
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState("");
   const [showFailure, setShowFailure] = useState(false);
   const [paginationData, setPaginationData] = useState({
     currentPage: 1,
     totalItems: 0,
-    totalPages: 0
+    totalPages: 0,
   });
-  const url = import.meta.env.VITE_API_BASE_URL;
+  const url = "https://little-scholar.onrender.com/api/v1/";
   const token = Cookies.get("token");
   const currentpage = useSelector((state) => state.userData.CurrentPage);
   const teachers = useSelector((state) => state.userData.TeacherData);
   const confirmRequest = useSelector((state) => state.userData.confirmRequest);
-  const showConfirmation = useSelector((state) => state.userData.showConfirmationModel);
-  const IsTeacherUpdate = useSelector((state) => state.userData.isTeacherUpdate);
+  const showConfirmation = useSelector(
+    (state) => state.userData.showConfirmationModel
+  );
+  const IsTeacherUpdate = useSelector(
+    (state) => state.userData.isTeacherUpdate
+  );
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -65,43 +69,42 @@ const TeacherDetails = () => {
   const fetchTeachers = async () => {
     dispatch(setTeacherData([]));
     setLoading(true);
-    const response = await GetTeachersPages(url,currentpage);
-    if (response.status === 200 || response.status === 204 || response.status === 201) {
+    const response = await GetTeachersPages(url, currentpage);
+    if (
+      response.status === 200 ||
+      response.status === 204 ||
+      response.status === 201
+    ) {
       dispatch(setTeacherData(response.data.teachers));
       setPaginationData({
         currentPage: response.data.pagination.currentPage || 1,
         totalItems: response.data.pagination.totalTeachers,
         totalPages: response.data.pagination.totalPages,
-        totalItemsPerPage: response.data.pagination.teachersPerPage ||10,
+        totalItemsPerPage: response.data.pagination.teachersPerPage || 10,
       });
-    
-          
-        } else {
+    } else {
+      setError(response.message);
+      setShowFailure(true);
+      setShowToast(true);
+      setToastMessage(response.message);
+      setToastType("error");
+      dispatch(setTeacherData([]));
+      setTimeout(() => {
+        setShowFailure(false);
+      }, 2000);
+    }
+    setLoading(false);
+  };
 
-          setError(response.message);
-          setShowFailure(true);
-          setShowToast(true);
-          setToastMessage(response.message);
-          setToastType("error");
-          dispatch(setTeacherData([]));
-          setTimeout(() => {
-            setShowFailure(false);
-          }, 2000);
-        }
-        setLoading(false)
-      };
-
-      useEffect(() => {
-      fetchTeachers();
+  useEffect(() => {
+    fetchTeachers();
   }, [currentpage]);
 
-      useEffect(() => {
-        if(IsTeacherUpdate)
-        {
-          fetchTeachers();
-          dispatch(setIsTeacherUpdate(false))
-
-        }
+  useEffect(() => {
+    if (IsTeacherUpdate) {
+      fetchTeachers();
+      dispatch(setIsTeacherUpdate(false));
+    }
   }, [IsTeacherUpdate]);
 
   const handlePageChange = (newPage) => {
@@ -115,7 +118,7 @@ const TeacherDetails = () => {
 
   const columns = [
     {
-      field: 'name',
+      field: "name",
       headerName: "Teacher's Name",
       renderCell: (row) => (
         <div className="flex items-center gap-3">
@@ -127,17 +130,17 @@ const TeacherDetails = () => {
       ),
     },
     {
-      field: 'email',
-      headerName: 'Email',
+      field: "email",
+      headerName: "Email",
     },
     {
-      field: 'salary',
-      headerName: 'Salary',
+      field: "salary",
+      headerName: "Salary",
       renderCell: (row) => row.salary || "-",
     },
     {
-      field: 'view',
-      headerName: 'View',
+      field: "view",
+      headerName: "View",
       renderCell: (row) => (
         <button
           onClick={() => {
@@ -152,68 +155,55 @@ const TeacherDetails = () => {
     },
   ];
 
-  const handleEditTeacher = (teacher) => {
-
-  };
+  const handleEditTeacher = (teacher) => {};
 
   const handleDeleteTeacher = (teacher) => {
     setSelectedTeacher(teacher);
     dispatch(setShowConfirmationModel(true));
-
   };
 
- useEffect(()=>{
-if(confirmRequest)
-{
-  DeleteTeacher();
-  
-}
-  },[confirmRequest])
+  useEffect(() => {
+    if (confirmRequest) {
+      DeleteTeacher();
+    }
+  }, [confirmRequest]);
 
+  const DeleteTeacher = async () => {
+    const payload = { id: selectedTeacher._id };
+    const response = await DeleteTeacherAPI(url, payload, token);
 
-const DeleteTeacher = async () => {
- 
-    const payload = {id: selectedTeacher._id}
-     const response = await DeleteTeacherAPI(url, payload,token)
-      
-      // Update the UI by removing the deleted subject from both lists
-      if(response.status===200 || response.status===201 || response.status===204){
-    
-     
-      
-      dispatch(setStatus("success"))
-      dispatch(setAddText(response.message))
-      fetchTeachers()
-      
+    // Update the UI by removing the deleted subject from both lists
+    if (
+      response.status === 200 ||
+      response.status === 201 ||
+      response.status === 204
+    ) {
+      dispatch(setStatus("success"));
+      dispatch(setAddText(response.message));
+      fetchTeachers();
+    } else {
+      dispatch(setStatus("error"));
+      dispatch(
+        setAddText(
+          response.message || "An error occoured, please try after sometime"
+        )
+      );
 
-    } 
-
-    else  {
-   
-      dispatch(setStatus("error"))
-      dispatch(setAddText(response.message || "An error occoured, please try after sometime"))
-      
-      
-      if (response.status === 401) {  
-        Cookies.remove('user');
-        Cookies.remove('token');
-        window.location.href = '/user-options';      
+      if (response.status === 401) {
+        Cookies.remove("user");
+        Cookies.remove("token");
+        window.location.href = "/user-options";
       }
     }
 
-    
-      setSelectedTeacher(null);
-      setTimeout(() => {
-        dispatch(setStatus(''));
-        dispatch(setAddText(''));
-        dispatch(setShowConfirmationModel(false));
-        dispatch(setConfirmRequest(false))
-      }, 3000);
-
-
-    
+    setSelectedTeacher(null);
+    setTimeout(() => {
+      dispatch(setStatus(""));
+      dispatch(setAddText(""));
+      dispatch(setShowConfirmationModel(false));
+      dispatch(setConfirmRequest(false));
+    }, 3000);
   };
-
 
   if (loading) {
     return (
@@ -238,7 +228,9 @@ const DeleteTeacher = async () => {
       {/* Header */}
       <div className="flex flex-col md:flex-row text-black-300 justify-between items-start md:items-center mb-6 p-2">
         <div className="mb-4 md:mb-0 text-left">
-          <h2 className="h2 text-2xl font-medium mb-2 text-left">All Teachers </h2>
+          <h2 className="h2 text-2xl font-medium mb-2 text-left">
+            All Teachers{" "}
+          </h2>
           <div className="flex items-center text-sm subtitle-2 text-left">
             <span className="mr-2">Teachers /</span>
             <span> All Teachers</span>
@@ -258,7 +250,11 @@ const DeleteTeacher = async () => {
         className={`
           fixed inset-0 flex items-center justify-center 
           bg-black bg-opacity-50 z-50 
-          ${showAddTeacher ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"}
+          ${
+            showAddTeacher
+              ? "opacity-100 visible"
+              : "opacity-0 invisible pointer-events-none"
+          }
           transition-all duration-300 ease-in-out
         `}
         onClick={(e) => {
@@ -268,14 +264,20 @@ const DeleteTeacher = async () => {
         }}
       >
         {showAddTeacher && (
-          <div className={`
+          <div
+            className={`
             relative rounded-xl w-auto max-h-[90vh] overflow-y-auto 
             bg-white 
             custom-scrollbar
-            ${showAddTeacher ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 -translate-y-4 pointer-events-none"}
+            ${
+              showAddTeacher
+                ? "opacity-100 scale-100 translate-y-0"
+                : "opacity-0 scale-95 -translate-y-4 pointer-events-none"
+            }
             transition-all duration-300 ease-in-out
             transform origin-center
-          `}>
+          `}
+          >
             <button
               onClick={() => setShowAddTeacher(false)}
               className="absolute top-6 right-4 p-2 bg-white rounded-full text-black-300 hover:text-gray-800 transition-colors duration-200 transform hover:scale-110"
@@ -291,7 +293,11 @@ const DeleteTeacher = async () => {
         className={`
           fixed inset-0 flex items-center justify-center 
           bg-black bg-opacity-50 z-50 
-          ${showViewTeacher ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"}
+          ${
+            showViewTeacher
+              ? "opacity-100 visible"
+              : "opacity-0 invisible pointer-events-none"
+          }
           transition-all duration-300 ease-in-out
         `}
         onClick={(e) => {
@@ -301,29 +307,37 @@ const DeleteTeacher = async () => {
         }}
       >
         {showViewTeacher && (
-          <div className={`
+          <div
+            className={`
             relative rounded-xl w-auto max-h-[90vh] overflow-y-auto 
             bg-white 
             custom-scrollbar
-            ${showViewTeacher ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 -translate-y-4 pointer-events-none"}
+            ${
+              showViewTeacher
+                ? "opacity-100 scale-100 translate-y-0"
+                : "opacity-0 scale-95 -translate-y-4 pointer-events-none"
+            }
             transition-all duration-300 ease-in-out
             transform origin-center
-          `}>
+          `}
+          >
             <button
               onClick={() => setShowViewTeacher(false)}
               className="absolute top-6 right-4 p-2 bg-white rounded-full text-black-300 hover:text-gray-800 transition-colors duration-200 transform hover:scale-110"
             >
               <X size={24} />
             </button>
-            <ViewTeacherDetails TeacherData={selectedTeacher} onClose={() => setShowViewTeacher(false)} />
+            <ViewTeacherDetails
+              TeacherData={selectedTeacher}
+              onClose={() => setShowViewTeacher(false)}
+            />
           </div>
         )}
       </div>
 
-{/* Delete Student confirmation model */}
+      {/* Delete Student confirmation model */}
 
-{
-showConfirmation && (
+      {showConfirmation && (
         <div
           className={`
             fixed inset-0 flex items-center justify-center 
@@ -337,19 +351,19 @@ showConfirmation && (
           `}
           onClick={(e) => {
             if (e.target === e.currentTarget) {
-              dispatch(setShowConfirmationModel(false))
+              dispatch(setShowConfirmationModel(false));
               setSelectedExpenses(null);
             }
           }}
         >
-          <Confirmation 
+          <Confirmation
             message={`Are you sure you want to delete the Teacher: ${selectedTeacher?.name}? This action cannot be undone.`}
-            note=""/>
+            note=""
+          />
         </div>
       )}
 
       <div className="bg-white rounded-lg shadow-lg p-4">
-
         {/* Table Component */}
         <Table
           columns={columns}
@@ -361,18 +375,14 @@ showConfirmation && (
           extraClasses="m-4"
         />
 
-{teachers.length === 0 && (
-
-<div className="flex flex-col items-center justify-center mt-4 p-4 ">
-  
-              <p className="text-gray-500 text-lg mb-6">No teachers available yet, be the first to create one</p>
-
-</div>       
- )}
-
-</div>
-
-
+        {teachers.length === 0 && (
+          <div className="flex flex-col items-center justify-center mt-4 p-4 ">
+            <p className="text-gray-500 text-lg mb-6">
+              No teachers available yet, be the first to create one
+            </p>
+          </div>
+        )}
+      </div>
 
       {/* Pagination Component */}
       {paginationData.totalPages > 0 && (

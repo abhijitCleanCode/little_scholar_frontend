@@ -1,11 +1,10 @@
-import { useState, useEffect } from 'react';
-import { Calendar, Loader } from 'lucide-react';
-import { GetStudentAttendanceByIDAPI } from '../../../../service/api';
-import Toast from '../../../Components/Toast';
+import { useState, useEffect } from "react";
+import { Calendar, Loader } from "lucide-react";
+import { GetStudentAttendanceByIDAPI } from "../../../../service/api";
+import Toast from "../../../Components/Toast";
 
 const StudentAttendance = (StudentData) => {
-  const url = import.meta.env.VITE_API_BASE_URL;
-
+  const url = "https://little-scholar.onrender.com/api/v1/";
 
   const [loading, setLoading] = useState(true);
   const [attendance, setAttendance] = useState([]);
@@ -16,8 +15,18 @@ const StudentAttendance = (StudentData) => {
   const [toastIcon, setToastIcon] = useState("");
 
   const months = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
   ];
 
   useEffect(() => {
@@ -27,20 +36,25 @@ const StudentAttendance = (StudentData) => {
   const fetchAttendance = async () => {
     setLoading(true);
 
-    
-    const response = await GetStudentAttendanceByIDAPI(url, StudentData.StudentData.studentData?._id);
-    if (response.status === 200 || response.status === 204 || response.status === 201) { 
-        setAttendance(response.data || []);
-        setToastMessage(response.message);
-        setToastIcon("success");
-        setShowToast(true);
+    const response = await GetStudentAttendanceByIDAPI(
+      url,
+      StudentData.StudentData.studentData?._id
+    );
+    if (
+      response.status === 200 ||
+      response.status === 204 ||
+      response.status === 201
+    ) {
+      setAttendance(response.data || []);
+      setToastMessage(response.message);
+      setToastIcon("success");
+      setShowToast(true);
+    } else {
+      setToastMessage(response.message);
+      setToastIcon("error");
+      setShowToast(true);
     }
-    else {
-        setToastMessage(response.message);
-        setToastIcon("error");
-        setShowToast(true);
-    }
-   
+
     setLoading(false);
   };
 
@@ -54,21 +68,23 @@ const StudentAttendance = (StudentData) => {
 
   const getAttendanceColor = (day) => {
     const currentDate = new Date(selectedYear, selectedMonth, day);
-    const attendanceRecord = attendance.find(record => {
+    const attendanceRecord = attendance.find((record) => {
       const recordDate = new Date(record.date);
-      return recordDate.getDate() === day && 
-             recordDate.getMonth() === selectedMonth && 
-             recordDate.getFullYear() === selectedYear;
+      return (
+        recordDate.getDate() === day &&
+        recordDate.getMonth() === selectedMonth &&
+        recordDate.getFullYear() === selectedYear
+      );
     });
 
-    if (!attendanceRecord) return '';
-    return attendanceRecord.status === 'present' ? 'bg-green-200 hover:bg-green-300' : 
-           attendanceRecord.status === 'absent' ? 'bg-red-200 hover:bg-red-300' : '';
+    if (!attendanceRecord) return "";
+    return attendanceRecord.status === "present"
+      ? "bg-green-200 hover:bg-green-300"
+      : attendanceRecord.status === "absent"
+      ? "bg-red-200 hover:bg-red-300"
+      : "";
   };
 
-
-
-  
   return (
     <div className="p-4 md:p-8 min-h-screen bg-gray-50">
       {showToast && (
@@ -87,10 +103,12 @@ const StudentAttendance = (StudentData) => {
             onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
           >
             {months.map((month, index) => (
-              <option key={index} value={index}>{month}</option>
+              <option key={index} value={index}>
+                {month}
+              </option>
             ))}
-          </select>        
-          </div>
+          </select>
+        </div>
 
         {loading ? (
           <div className="flex items-center justify-center h-96">
@@ -99,26 +117,35 @@ const StudentAttendance = (StudentData) => {
         ) : (
           <div className="text-purpleColor rounded-xl shadow-lg p-3 md:p-6 transition-all duration-300 hover:shadow-xl">
             <div className="grid grid-cols-7 gap-1 md:gap-2 mb-4">
-              {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-                <div key={day} className="text-center text-xs md:text-base font-semibold py-1 md:py-2 bg-lamaPurple rounded-md">
+              {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+                <div
+                  key={day}
+                  className="text-center text-xs md:text-base font-semibold py-1 md:py-2 bg-lamaPurple rounded-md"
+                >
                   {day}
                 </div>
               ))}
             </div>
             <div className="grid grid-cols-7 gap-1 md:gap-2 bg-primary-300 text-black-300 border-lamaSkyLight p-2 md:p-5 rounded-md">
-              {[...Array(getFirstDayOfMonth(selectedMonth, selectedYear))].map((_, index) => (
-                <div key={`empty-${index}`} className="h-12 md:h-24"></div>
-              ))}
-              {[...Array(getDaysInMonth(selectedMonth, selectedYear))].map((_, index) => (
-                <div
-                  key={index + 1}
-                  className={`size-8 md:size-12 rounded-full border shadow-lg  p-1 md:p-2 transition-all duration-200 transform hover:scale-105 flex items-center justify-center ${getAttendanceColor(
-                    index + 1
-                  )}`}
-                >
-                  <span className="text-xs md:text-base font-medium">{index + 1}</span>
-                </div>
-              ))}
+              {[...Array(getFirstDayOfMonth(selectedMonth, selectedYear))].map(
+                (_, index) => (
+                  <div key={`empty-${index}`} className="h-12 md:h-24"></div>
+                )
+              )}
+              {[...Array(getDaysInMonth(selectedMonth, selectedYear))].map(
+                (_, index) => (
+                  <div
+                    key={index + 1}
+                    className={`size-8 md:size-12 rounded-full border shadow-lg  p-1 md:p-2 transition-all duration-200 transform hover:scale-105 flex items-center justify-center ${getAttendanceColor(
+                      index + 1
+                    )}`}
+                  >
+                    <span className="text-xs md:text-base font-medium">
+                      {index + 1}
+                    </span>
+                  </div>
+                )
+              )}
             </div>
           </div>
         )}
@@ -126,11 +153,11 @@ const StudentAttendance = (StudentData) => {
         <div className="mt-4 md:mt-8 flex gap-2 md:gap-4 justify-center">
           <div className="flex items-center gap-1 md:gap-2">
             <div className="w-3 h-3 md:w-4 md:h-4 bg-green-200 rounded text-green-400"></div>
-            <span className='text-sm md:text-base text-green-400'>Present</span>
+            <span className="text-sm md:text-base text-green-400">Present</span>
           </div>
           <div className="flex items-center gap-1 md:gap-2">
             <div className="w-3 h-3 md:w-4 md:h-4 bg-red-200 rounded"></div>
-            <span className='text-sm md:text-base text-red-400'>Absent</span>
+            <span className="text-sm md:text-base text-red-400">Absent</span>
           </div>
         </div>
       </div>

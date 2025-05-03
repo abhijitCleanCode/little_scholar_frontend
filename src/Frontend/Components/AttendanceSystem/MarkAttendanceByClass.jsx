@@ -1,29 +1,31 @@
-
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Calendar, Save, CheckCircle, XCircle } from "lucide-react";
 import { GetAllClasses } from "../../Route";
-import { setStudentAttendanceData, updateStudentAttendance } from '../../../Store/slice';
-import { useSelector, useDispatch } from 'react-redux';
+import {
+  setStudentAttendanceData,
+  updateStudentAttendance,
+} from "../../../Store/slice";
+import { useSelector, useDispatch } from "react-redux";
 
 const StudentAttendanceSystem = () => {
   const dispatch = useDispatch();
   const [classes, setClasses] = useState([]);
   const [selectedClass, setSelectedClass] = useState("");
-   const [selectedDate, setSelectedDate] = useState(() => {
-      const today = new Date();
-      today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
-      return today.toISOString().split('T')[0];
-    });
+  const [selectedDate, setSelectedDate] = useState(() => {
+    const today = new Date();
+    today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
+    return today.toISOString().split("T")[0];
+  });
   const [students, setStudents] = useState([]);
-  const attendanceData = useSelector((state) => 
-    Array.isArray(state.userData.StudentAttendanceData) 
-      ? state.userData.StudentAttendanceData 
+  const attendanceData = useSelector((state) =>
+    Array.isArray(state.userData.StudentAttendanceData)
+      ? state.userData.StudentAttendanceData
       : []
   );
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
-  const url = import.meta.env.VITE_API_BASE_URL;
+  const url = "https://little-scholar.onrender.com/api/v1/";
 
   // Fetch classes on initial mount
   useEffect(() => {
@@ -53,7 +55,7 @@ const StudentAttendanceSystem = () => {
     try {
       const response = await axios.get(`${url}${GetAllClasses}`);
       setClasses(response.data.data.classes);
-      
+
       // If no class is selected, auto-select first class
       if (response.data.data.classes.length > 0 && !selectedClass) {
         setSelectedClass(response.data.data.classes[0]._id);
@@ -78,9 +80,9 @@ const StudentAttendanceSystem = () => {
       setStudents(fetchedStudents);
 
       // Always initialize attendance data for all students
-      const initialAttendance = fetchedStudents.map(student => ({
+      const initialAttendance = fetchedStudents.map((student) => ({
         student: student._id,
-        status: null  // Default to null, indicating not yet marked
+        status: null, // Default to null, indicating not yet marked
       }));
 
       try {
@@ -90,18 +92,20 @@ const StudentAttendanceSystem = () => {
         );
 
         // If attendance exists, update the initial attendance
-        if (attendanceResponse.data.attendance && attendanceResponse.data.attendance.students.length > 0) {
-          const existingAttendance = attendanceResponse.data.attendance.students.map(
-            (item) => ({
+        if (
+          attendanceResponse.data.attendance &&
+          attendanceResponse.data.attendance.students.length > 0
+        ) {
+          const existingAttendance =
+            attendanceResponse.data.attendance.students.map((item) => ({
               student: item.student._id,
               status: item.status,
-            })
-          );
+            }));
 
           // Merge existing attendance with initial attendance
-          const mergedAttendance = initialAttendance.map(initItem => {
+          const mergedAttendance = initialAttendance.map((initItem) => {
             const existingItem = existingAttendance.find(
-              existing => existing.student === initItem.student
+              (existing) => existing.student === initItem.student
             );
             return existingItem || initItem;
           });
@@ -140,7 +144,7 @@ const StudentAttendanceSystem = () => {
     const studentAttendance = attendanceData.find(
       (item) => item.student === studentId
     );
-    
+
     return studentAttendance ? studentAttendance.status : null;
   };
 
@@ -150,33 +154,35 @@ const StudentAttendanceSystem = () => {
     const currentStatus = attendanceData.find(
       (item) => item.student === studentId
     )?.status;
-    
+
     // If clicking the same status that's already selected, set to null
     // Otherwise, update to the new status
     const newStatus = currentStatus === status ? null : status;
-    
-    dispatch(updateStudentAttendance({ 
-      studentId, 
-      status: newStatus 
-    }));
+
+    dispatch(
+      updateStudentAttendance({
+        studentId,
+        status: newStatus,
+      })
+    );
   };
 
   // Set attendance status for all students
   const setAllStudentsStatus = (status) => {
     // Get the current statuses to check if all students already have this status
-    const allHaveStatus = students.every(student => 
-      getAttendanceStatus(student._id) === status
+    const allHaveStatus = students.every(
+      (student) => getAttendanceStatus(student._id) === status
     );
-    
+
     // If all students already have this status, set all to null (toggle off)
     // Otherwise, set all to the provided status
     const newStatus = allHaveStatus ? null : status;
-    
+
     const newData = students.map((student) => ({
       student: student._id,
       status: newStatus,
     }));
-    
+
     dispatch(setStudentAttendanceData(newData));
   };
 
@@ -188,7 +194,9 @@ const StudentAttendanceSystem = () => {
     }
 
     // Ensure all students have a status (present or absent)
-    const incompleteAttendance = attendanceData.some(item => item.status === null);
+    const incompleteAttendance = attendanceData.some(
+      (item) => item.status === null
+    );
     if (incompleteAttendance) {
       setMessage("Please mark attendance for all students");
       return;
@@ -198,9 +206,9 @@ const StudentAttendanceSystem = () => {
     try {
       const payload = {
         date: selectedDate,
-        students: attendanceData.map(item => ({
+        students: attendanceData.map((item) => ({
           student: item.student,
-          status: item.status || 'absent'  // Default to absent if somehow null
+          status: item.status || "absent", // Default to absent if somehow null
         })),
       };
 
@@ -282,33 +290,40 @@ const StudentAttendanceSystem = () => {
               </span>
               <div className="flex gap-2">
                 <label className="flex items-center gap-1 cursor-pointer">
-                  <div 
+                  <div
                     onClick={() => setAllStudentsStatus("present")}
                     className={`w-4 h-4 border border-gray-300 rounded-full flex items-center justify-center ${
-                      students.every(student => getAttendanceStatus(student._id) === "present") 
-                        ? "bg-success-500 border-success-500" 
+                      students.every(
+                        (student) =>
+                          getAttendanceStatus(student._id) === "present"
+                      )
+                        ? "bg-success-500 border-success-500"
                         : ""
                     }`}
                   >
-                    {students.every(student => getAttendanceStatus(student._id) === "present") && (
-                      <div className="w-2 h-2 bg-white rounded-full"></div>
-                    )}
+                    {students.every(
+                      (student) =>
+                        getAttendanceStatus(student._id) === "present"
+                    ) && <div className="w-2 h-2 bg-white rounded-full"></div>}
                   </div>
                   <span className="text-success-500">Present</span>
                 </label>
 
                 <label className="flex items-center gap-1 cursor-pointer">
-                  <div 
+                  <div
                     onClick={() => setAllStudentsStatus("absent")}
                     className={`w-4 h-4 border border-gray-300 rounded-full flex items-center justify-center ${
-                      students.every(student => getAttendanceStatus(student._id) === "absent") 
-                        ? "bg-red-500 border-red-500" 
+                      students.every(
+                        (student) =>
+                          getAttendanceStatus(student._id) === "absent"
+                      )
+                        ? "bg-red-500 border-red-500"
                         : ""
                     }`}
                   >
-                    {students.every(student => getAttendanceStatus(student._id) === "absent") && (
-                      <div className="w-2 h-2 bg-white rounded-full"></div>
-                    )}
+                    {students.every(
+                      (student) => getAttendanceStatus(student._id) === "absent"
+                    ) && <div className="w-2 h-2 bg-white rounded-full"></div>}
                   </div>
                   <span className="text-danger">Absent</span>
                 </label>
@@ -362,15 +377,18 @@ const StudentAttendanceSystem = () => {
                                   : ""
                               }`}
                             >
-                              <div 
-                                onClick={() => handleAttendanceChange(student._id, "present")}
+                              <div
+                                onClick={() =>
+                                  handleAttendanceChange(student._id, "present")
+                                }
                                 className={`w-4 h-4 border border-gray-300 rounded-full flex items-center justify-center ${
-                                  getAttendanceStatus(student._id) === "present" 
-                                    ? "bg-success-500 border-success-500" 
+                                  getAttendanceStatus(student._id) === "present"
+                                    ? "bg-success-500 border-success-500"
                                     : ""
                                 }`}
                               >
-                                {getAttendanceStatus(student._id) === "present" && (
+                                {getAttendanceStatus(student._id) ===
+                                  "present" && (
                                   <div className="w-2 h-2 bg-white rounded-full"></div>
                                 )}
                               </div>
@@ -388,15 +406,18 @@ const StudentAttendanceSystem = () => {
                                   : ""
                               }`}
                             >
-                              <div 
-                                onClick={() => handleAttendanceChange(student._id, "absent")}
+                              <div
+                                onClick={() =>
+                                  handleAttendanceChange(student._id, "absent")
+                                }
                                 className={`w-4 h-4 border border-gray-300 rounded-full flex items-center justify-center ${
-                                  getAttendanceStatus(student._id) === "absent" 
-                                    ? "bg-red-500 border-red-500" 
+                                  getAttendanceStatus(student._id) === "absent"
+                                    ? "bg-red-500 border-red-500"
                                     : ""
                                 }`}
                               >
-                                {getAttendanceStatus(student._id) === "absent" && (
+                                {getAttendanceStatus(student._id) ===
+                                  "absent" && (
                                   <div className="w-2 h-2 bg-white rounded-full"></div>
                                 )}
                               </div>

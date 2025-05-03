@@ -1,35 +1,42 @@
 import React, { useState, useEffect } from "react";
-import CustomCalander from '../Components/Elements/CustomCalander'
+import CustomCalander from "../Components/Elements/CustomCalander";
 import {
   GraduationCap,
-  Pen,X,
+  Pen,
+  X,
   TrendingUp,
   Calendar,
   IndianRupee,
 } from "lucide-react";
 import Cookies from "js-cookie";
-import {
-  ResponsiveContainer,
-  PieChart, Pie, Cell 
-} from "recharts";
+import { ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import { useSelector, useDispatch } from "react-redux";
-import {Link} from "react-router-dom"
-import { setStudentCount,setTeacherCount,setGenderRatio } from "../../Store/slice";
-import { GetAllStudentCountAPI, GetAllTeacherCountAPI,GetGenderRatioAPI,
-  GetStudentAttendanceByIDAPI,GetAllLeaveTeacherAPI } from '../../service/api';
+import { Link } from "react-router-dom";
+import {
+  setStudentCount,
+  setTeacherCount,
+  setGenderRatio,
+} from "../../Store/slice";
+import {
+  GetAllStudentCountAPI,
+  GetAllTeacherCountAPI,
+  GetGenderRatioAPI,
+  GetStudentAttendanceByIDAPI,
+  GetAllLeaveTeacherAPI,
+} from "../../service/api";
 
 const PerformanceDashboard = () => {
-  const url = import.meta.env.VITE_API_BASE_URL;
-  const token = Cookies.get("token")
+  const url = "https://little-scholar.onrender.com/api/v1/";
+  const token = Cookies.get("token");
   const user = useSelector((state) => state.userData.user);
-  const [error, setError] = useState('')
-  const dispatch= useDispatch();
-  const StudentCount= useSelector((state) => state.userData.StudentCount);
-  const TeacherCount= useSelector((state) => state.userData.TeacherCount);
+  const [error, setError] = useState("");
+  const dispatch = useDispatch();
+  const StudentCount = useSelector((state) => state.userData.StudentCount);
+  const TeacherCount = useSelector((state) => state.userData.TeacherCount);
   const GenderRatio = useSelector((state) => state.userData.GenderRatio);
-const [presentCount, setPresentCount]= useState(0)
-const [absentCount,setAbsentCount]= useState(0)
-const[leaveCount, setLeaveCount] = useState(null)
+  const [presentCount, setPresentCount] = useState(0);
+  const [absentCount, setAbsentCount] = useState(0);
+  const [leaveCount, setLeaveCount] = useState(null);
 
   const StudentData = [
     { name: "Performance", value: "Under Maintenance", Icon: TrendingUp },
@@ -42,13 +49,23 @@ const[leaveCount, setLeaveCount] = useState(null)
     { name: "feedback", value: "Under Maintenance", Icon: GraduationCap },
   ];
   const PrincipalData = [
-    { name: "Students", value: `${StudentCount}`, Icon: GraduationCap, path:"/all-students" },
-    { name: "Teachers", value: `${TeacherCount}`, Icon: Pen, path:"/all-teachers" },
+    {
+      name: "Students",
+      value: `${StudentCount}`,
+      Icon: GraduationCap,
+      path: "/all-students",
+    },
+    {
+      name: "Teachers",
+      value: `${TeacherCount}`,
+      Icon: Pen,
+      path: "/all-teachers",
+    },
     { name: "Earnings", value: "Under Maintenance", Icon: IndianRupee },
   ];
   const [selectedClass, setSelectedClass] = useState("Class A");
-  const [selectedDate,  setSelectedDate] = useState("2024-05-05");
-  const [isLoading,  setIsLoading] = useState(true);
+  const [selectedDate, setSelectedDate] = useState("2024-05-05");
+  const [isLoading, setIsLoading] = useState(true);
   const [showCharts, setShowCharts] = useState(false);
 
   const MALE_COLOR = "#8C86D9";
@@ -57,8 +74,8 @@ const[leaveCount, setLeaveCount] = useState(null)
   const pieData =
     user.role === "principal"
       ? [
-          { name: "Male Active", value: GenderRatio?.ratioMale},
-          { name: "Female Active", value: GenderRatio?.ratioFemale},
+          { name: "Male Active", value: GenderRatio?.ratioMale },
+          { name: "Female Active", value: GenderRatio?.ratioFemale },
         ]
       : user.role === "teacher"
       ? [
@@ -66,15 +83,14 @@ const[leaveCount, setLeaveCount] = useState(null)
           { name: "Absent", value: absentCount },
         ]
       : [
-          { name: "Present", presentCount},
+          { name: "Present", presentCount },
           { name: "Absent", absentCount },
         ];
-
 
   useEffect(() => {
     document.title = "Dashboard";
   }, []);
-  
+
   useEffect(() => {
     setIsLoading(true);
     setShowCharts(false);
@@ -87,107 +103,111 @@ const[leaveCount, setLeaveCount] = useState(null)
     return () => clearTimeout(timer);
   }, [selectedClass, selectedDate]);
 
-
   const fetchStudentsCount = async () => {
     const response = await GetAllStudentCountAPI(url);
-    if (response.status === 200 || response.status === 204 || response.status === 201) {
-          dispatch(setStudentCount(response.data.data));
-        }
-    };
+    if (
+      response.status === 200 ||
+      response.status === 204 ||
+      response.status === 201
+    ) {
+      dispatch(setStudentCount(response.data.data));
+    }
+  };
 
-    const fetchTeachersCount = async () => {
-        const response = await GetAllTeacherCountAPI(url);
-        if (response.status === 200 || response.status === 204 || response.status === 201) {
-          dispatch(setTeacherCount(response.data.data));
-        } else {
-          setError(response.message);
-        }
-    };
-    
-    const fetchGenderRatio = async () => {
-      const response = await GetGenderRatioAPI(url,token);
-        if (response.status === 200 || response.status === 204 || response.status === 201) {
-          dispatch(setGenderRatio(response.data));
-         
-        } else {
-          setError(response.message);
-          if (response.status === 401) {  
-            Cookies.remove('user');
-            Cookies.remove('token');
-            window.location.href = '/user-options';                      
-          }
-        }
-      };
-      
-      const fetchStudentAttendance = async () => {
-        const response =  GetStudentAttendanceByIDAPI(url, user?._id);
-        if (response.status === 200 || response.status === 204 || response.status === 201) { 
-                  const presentCount = response.data.filter(record => record.status === 'present').length;
-                  setPresentCount(presentCount)
-                  const absentCount = response.data.filter(record => record.status === 'absent').length;
-                  setAbsentCount(absentCount)
-        }
-      
+  const fetchTeachersCount = async () => {
+    const response = await GetAllTeacherCountAPI(url);
+    if (
+      response.status === 200 ||
+      response.status === 204 ||
+      response.status === 201
+    ) {
+      dispatch(setTeacherCount(response.data.data));
+    } else {
+      setError(response.message);
+    }
+  };
+
+  const fetchGenderRatio = async () => {
+    const response = await GetGenderRatioAPI(url, token);
+    if (
+      response.status === 200 ||
+      response.status === 204 ||
+      response.status === 201
+    ) {
+      dispatch(setGenderRatio(response.data));
+    } else {
+      setError(response.message);
+      if (response.status === 401) {
+        Cookies.remove("user");
+        Cookies.remove("token");
+        window.location.href = "/user-options";
       }
-      const fetchTeacherAttendance = async () => {
-        const response =  GetStudentAttendanceByIDAPI(url, user?._id);
-  if (response.status === 200 || response.status === 204 || response.status === 201) { 
-            const presentCount = response.data.filter(record => record.status === 'present').length;
-            setPresentCount(presentCount)
-            const absentCount = response.data.filter(record => record.status === 'absent').length;
-            setAbsentCount(absentCount)
-          }
-  }
+    }
+  };
+
+  const fetchStudentAttendance = async () => {
+    const response = GetStudentAttendanceByIDAPI(url, user?._id);
+    if (
+      response.status === 200 ||
+      response.status === 204 ||
+      response.status === 201
+    ) {
+      const presentCount = response.data.filter(
+        (record) => record.status === "present"
+      ).length;
+      setPresentCount(presentCount);
+      const absentCount = response.data.filter(
+        (record) => record.status === "absent"
+      ).length;
+      setAbsentCount(absentCount);
+    }
+  };
+  const fetchTeacherAttendance = async () => {
+    const response = GetStudentAttendanceByIDAPI(url, user?._id);
+    if (
+      response.status === 200 ||
+      response.status === 204 ||
+      response.status === 201
+    ) {
+      const presentCount = response.data.filter(
+        (record) => record.status === "present"
+      ).length;
+      setPresentCount(presentCount);
+      const absentCount = response.data.filter(
+        (record) => record.status === "absent"
+      ).length;
+      setAbsentCount(absentCount);
+    }
+  };
 
   const fetchLeaves = async () => {
     const response = await GetAllLeaveTeacherAPI(url, user?._id);
-    console.log(response.count)
-    if (response.status === 200 || response.status === 204 || response.status === 201) 
-      {
-     setLeaveCount(response.count)
-      
-   
-    } 
-    else {
-     
+    console.log(response.count);
+    if (
+      response.status === 200 ||
+      response.status === 204 ||
+      response.status === 201
+    ) {
+      setLeaveCount(response.count);
+    } else {
       setToastMessage(response.message);
       setToastType("error");
       setShowToast(true);
     }
-    
-   
   };
 
-
-
-
-        
-        useEffect(() => {
-          if(user?.role==='principal')
-          {
-            fetchStudentsCount();
-            fetchTeachersCount();
-            fetchGenderRatio();
-
-          }
-          else if(user?.role==='student')
-          {
-            fetchStudentAttendance();
-          }
-          else if(user?.role==='teacher')
-          {
-            fetchTeacherAttendance();
-            fetchLeaves()
-          }
-
-          }, []);
-
-
-
-
-
-
-
+  useEffect(() => {
+    if (user?.role === "principal") {
+      fetchStudentsCount();
+      fetchTeachersCount();
+      fetchGenderRatio();
+    } else if (user?.role === "student") {
+      fetchStudentAttendance();
+    } else if (user?.role === "teacher") {
+      fetchTeacherAttendance();
+      fetchLeaves();
+    }
+  }, []);
 
   return (
     <div className="sm:px-16 px-6 sm:py-16 py-10">
@@ -229,7 +249,13 @@ const[leaveCount, setLeaveCount] = useState(null)
             <div className="min-w-0">
               <p className="text-gray-500 truncate">{card.name}</p>
               <p className="text-2xl font-bold text-black truncate">
-                {card.value!==undefined || card.value===0 || card.value!==null ? card.value : <span className="inline-block animate-spin">⌛</span>}
+                {card.value !== undefined ||
+                card.value === 0 ||
+                card.value !== null ? (
+                  card.value
+                ) : (
+                  <span className="inline-block animate-spin">⌛</span>
+                )}
               </p>
             </div>
 
@@ -260,7 +286,7 @@ const[leaveCount, setLeaveCount] = useState(null)
           <h2 className="h2 text-black-300 mb-4 text-left">
             {user?.role === "principal"
               ? "Student Ratio"
-              : user?.role === "teacher" ||user?.role === "student"
+              : user?.role === "teacher" || user?.role === "student"
               ? "Attendance Record"
               : ""}
           </h2>
@@ -279,7 +305,11 @@ const[leaveCount, setLeaveCount] = useState(null)
                     paddingAngle={0}
                     dataKey="value"
                   >
-                    <Cell key="active" fill={user?.role === 'principal' ? MALE_COLOR : '#808080'} strokeWidth={0} />
+                    <Cell
+                      key="active"
+                      fill={user?.role === "principal" ? MALE_COLOR : "#808080"}
+                      strokeWidth={0}
+                    />
                     <Cell key="inactive" fill={FEMALE_COLOR} strokeWidth={0} />
                   </Pie>
                   <Pie
@@ -293,7 +323,11 @@ const[leaveCount, setLeaveCount] = useState(null)
                     paddingAngle={0}
                     dataKey="value"
                   >
-                    <Cell key="active" fill={user?.role === 'principal' ? MALE_COLOR : '#808080'} strokeWidth={0} />
+                    <Cell
+                      key="active"
+                      fill={user?.role === "principal" ? MALE_COLOR : "#808080"}
+                      strokeWidth={0}
+                    />
                     <Cell key="inactive" fill={FEMALE_COLOR} strokeWidth={0} />
                   </Pie>
                 </PieChart>
@@ -301,43 +335,68 @@ const[leaveCount, setLeaveCount] = useState(null)
             )}
             <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
               <div className="flex flex-row space-x-4 justify-center items-center">
-                {user?.role==='principal'?
-                (<img className="w-16 h-20" src="/f_m.png" />):(
-                  
-                  <div className="text-2xl md:text-3xl font-bold" style={{ color: FEMALE_COLOR }}>
-                    {presentCount? ((presentCount / (presentCount + absentCount)) * 100).toFixed(1):'0'}%
+                {user?.role === "principal" ? (
+                  <img className="w-16 h-20" src="/f_m.png" />
+                ) : (
+                  <div
+                    className="text-2xl md:text-3xl font-bold"
+                    style={{ color: FEMALE_COLOR }}
+                  >
+                    {presentCount
+                      ? (
+                          (presentCount / (presentCount + absentCount)) *
+                          100
+                        ).toFixed(1)
+                      : "0"}
+                    %
                   </div>
-                  
                 )}
               </div>
             </div>
 
             {/* Arrow legends for pie chart */}
-            { !isLoading && (
+            {!isLoading && (
               <>
                 {/* Left arrow for Female */}
                 <div className="absolute top-1/2 left-0 transform -translate-y-1/2 flex items-center">
                   <div className="relative">
-                                      {user?.role==='principal' && (
-                                        <>
-                                          <div className="w-24 h-px bg-gray-400"></div>
-                                          <div className="absolute left-0 top-0 w-3 h-3 border-t border-l border-gray-400 transform -rotate-45 -translate-y-1/2"></div>
-                                        </>
-                                      )}
+                    {user?.role === "principal" && (
+                      <>
+                        <div className="w-24 h-px bg-gray-400"></div>
+                        <div className="absolute left-0 top-0 w-3 h-3 border-t border-l border-gray-400 transform -rotate-45 -translate-y-1/2"></div>
+                      </>
+                    )}
                     <div className="absolute -left-24 -top-10 w-20">
                       <div className="flex flex-col items-start">
                         <div className="flex items-center mb-1">
-                          <div className="w-3 h-3 rounded-full mr-1" style={{ backgroundColor: FEMALE_COLOR }}></div>
-                          <span className="text-sm font-medium" style={{ color: FEMALE_COLOR }}>{user?.role==='principal'?'Female':''}</span>
+                          <div
+                            className="w-3 h-3 rounded-full mr-1"
+                            style={{ backgroundColor: FEMALE_COLOR }}
+                          ></div>
+                          <span
+                            className="text-sm font-medium"
+                            style={{ color: FEMALE_COLOR }}
+                          >
+                            {user?.role === "principal" ? "Female" : ""}
+                          </span>
                         </div>
-                        <span className="text-sm font-bold" style={{ color: FEMALE_COLOR }}>
-
-                                                  {user?.role === 'principal' ? 
-                                                    GenderRatio?.femaleCount ? `${GenderRatio.femaleCount} (${((GenderRatio.femaleCount / (GenderRatio.maleCount + GenderRatio.femaleCount)) * 100).toFixed(1)}%)` : '-'
-                                                    :''
-                                                    //  `${presentCount} (${((presentCount / (presentCount + absentCount)) * 100).toFixed(1)}%)`
-                                                  }
-                        
+                        <span
+                          className="text-sm font-bold"
+                          style={{ color: FEMALE_COLOR }}
+                        >
+                          {
+                            user?.role === "principal"
+                              ? GenderRatio?.femaleCount
+                                ? `${GenderRatio.femaleCount} (${(
+                                    (GenderRatio.femaleCount /
+                                      (GenderRatio.maleCount +
+                                        GenderRatio.femaleCount)) *
+                                    100
+                                  ).toFixed(1)}%)`
+                                : "-"
+                              : ""
+                            //  `${presentCount} (${((presentCount / (presentCount + absentCount)) * 100).toFixed(1)}%)`
+                          }
                         </span>
                       </div>
                     </div>
@@ -347,27 +406,46 @@ const[leaveCount, setLeaveCount] = useState(null)
                 {/* Right arrow for Male */}
                 <div className="absolute top-1/2 right-0 transform -translate-y-1/2 flex items-center">
                   <div className="relative">
-                                      {user?.role==='principal' && (
-                                        <>
-                                          <div className="w-24 h-px bg-gray-400"></div>
-                                          <div className="absolute right-0 top-0 w-3 h-3 border-t border-r border-gray-400 transform rotate-45 -translate-y-1/2"></div>
-                                        </>
-                                      )}
+                    {user?.role === "principal" && (
+                      <>
+                        <div className="w-24 h-px bg-gray-400"></div>
+                        <div className="absolute right-0 top-0 w-3 h-3 border-t border-r border-gray-400 transform rotate-45 -translate-y-1/2"></div>
+                      </>
+                    )}
                     <div className="absolute -right-24 -top-10 w-20">
                       <div className="flex flex-col items-end">
                         <div className="flex items-center mb-1">
-                          <div className="w-3 h-3 rounded-full mr-1" style={{ backgroundColor: MALE_COLOR }}></div>
-                          <span className="text-sm font-medium" style={{ color: MALE_COLOR }}>{user?.role==='principal'? 'Male' : ''}</span>
+                          <div
+                            className="w-3 h-3 rounded-full mr-1"
+                            style={{ backgroundColor: MALE_COLOR }}
+                          ></div>
+                          <span
+                            className="text-sm font-medium"
+                            style={{ color: MALE_COLOR }}
+                          >
+                            {user?.role === "principal" ? "Male" : ""}
+                          </span>
                         </div>
-                        <span className="text-sm font-bold" style={{ color: MALE_COLOR }}>
-                                                  {user?.role === 'principal' ? 
-                                                    GenderRatio?.maleCount ? `${GenderRatio.maleCount} (${((GenderRatio.maleCount / (GenderRatio.maleCount + GenderRatio.femaleCount)) * 100).toFixed(1)}%)` : '-'
-                                                    : ''
-                                                    
-                                                    // `${absentCount} (${((absentCount / (presentCount + absentCount)) * 100).toFixed(1)}%)`
-                                                  }
-                                                </span>                      
-                        </div>
+                        <span
+                          className="text-sm font-bold"
+                          style={{ color: MALE_COLOR }}
+                        >
+                          {
+                            user?.role === "principal"
+                              ? GenderRatio?.maleCount
+                                ? `${GenderRatio.maleCount} (${(
+                                    (GenderRatio.maleCount /
+                                      (GenderRatio.maleCount +
+                                        GenderRatio.femaleCount)) *
+                                    100
+                                  ).toFixed(1)}%)`
+                                : "-"
+                              : ""
+
+                            // `${absentCount} (${((absentCount / (presentCount + absentCount)) * 100).toFixed(1)}%)`
+                          }
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>

@@ -1,9 +1,8 @@
-
 import React, { useEffect, useState } from "react";
-import {Link} from "react-router-dom"
+import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { setUser ,setShowLogoutConfirm} from "../../../Store/slice";
-import educloud from '../../../assets/educloud.jpg'
+import { setUser, setShowLogoutConfirm } from "../../../Store/slice";
+import educloud from "../../../assets/LSCS.jpg";
 import {
   Home,
   User,
@@ -20,13 +19,15 @@ import {
   LogOut,
   ChevronRight,
   IndianRupee,
-  ShieldAlert,Hand, IdCard
+  ShieldAlert,
+  Hand,
+  IdCard,
 } from "lucide-react";
 const Sidebar = ({ isOpen, role, onMenuClick }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeItem, setActiveItem] = useState("dashboard");
   const [expandedMenus, setExpandedMenus] = useState({});
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const themeColors = {
     admin: "bg-purpleColor",
     //   teacher: 'bg-purple-600',
@@ -35,7 +36,7 @@ const Sidebar = ({ isOpen, role, onMenuClick }) => {
   useEffect(() => {
     setMenuOpen(isOpen);
   }, [isOpen]);
-  
+
   const menuItems = {
     admin: [
       { icon: Home, label: "Home", id: "home", path: "/dashboard" },
@@ -45,81 +46,81 @@ const Sidebar = ({ isOpen, role, onMenuClick }) => {
         id: "students",
         submenu: [
           { label: "Student List", id: "all-students", path: "/all-students" },
-            {
+          {
             label: " Student Leaderboard",
             id: "leaderboard",
             path: "/leaderboard",
           },
-            {
+          {
             label: " Student Promotion",
             id: "student-promotion",
             path: "/student-promotion",
           },
-         
         ],
       },
-      { icon:IdCard,
+      {
+        icon: IdCard,
         label: "Card Management",
-        id:"card-management",
-        submenu:[
+        id: "card-management",
+        submenu: [
           { label: "Student ID Card", id: "id-card", path: "/id-card" },
-          { label: "Teacher ID Card", id: "teacher-id-card", path: "/teacher-id-card" },
+          {
+            label: "Teacher ID Card",
+            id: "teacher-id-card",
+            path: "/teacher-id-card",
+          },
           { label: "Certificate", id: "certificate", path: "/certificate" },
-        ]
-
-      },
-
-      { icon:Hand,
-        label:"Attendance",
-        id:"attendance",
-        submenu:[
-          {
-           label: "Student Attendance",
-           id: "student-attendance",
-           path: "/mark-attendance",
-         },
-          {
-           label: "Teacher Attendance",
-           id: "teacher-attendance",
-           path: "/teacher-attendance",
-         },
-         
-         {
-           label: "Leave Records",
-           id: "leave-records",
-           path: "/leave-records",
-         },
-
-        ]
-
+        ],
       },
 
       {
-        icon:IndianRupee,
-        label:'Accounting',
-        id:'accounting',
-        submenu:[
+        icon: Hand,
+        label: "Attendance",
+        id: "attendance",
+        submenu: [
           {
-            label: "Student Finance",
-            id: "student-finance",
-            path: "/student-finance",
+            label: "Student Attendance",
+            id: "student-attendance",
+            path: "/mark-attendance",
           },
           {
-            label: "Teacher Finance",
-            id: "all-transactions",
-            path: "/all-transactions",
+            label: "Teacher Attendance",
+            id: "teacher-attendance",
+            path: "/teacher-attendance",
           },
-          {
-            label: "Other Expenses",
-            id: "other-expenses",
-            path: "/other-expenses",
-          },
-        ]
 
+          {
+            label: "Leave Records",
+            id: "leave-records",
+            path: "/leave-records",
+          },
+        ],
       },
 
+      // {
+      //   icon:IndianRupee,
+      //   label:'Accounting',
+      //   id:'accounting',
+      //   submenu:[
+      //     {
+      //       label: "Student Finance",
+      //       id: "student-finance",
+      //       path: "/student-finance",
+      //     },
+      //     {
+      //       label: "Teacher Finance",
+      //       id: "all-transactions",
+      //       path: "/all-transactions",
+      //     },
+      //     {
+      //       label: "Other Expenses",
+      //       id: "other-expenses",
+      //       path: "/other-expenses",
+      //     },
+      //   ]
 
-    
+      // },
+
       {
         icon: School,
         label: "Academic",
@@ -130,14 +131,18 @@ const Sidebar = ({ isOpen, role, onMenuClick }) => {
             id: "all-classes",
             path: "/all-classes",
           },
-           {
-        icon: Clock,
-        label: "Time table",
-        id: "time-table",
-        path: "/time-table",
-      },
-          { label: "Make Class Teacher", id: "class-teacher", path: "/class-teacher" },
-         
+          {
+            icon: Clock,
+            label: "Time table",
+            id: "time-table",
+            path: "/time-table",
+          },
+          {
+            label: "Make Class Teacher",
+            id: "class-teacher",
+            path: "/class-teacher",
+          },
+
           {
             label: "Assign classes-Subjects",
             id: "assign-classes-subjects",
@@ -148,48 +153,54 @@ const Sidebar = ({ isOpen, role, onMenuClick }) => {
             id: "delete-classes-subjects",
             path: "/delete-classes-subjects",
           },
-            { label: "All Subjects", id: "all-subjects", path: "/all-subjects" },
-         
+          { label: "All Subjects", id: "all-subjects", path: "/all-subjects" },
         ],
       },
 
-        {
+      {
         icon: Users,
         label: "Teachers",
         id: "teachers",
         submenu: [
           { label: "All Teachers", id: "all-teachers", path: "/all-teachers" },
-        
-         
         ],
       },
-  
+
       {
         icon: FileText,
         label: "Exam",
         id: "exam",
         submenu: [
-          { label: "Grades Upload", id: "grades-upload", path: "/grades-upload" },
-          { label: "All Exams", id: "all-exams", path: "/all-exams" }
+          {
+            label: "Grades Upload",
+            id: "grades-upload",
+            path: "/grades-upload",
+          },
+          { label: "All Exams", id: "all-exams", path: "/all-exams" },
         ],
       },
-     
+
       {
         icon: ShieldAlert,
         label: "Complaints",
         id: "complaints",
         path: "/complaints",
       },
-      { icon: Calendar, label: "Events and Announcements", id: "events", path: "/events" },
+      {
+        icon: Calendar,
+        label: "Events and Announcements",
+        id: "events",
+        path: "/events",
+      },
       // { icon: IndianRupee, label: "Finance", id: "finance", path: "/finance" },
     ],
 
-
-
-
     teacher: [
       { icon: Home, label: "Dashboard", id: "dashboard", path: "/dashboard" },
-      { icon: Users, label: "Student Details", id: "student-details",
+      {
+        icon: Users,
+        label: "Student Details",
+        id: "student-details",
         submenu: [
           {
             label: "Student List",
@@ -201,14 +212,15 @@ const Sidebar = ({ isOpen, role, onMenuClick }) => {
             id: "student-leaderboard-teacher",
             path: "/student-leaderboard-teacher",
           },
-        ]
-
-
+        ],
       },
-      
-      {icon: Hand, label: "Attendance",id:"attendance-teacher",
 
-        submenu:[
+      {
+        icon: Hand,
+        label: "Attendance",
+        id: "attendance-teacher",
+
+        submenu: [
           {
             label: "Student Attendance",
             id: "student-attendance-teacher",
@@ -225,37 +237,36 @@ const Sidebar = ({ isOpen, role, onMenuClick }) => {
             id: "teacher-leave-records",
             path: "/teacher-leave-records",
           },
-        ]
+        ],
       },
-      { icon: Calendar, label: "Teacher Finance", id: "teacher-finance-data", path: "/teacher-finance-data" },
-      
+      {
+        icon: Calendar,
+        label: "Teacher Finance",
+        id: "teacher-finance-data",
+        path: "/teacher-finance-data",
+      },
+
       // { icon: IdCard, label: "Student Marksheet", id: "student-marksheet", path: "/student-marksheet" },
       { icon: Calendar, label: "Events", id: "events", path: "/events" },
-      { icon: FileText, label: "Exams", id: "exams", path: "/all-exams",
-        submenu:[
+      {
+        icon: FileText,
+        label: "Exams",
+        id: "exams",
+        path: "/all-exams",
+        submenu: [
           {
-
             label: "All Exams",
             id: "all-exams",
             path: "/all-exams",
           },
           {
-
             label: "Grades Upload",
             id: "add-marks-student",
             path: "/add-marks-student",
-          }
-        ]
-
-       },
-  
+          },
+        ],
+      },
     ],
-
-
-
-
-
-
 
     student: [
       { icon: Home, label: "Dashboard", id: "dashboard", path: "/dashboard" },
@@ -278,12 +289,21 @@ const Sidebar = ({ isOpen, role, onMenuClick }) => {
         path: "/my-time-table",
       },
       // { icon: FileText, label: "My Exams", id: "my-exams", path: "/my-exams" },
-      { icon: Award, label: "Exam Results", id: "results", path: "/my-results" },
-      { icon: ShieldAlert, label: "My Complaints", id: "complaints", path: "/my-complaints" },
+      {
+        icon: Award,
+        label: "Exam Results",
+        id: "results",
+        path: "/my-results",
+      },
+      {
+        icon: ShieldAlert,
+        label: "My Complaints",
+        id: "complaints",
+        path: "/my-complaints",
+      },
       { icon: IndianRupee, label: "My Dues", id: "my-dues", path: "/my-dues" },
     ],
   };
-
 
   const toggleSubmenu = (id) => {
     setExpandedMenus((prev) => ({
@@ -305,11 +325,18 @@ const Sidebar = ({ isOpen, role, onMenuClick }) => {
     `}
     >
       <div className="px-4 mt-4 flex items-center justify-between">
-        <Link to="/" className="h3 font-medium text-black gap-2 flex flex-row items-center">
-        
-        <img src={educloud} alt="EduCloud Logo" className="size-8 rounded-full" />
-        
-          <span className="text-purpleColor">Edu</span>Cloud
+        <Link
+          to="/"
+          className="h3 font-medium text-black gap-2 flex flex-row items-center"
+        >
+          <img
+            src={educloud}
+            alt="EduCloud Logo"
+            className="size-8 rounded-full"
+          />
+          <span className="text-purpleColor">
+            Little Scholar Central School
+          </span>
         </Link>
         <button onClick={onMenuClick}>
           <span>
@@ -321,7 +348,9 @@ const Sidebar = ({ isOpen, role, onMenuClick }) => {
       <nav className="sidebar-nav p-4">
         {/* Menu Section */}
         <div className="mb-4">
-          <h3 className="text-left text-gray-500 text-sm font-medium tracking-wider px-4 mb-2">Menu</h3>
+          <h3 className="text-left text-gray-500 text-sm font-medium tracking-wider px-4 mb-2">
+            Menu
+          </h3>
           <ul className="ml-3 flex flex-1 flex-col gap-2">
             {menuItems[
               role === "principal"
@@ -413,18 +442,13 @@ const Sidebar = ({ isOpen, role, onMenuClick }) => {
           </ul>
         </div>
 
-{/* Logout Confirmation Modal */}
-
-
-
-
-
-
-
+        {/* Logout Confirmation Modal */}
 
         {/* Others Section */}
         <div className="mt-8">
-          <h3 className="text-left text-gray-500 text-sm font-medium  tracking-wider px-4 mb-2">Others</h3>
+          <h3 className="text-left text-gray-500 text-sm font-medium  tracking-wider px-4 mb-2">
+            Others
+          </h3>
           <ul className="ml-3 flex flex-col gap-2">
             <li>
               <Link to="/profile">
@@ -433,7 +457,11 @@ const Sidebar = ({ isOpen, role, onMenuClick }) => {
                   className={`
                   w-full flex items-center space-x-3 px-4 py-2 rounded-lg mb-1
                   transition-colors duration-200
-                  ${activeItem === "profile" ? "bg-purpleColor text-white" : "text-black"}
+                  ${
+                    activeItem === "profile"
+                      ? "bg-purpleColor text-white"
+                      : "text-black"
+                  }
                 `}
                 >
                   <User size={20} />
@@ -442,39 +470,40 @@ const Sidebar = ({ isOpen, role, onMenuClick }) => {
               </Link>
             </li>
             <li>
-
               <button
-              onClick={() => dispatch(setShowLogoutConfirm(true))}
+                onClick={() => dispatch(setShowLogoutConfirm(true))}
                 className="w-full flex items-center space-x-3 px-4 py-2 rounded-lg mb-1 text-black hover:bg-gray-100"
               >
                 <LogOut size={20} />
                 <span className="flex-1 text-left text-danger">Logout</span>
-              </button>            </li>
+              </button>{" "}
+            </li>
 
-          {
-            (role==='teacher'|| role === 'student') && (
+            {(role === "teacher" || role === "student") && (
               <li>
-              <Link to="/change-password">
-                <button
-                  onClick={() => setActiveItem("change-password")}
-                  className={`
+                <Link to="/change-password">
+                  <button
+                    onClick={() => setActiveItem("change-password")}
+                    className={`
                   w-full flex items-center space-x-3 px-4 py-2 rounded-lg mb-1
                   transition-colors duration-200
-                  ${activeItem === "change-password" ? "bg-purpleColor text-white" : "text-black"}
+                  ${
+                    activeItem === "change-password"
+                      ? "bg-purpleColor text-white"
+                      : "text-black"
+                  }
                 `}
-                >
-                  <User size={20} />
-                  <span className="flex-1 text-left">Change password</span>
-                </button>
-              </Link>
-            </li>
-            )
-          }
-
-                    </ul>
+                  >
+                    <User size={20} />
+                    <span className="flex-1 text-left">Change password</span>
+                  </button>
+                </Link>
+              </li>
+            )}
+          </ul>
         </div>
       </nav>
     </aside>
   );
 };
-export default Sidebar
+export default Sidebar;

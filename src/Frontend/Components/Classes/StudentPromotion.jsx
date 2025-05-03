@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import {
   Search,
@@ -10,10 +9,14 @@ import {
   Eye,
 } from "lucide-react";
 import UpdateStudents from "../../Pages/Student/UpdateStudent";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 import { useSelector, useDispatch } from "react-redux";
-import { setStudentData, setCurrentPage,setIsStudentUpdate } from "../../../Store/slice";
-import { GetStudents } from '../../../service/api';
+import {
+  setStudentData,
+  setCurrentPage,
+  setIsStudentUpdate,
+} from "../../../Store/slice";
+import { GetStudents } from "../../../service/api";
 import Table from "../Elements/Table";
 import Pagination from "../Elements/Pagination";
 
@@ -26,14 +29,15 @@ const PromoteStudents = () => {
   const [paginationData, setPaginationData] = useState({
     currentPage: 1,
     totalItems: 0,
-    totalPages: 0
+    totalPages: 0,
   });
   const students = useSelector((state) => state.userData.StudentData);
   const currentPage = useSelector((state) => state.userData.CurrentPage);
-  const isStudentUpdate = useSelector((state) => state.userData.isStudentUpdate);
-  const url = import.meta.env.VITE_API_BASE_URL;
+  const isStudentUpdate = useSelector(
+    (state) => state.userData.isStudentUpdate
+  );
+  const url = "https://little-scholar.onrender.com/api/v1/";
   const dispatch = useDispatch();
-  
 
   useEffect(() => {
     document.title = "Student Details";
@@ -41,54 +45,47 @@ const PromoteStudents = () => {
   }, []);
 
   const fetchStudents = async () => {
+    setLoading(true);
+    const response = await GetStudents(url, currentPage);
+    if (
+      response.status === 200 ||
+      response.status === 204 ||
+      response.status === 201
+    ) {
+      dispatch(setStudentData(response.data.students));
 
-      setLoading(true);
-      const response = await GetStudents(url, currentPage);
-      if (response.status === 200 || response.status === 204 || response.status === 201) {
-        dispatch(setStudentData(response.data.students));
-      
-        // Update pagination data from API response
-        setPaginationData({
-          currentPage: response.data.pagination.currentPage|| 1,
-          totalItems: response.data.pagination.totalItems,
-          totalPages: response.data.pagination.totalPages,
-          totalItemsPerPage: response.data.pagination.studentsPerPage ||10
-        });
-      
-      } 
-      
-      else {
-        dispatch(setStudentData([]));
-         toast.error(response.message , {
-                    position: "top-right",
-                    autoClose: 2000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                  });
-      }
-   
+      // Update pagination data from API response
+      setPaginationData({
+        currentPage: response.data.pagination.currentPage || 1,
+        totalItems: response.data.pagination.totalItems,
+        totalPages: response.data.pagination.totalPages,
+        totalItemsPerPage: response.data.pagination.studentsPerPage || 10,
+      });
+    } else {
+      dispatch(setStudentData([]));
+      toast.error(response.message, {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    }
+
     setLoading(false);
   };
 
-useEffect(() => {
-fetchStudents();
+  useEffect(() => {
+    fetchStudents();
   }, [currentPage]);
 
   useEffect(() => {
-    if(isStudentUpdate){
-    fetchStudents();
-      dispatch(setIsStudentUpdate(false))
-
+    if (isStudentUpdate) {
+      fetchStudents();
+      dispatch(setIsStudentUpdate(false));
     }
   }, [isStudentUpdate]);
-
-
-
-
-
-
 
   // Handle page change
   const handlePageChange = (newPage) => {
@@ -110,7 +107,7 @@ fetchStudents();
   // Table columns definition
   const columns = [
     {
-      field: 'name',
+      field: "name",
       headerName: "Student's Name",
       renderCell: (row) => (
         <div className="flex items-center gap-3">
@@ -122,25 +119,25 @@ fetchStudents();
       ),
     },
     {
-      field: 'studentClass',
-      headerName: 'Class',
+      field: "studentClass",
+      headerName: "Class",
       renderCell: (row) => row.studentClass?.className || "-",
     },
     {
-      field: 'parentName',
-      headerName: 'Parent Name',
+      field: "parentName",
+      headerName: "Parent Name",
     },
     {
-      field: 'parentContact',
-      headerName: 'Parent Contact',
+      field: "parentContact",
+      headerName: "Parent Contact",
     },
     {
-      field: 'action',
+      field: "action",
       headerName: "Action",
       renderCell: (row) => (
         <div className="flex items-center gap-3">
-          <button 
-            onClick={() => handlePromoteStudent(row)} 
+          <button
+            onClick={() => handlePromoteStudent(row)}
             className="w-10 h-10 hover:text-purpleColor  rounded-lg overflow-hidden flex flex-row justify-center items-center"
           >
             <PenSquare size={20} />
@@ -162,7 +159,6 @@ fetchStudents();
 
   return (
     <div className="sm:px-16 px-6 sm:py-16 py-10 min-h-screen">
-    
       {/* Update Student Modal */}
       <div
         className={`
@@ -206,17 +202,17 @@ fetchStudents();
             >
               <X size={24} />
             </button>
-            <UpdateStudents 
-              studentData={selectedStudent} 
+            <UpdateStudents
+              studentData={selectedStudent}
               onClose={() => {
                 setShowUpdateStudent(false);
                 setSelectedStudent(null);
-              }} 
+              }}
             />
           </div>
         )}
       </div>
-      
+
       {/* Header */}
       <div className="flex flex-col md:flex-row text-black justify-between items-start md:items-center mb-[32px] p-2">
         <div className="mb-4 md:mb-0 text-left">
@@ -230,8 +226,6 @@ fetchStudents();
 
       {/* Filters */}
       <div className="bg-white p-2 rounded-md shadow-lg">
-      
-
         {/* Table Component */}
         <Table
           columns={columns}

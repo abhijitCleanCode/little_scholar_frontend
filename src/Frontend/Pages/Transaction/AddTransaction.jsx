@@ -12,9 +12,9 @@ import Cookies from "js-cookie";
 import Toast from "../../Components/Toast";
 import { useSelector, useDispatch } from "react-redux";
 import { setTeacherData } from "../../../Store/slice";
-import { GetTeachers, AddTransactionAPI } from '../../../service/api';
-import SelectDropdown from "../../Components/Elements/SelectDropDown"; 
-import Input from "../../Components/Elements/Input"; 
+import { GetTeachers, AddTransactionAPI } from "../../../service/api";
+import SelectDropdown from "../../Components/Elements/SelectDropDown";
+import Input from "../../Components/Elements/Input";
 
 const AddTransactions = () => {
   const {
@@ -33,13 +33,17 @@ const AddTransactions = () => {
   const teachers = useSelector((state) => state.userData.TeacherData);
 
   const dispatch = useDispatch();
-  const url = import.meta.env.VITE_API_BASE_URL;
+  const url = "https://little-scholar.onrender.com/api/v1/";
   const token = Cookies.get("token");
 
   useEffect(() => {
     const fetchTeachers = async () => {
       const response = await GetTeachers(url);
-      if (response.status === 200 || response.status === 204 || response.status === 201) {
+      if (
+        response.status === 200 ||
+        response.status === 204 ||
+        response.status === 201
+      ) {
         dispatch(setTeacherData(response.data.teachers));
       } else {
         setError(response.message);
@@ -67,7 +71,11 @@ const AddTransactions = () => {
 
     const response = await AddTransactionAPI(url, paymentData, token);
 
-    if (response.status === 200 || response.status === 201 || response.status === 204) {
+    if (
+      response.status === 200 ||
+      response.status === 201 ||
+      response.status === 204
+    ) {
       setToastMessage(response.message);
       setToastIcon("right");
       setShowToast(true);
@@ -121,11 +129,11 @@ const AddTransactions = () => {
           />
           <SelectDropdown
             options={[
-              { value: 'paid', label: 'Paid' },
-              { value: 'pending', label: 'Pending' }
+              { value: "paid", label: "Paid" },
+              { value: "pending", label: "Pending" },
             ]}
-            selectedValue={watch('status')}
-            onSelect={(value) => setValue('status', value)}
+            selectedValue={watch("status")}
+            onSelect={(value) => setValue("status", value)}
             displayField="label"
             valueField="value"
             placeholder="Select Status"

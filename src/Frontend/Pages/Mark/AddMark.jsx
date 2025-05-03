@@ -1,123 +1,136 @@
-
-
-import React, { useState, useEffect } from 'react'
-import { useForm } from 'react-hook-form'
-import Cookies from "js-cookie"
-import { 
-  ChevronDown, 
-  Check, 
-  School, 
-  BookOpen, 
-  User, 
-  FileText, 
-  GraduationCap, 
-  Trophy 
-} from 'lucide-react'
-import { setClassData, setIsLeaderBoardUpdate } from '../../../Store/slice'
-import { 
-  GetStudentByClassAPI, 
-  GetSubjectByClassAPI, 
-  GetExamsAPI, 
-  AddMarkStudentAPI, 
-  GetAllClassesAPI 
-} from '../../../service/api'
-import { useSelector, useDispatch } from 'react-redux'
-import { toast } from 'react-toastify'
+import React, { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import Cookies from "js-cookie";
+import {
+  ChevronDown,
+  Check,
+  School,
+  BookOpen,
+  User,
+  FileText,
+  GraduationCap,
+  Trophy,
+} from "lucide-react";
+import { setClassData, setIsLeaderBoardUpdate } from "../../../Store/slice";
+import {
+  GetStudentByClassAPI,
+  GetSubjectByClassAPI,
+  GetExamsAPI,
+  AddMarkStudentAPI,
+  GetAllClassesAPI,
+} from "../../../service/api";
+import { useSelector, useDispatch } from "react-redux";
+import { toast } from "react-toastify";
 
 const AddMark = () => {
   // Loading and error states
-  const [loading, setLoading] = useState(false)
-  const [students, setStudents] = useState([])
-  const [subjects, setSubjects] = useState([])
-  const [exams, setExams] = useState([])
+  const [loading, setLoading] = useState(false);
+  const [students, setStudents] = useState([]);
+  const [subjects, setSubjects] = useState([]);
+  const [exams, setExams] = useState([]);
 
   // Selection states
-  const [selectedClass, setSelectedClass] = useState('')
-  const [selectedExam, setSelectedExam] = useState('')
-  const [selectedStudent, setSelectedStudent] = useState('')
+  const [selectedClass, setSelectedClass] = useState("");
+  const [selectedExam, setSelectedExam] = useState("");
+  const [selectedStudent, setSelectedStudent] = useState("");
 
   // Dropdown visibility states
-  const [isClassDropdownOpen, setIsClassDropdownOpen] = useState(false)
-  const [isStudentDropdownOpen, setIsStudentDropdownOpen] = useState(false)
-  const [isExamDropdownOpen, setIsExamDropdownOpen] = useState(false)
+  const [isClassDropdownOpen, setIsClassDropdownOpen] = useState(false);
+  const [isStudentDropdownOpen, setIsStudentDropdownOpen] = useState(false);
+  const [isExamDropdownOpen, setIsExamDropdownOpen] = useState(false);
 
   // Display name states
-  const [selectedClassName, setSelectedClassName] = useState('')
-  const [selectedStudentName, setSelectedStudentName] = useState('')
-  const [selectedExamName, setSelectedExamName] = useState('')
+  const [selectedClassName, setSelectedClassName] = useState("");
+  const [selectedStudentName, setSelectedStudentName] = useState("");
+  const [selectedExamName, setSelectedExamName] = useState("");
 
   // Subject marks
-  const [subjectMarks, setSubjectMarks] = useState([])
-  
+  const [subjectMarks, setSubjectMarks] = useState([]);
+
   // Form validation state
-  const [isFormValid, setIsFormValid] = useState(false)
+  const [isFormValid, setIsFormValid] = useState(false);
 
   // Toast and notification states
-  const [showToast, setShowToast] = useState(false)
-  const [toastMessage, setToastMessage] = useState('')
-  const [toastType, setToastType] = useState('')
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState("");
 
   // Redux hooks
-  const classes = useSelector((state) => state.userData.ClassData)
-  const dispatch = useDispatch()
+  const classes = useSelector((state) => state.userData.ClassData);
+  const dispatch = useDispatch();
 
   // Form hook
-  const { 
-    register, 
-    handleSubmit, 
-    reset, 
-    formState: { errors } 
-  } = useForm()
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm();
 
   // Environment and authentication
-  const url = import.meta.env.VITE_API_BASE_URL
-  const token = Cookies.get('token')
+  const url = "https://little-scholar.onrender.com/api/v1/";
+  const token = Cookies.get("token");
 
   // Color schemes for subject cards
   const cardColors = [
-    { bg: 'bg-gradient-to-br from-purpleColor to-blue-700', border: 'border-blue-200', label: 'text-white', status: 'Incomplete' },
-    { bg: 'bg-gradient-to-br from-red-400 to-blue-700', border: 'border-green-200', label: 'text-white', status: 'Completed' },
-    { bg: 'bg-gradient-to-br from-cyan-500 to-blue-700', border: 'border-purple-200', label: 'text-white', status: 'Incomplete' },
-  ]
+    {
+      bg: "bg-gradient-to-br from-purpleColor to-blue-700",
+      border: "border-blue-200",
+      label: "text-white",
+      status: "Incomplete",
+    },
+    {
+      bg: "bg-gradient-to-br from-red-400 to-blue-700",
+      border: "border-green-200",
+      label: "text-white",
+      status: "Completed",
+    },
+    {
+      bg: "bg-gradient-to-br from-cyan-500 to-blue-700",
+      border: "border-purple-200",
+      label: "text-white",
+      status: "Incomplete",
+    },
+  ];
 
   // Fetch initial data
   useEffect(() => {
     const initializeFetch = async () => {
-      await fetchClasses()
-      await fetchExams()
-    }
-    initializeFetch()
-  }, [])
+      await fetchClasses();
+      await fetchExams();
+    };
+    initializeFetch();
+  }, []);
 
   // Fetch students and subjects when class is selected
   useEffect(() => {
     if (selectedClass) {
       const fetchClassData = async () => {
-        await fetchStudents(selectedClass)
-        await fetchSubjects(selectedClass)
-      }
-      fetchClassData()
+        await fetchStudents(selectedClass);
+        await fetchSubjects(selectedClass);
+      };
+      fetchClassData();
     }
-  }, [selectedClass])
+  }, [selectedClass]);
 
   // Initialize subject marks when subjects are loaded
   useEffect(() => {
     if (subjects?.length > 0) {
-      const initialSubjectMarks = subjects.map(subject => ({
+      const initialSubjectMarks = subjects.map((subject) => ({
         subject: subject._id,
         subjectName: subject.name,
-        marksObtained: '',
-        maxMarks: '100'
-      }))
-      setSubjectMarks(initialSubjectMarks)
-      setIsFormValid(false)
+        marksObtained: "",
+        maxMarks: "100",
+      }));
+      setSubjectMarks(initialSubjectMarks);
+      setIsFormValid(false);
     }
-  }, [subjects])
+  }, [subjects]);
 
   // Check form validity whenever subject marks change
   useEffect(() => {
-    checkFormValidity()
-  }, [subjectMarks, selectedClass, selectedStudent, selectedExam])
+    checkFormValidity();
+  }, [subjectMarks, selectedClass, selectedStudent, selectedExam]);
 
   // Toast notification effect
   useEffect(() => {
@@ -129,228 +142,253 @@ const AddMark = () => {
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
-      })
-      setShowToast(false)
+      });
+      setShowToast(false);
     }
-  }, [showToast, toastMessage, toastType])
+  }, [showToast, toastMessage, toastType]);
 
   // Fetch methods
   const fetchClasses = async () => {
     try {
-      const response = await GetAllClassesAPI(url)
-      if (response.status === 200 || response.status === 204 || response.status === 201) {
-        dispatch(setClassData(response.data.classes))
+      const response = await GetAllClassesAPI(url);
+      if (
+        response.status === 200 ||
+        response.status === 204 ||
+        response.status === 201
+      ) {
+        dispatch(setClassData(response.data.classes));
       } else {
-        setShowToast(true)
-        setToastMessage(response.message || 'Failed to fetch classes')
-        setToastType("error")
+        setShowToast(true);
+        setToastMessage(response.message || "Failed to fetch classes");
+        setToastType("error");
       }
     } catch (error) {
-      setShowToast(true)
-      setToastMessage('Error fetching classes')
-      setToastType("error")
+      setShowToast(true);
+      setToastMessage("Error fetching classes");
+      setToastType("error");
     }
-  }
+  };
 
   const fetchStudents = async (classId) => {
-    setStudents([])
+    setStudents([]);
     try {
-      const response = await GetStudentByClassAPI(url, classId)
-      if (response.status === 200 || response.status === 201 || response.status === 204) {
-        setStudents(response.data.students)
+      const response = await GetStudentByClassAPI(url, classId);
+      if (
+        response.status === 200 ||
+        response.status === 201 ||
+        response.status === 204
+      ) {
+        setStudents(response.data.students);
       } else {
-        setShowToast(true)
-        setToastMessage(response.message || 'Failed to fetch students')
-        setToastType("error")
+        setShowToast(true);
+        setToastMessage(response.message || "Failed to fetch students");
+        setToastType("error");
       }
     } catch (error) {
-      setShowToast(true)
-      setToastMessage('Error fetching students')
-      setToastType("error")
+      setShowToast(true);
+      setToastMessage("Error fetching students");
+      setToastType("error");
     }
-  }
+  };
 
   const fetchSubjects = async (classId) => {
-    setSubjects([])
+    setSubjects([]);
     try {
-      const response = await GetSubjectByClassAPI(url, classId)
-      if (response.status === 200 || response.status === 201 || response.status === 204) {
-        setSubjects(response.data)
+      const response = await GetSubjectByClassAPI(url, classId);
+      if (
+        response.status === 200 ||
+        response.status === 201 ||
+        response.status === 204
+      ) {
+        setSubjects(response.data);
       } else {
-        setShowToast(true)
-        setToastMessage(response.message || 'Failed to fetch subjects')
-        setToastType("error")
+        setShowToast(true);
+        setToastMessage(response.message || "Failed to fetch subjects");
+        setToastType("error");
       }
     } catch (error) {
-      setShowToast(true)
-      setToastMessage('Error fetching subjects')
-      setToastType("error")
+      setShowToast(true);
+      setToastMessage("Error fetching subjects");
+      setToastType("error");
     }
-  }
+  };
 
   const fetchExams = async () => {
     try {
-      const response = await GetExamsAPI(url)
-      if (response.status === 200 || response.status === 201 || response.status === 204) {
-        setExams(response.data.exams)
+      const response = await GetExamsAPI(url);
+      if (
+        response.status === 200 ||
+        response.status === 201 ||
+        response.status === 204
+      ) {
+        setExams(response.data.exams);
       } else {
-        setShowToast(true)
-        setToastMessage(response.message || 'Failed to fetch exams')
-        setToastType("error")
+        setShowToast(true);
+        setToastMessage(response.message || "Failed to fetch exams");
+        setToastType("error");
       }
     } catch (error) {
-      setShowToast(true)
-      setToastMessage('Error fetching exams')
-      setToastType("error")
+      setShowToast(true);
+      setToastMessage("Error fetching exams");
+      setToastType("error");
     }
-  }
+  };
 
   // Selection methods
   const selectClass = (classItem) => {
-    setSelectedClass(classItem._id)
-    setSelectedClassName(classItem.className)
-    setIsClassDropdownOpen(false)
-  }
+    setSelectedClass(classItem._id);
+    setSelectedClassName(classItem.className);
+    setIsClassDropdownOpen(false);
+  };
 
   const selectStudent = (student) => {
-    setSelectedStudent(student._id)
-    setSelectedStudentName(student.name)
-    setIsStudentDropdownOpen(false)
-  }
+    setSelectedStudent(student._id);
+    setSelectedStudentName(student.name);
+    setIsStudentDropdownOpen(false);
+  };
 
   const selectExam = (exam) => {
-    setSelectedExam(exam._id)
-    setSelectedExamName(exam.name)
-    setIsExamDropdownOpen(false)
-  }
+    setSelectedExam(exam._id);
+    setSelectedExamName(exam.name);
+    setIsExamDropdownOpen(false);
+  };
 
   // Marks handling methods
   const handleSubjectMarksChange = (index, field, value) => {
-    const updatedMarks = [...subjectMarks]
-    updatedMarks[index][field] = value
-    setSubjectMarks(updatedMarks)
-  }
+    const updatedMarks = [...subjectMarks];
+    updatedMarks[index][field] = value;
+    setSubjectMarks(updatedMarks);
+  };
 
   // Check if all form fields are valid
   const checkFormValidity = () => {
     // Check if class, student, and exam are selected
-    if (!selectedClass || !selectedStudent || !selectedExam || subjects.length === 0) {
-      setIsFormValid(false)
-      return
+    if (
+      !selectedClass ||
+      !selectedStudent ||
+      !selectedExam ||
+      subjects.length === 0
+    ) {
+      setIsFormValid(false);
+      return;
     }
-    
+
     // Check if all subjects have marks entered
     const allSubjectsHaveMarks = subjectMarks.every(
-      mark => mark.marksObtained !== '' && 
-              mark.marksObtained !== undefined && 
-              mark.maxMarks !== '' && 
-              mark.maxMarks !== undefined
-    )
-    
-    setIsFormValid(allSubjectsHaveMarks)
-  }
+      (mark) =>
+        mark.marksObtained !== "" &&
+        mark.marksObtained !== undefined &&
+        mark.maxMarks !== "" &&
+        mark.maxMarks !== undefined
+    );
+
+    setIsFormValid(allSubjectsHaveMarks);
+  };
 
   // Form validation and submission
   const validateForm = () => {
     if (!selectedClass) {
-      setShowToast(true)
-      setToastMessage('Please select a class')
-      setToastType("error")
-      return false
+      setShowToast(true);
+      setToastMessage("Please select a class");
+      setToastType("error");
+      return false;
     }
     if (!selectedStudent) {
-      setShowToast(true)
-      setToastMessage('Please select a student')
-      setToastType("error")
-      return false
+      setShowToast(true);
+      setToastMessage("Please select a student");
+      setToastType("error");
+      return false;
     }
     if (!selectedExam) {
-      setShowToast(true)
-      setToastMessage('Please select an exam')
-      setToastType("error")
-      return false
+      setShowToast(true);
+      setToastMessage("Please select an exam");
+      setToastType("error");
+      return false;
     }
 
     // Check if all subjects have marks
     const allSubjectsHaveMarks = subjectMarks.every(
-      mark => mark.marksObtained !== '' && mark.maxMarks !== ''
-    )
-    
+      (mark) => mark.marksObtained !== "" && mark.maxMarks !== ""
+    );
+
     if (!allSubjectsHaveMarks) {
-      setShowToast(true)
-      setToastMessage('Please enter marks for all subjects')
-      setToastType("error")
-      return false
+      setShowToast(true);
+      setToastMessage("Please enter marks for all subjects");
+      setToastType("error");
+      return false;
     }
 
-    return true
-  }
+    return true;
+  };
 
   const onSubmit = async () => {
-    if (!validateForm()) return
+    if (!validateForm()) return;
 
     try {
-      setLoading(true)
-      
-      const formattedMarks = subjectMarks.map(mark => ({
+      setLoading(true);
+
+      const formattedMarks = subjectMarks.map((mark) => ({
         subject: mark.subject,
         marksObtained: parseFloat(mark.marksObtained),
-        maxMarks: parseFloat(mark.maxMarks)
-      }))
-      
+        maxMarks: parseFloat(mark.maxMarks),
+      }));
+
       const markData = {
         student: selectedStudent,
         exam: selectedExam,
         studentClass: selectedClass,
-        marks: formattedMarks
-      }
+        marks: formattedMarks,
+      };
 
-      const response = await AddMarkStudentAPI(url, markData, token)
+      const response = await AddMarkStudentAPI(url, markData, token);
 
       if (response.status === 201 || response.status === 200) {
-        setShowToast(true)
-        setToastMessage(response.message || 'Marks added successfully')
-        setToastType("success")
+        setShowToast(true);
+        setToastMessage(response.message || "Marks added successfully");
+        setToastType("success");
 
         // Reset form
-        setSelectedClass('')
-        setSelectedClassName('')
-        setSelectedStudent('')
-        setSelectedStudentName('')
-        setSelectedExam('')
-        setSelectedExamName('')
-        setSubjectMarks([])
-        setIsFormValid(false)
+        setSelectedClass("");
+        setSelectedClassName("");
+        setSelectedStudent("");
+        setSelectedStudentName("");
+        setSelectedExam("");
+        setSelectedExamName("");
+        setSubjectMarks([]);
+        setIsFormValid(false);
 
-        dispatch(setIsLeaderBoardUpdate(true))
+        dispatch(setIsLeaderBoardUpdate(true));
       } else {
-        setShowToast(true)
-        setToastMessage(response.message || 'Failed to add marks')
-        setToastType("error")
+        setShowToast(true);
+        setToastMessage(response.message || "Failed to add marks");
+        setToastType("error");
       }
     } catch (error) {
-      setShowToast(true)
-      setToastMessage(error.response?.data?.message || 'Failed to add marks')
-      setToastType("error")
+      setShowToast(true);
+      setToastMessage(error.response?.data?.message || "Failed to add marks");
+      setToastType("error");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   // Helper to determine if mark is entered
   const isMarkEntered = (index) => {
-    return subjectMarks[index]?.marksObtained !== '' && subjectMarks[index]?.marksObtained !== undefined
-  }
+    return (
+      subjectMarks[index]?.marksObtained !== "" &&
+      subjectMarks[index]?.marksObtained !== undefined
+    );
+  };
 
   // Helper to get status label
   const getStatusLabel = (index) => {
-    return isMarkEntered(index) ? 'Completed' : 'Incomplete'
-  }
+    return isMarkEntered(index) ? "Completed" : "Incomplete";
+  };
 
   // Helper to get status color
   const getStatusColor = (index) => {
-    return isMarkEntered(index) ? 'text-green-500' : 'text-danger'
-  }
+    return isMarkEntered(index) ? "text-green-500" : "text-danger";
+  };
 
   return (
     <div className="min-h-screen w-full  justify-center sm:px-16 px-6 sm:py-16 py-10">
@@ -367,13 +405,18 @@ const AddMark = () => {
       <div className="min-h-full w-full flex flex-col items-center justify-center p-4">
         <div className="h-full max-w-4xl space-y-10 bg-white p-4">
           <div className="text-left">
-            <h2 className="h2 text-black mt-5 flex flex-col items-start">Upload Grades</h2>
+            <h2 className="h2 text-black mt-5 flex flex-col items-start">
+              Upload Grades
+            </h2>
           </div>
 
           <div className="mt-[32px] space-y-6 mb-[16px]">
             {/* Class Dropdown */}
             <div className="relative w-full sm:w-96 md:w-[24rem] lg:w-[28rem] mx-auto">
-              <label htmlFor="class-select" className="h5 text-sm md:text-base font-medium text-black-300 text-left">
+              <label
+                htmlFor="class-select"
+                className="h5 text-sm md:text-base font-medium text-black-300 text-left"
+              >
                 Select Class
               </label>
               <div className="relative bg-transparent border-2 border-black-200 text-black-300 rounded-lg focus:outline">
@@ -420,16 +463,23 @@ const AddMark = () => {
 
             {/* Student Dropdown */}
             <div className="relative w-full sm:w-96 md:w-[24rem] lg:w-[28rem] mx-auto">
-              <label htmlFor="student-select" className="h5 text-sm md:text-base font-medium text-black-300">
+              <label
+                htmlFor="student-select"
+                className="h5 text-sm md:text-base font-medium text-black-300"
+              >
                 Select Student
               </label>
               <div className="relative bg-transparent border-2 border-black-200 text-black-300 rounded-lg focus:outline">
                 <button
                   id="student-select"
                   type="button"
-                  onClick={() => setIsStudentDropdownOpen(!isStudentDropdownOpen)}
+                  onClick={() =>
+                    setIsStudentDropdownOpen(!isStudentDropdownOpen)
+                  }
                   disabled={!selectedClass}
-                  className={`w-full flex items-center justify-between px-2 py-1.5 md:py-2 border rounded-lg bg-white text-sm md:text-base ${!selectedClass ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  className={`w-full flex items-center justify-between px-2 py-1.5 md:py-2 border rounded-lg bg-white text-sm md:text-base ${
+                    !selectedClass ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
                 >
                   <div className="flex items-center">
                     <User className="w-4 h-4 md:w-5 md:h-5 mr-2 text-danger" />
@@ -468,7 +518,10 @@ const AddMark = () => {
 
             {/* Exam Dropdown */}
             <div className="relative w-full sm:w-96 md:w-[24rem] lg:w-[28rem] mx-auto">
-              <label htmlFor="exam-select" className="h5 text-sm md:text-base font-medium text-black-300">
+              <label
+                htmlFor="exam-select"
+                className="h5 text-sm md:text-base font-medium text-black-300"
+              >
                 Select Exam
               </label>
               <div className="relative bg-transparent border-2 border-black-200 text-black-300 rounded-lg focus:outline">
@@ -512,7 +565,7 @@ const AddMark = () => {
                 )}
               </div>
             </div>
-            
+
             {/* Submit Button */}
             <div className="w-full sm:w-96 md:w-[24rem] lg:w-[28rem] mx-auto mt-8">
               <button
@@ -520,7 +573,9 @@ const AddMark = () => {
                 onClick={onSubmit}
                 disabled={loading || !isFormValid}
                 className={`w-full flex items-center justify-center py-3 px-4 rounded-lg ${
-                  isFormValid ? 'bg-orange-500 hover:bg-orange-600' : 'bg-gray-400 cursor-not-allowed'
+                  isFormValid
+                    ? "bg-orange-500 hover:bg-orange-600"
+                    : "bg-gray-400 cursor-not-allowed"
                 } text-white focus:outline-none transition duration-200`}
               >
                 {loading ? (
@@ -529,7 +584,7 @@ const AddMark = () => {
                   "Add Grades"
                 )}
               </button>
-              
+
               {selectedClass && subjects?.length > 0 && !isFormValid && (
                 <p className="text-danger text-sm mt-2 text-center">
                   Please enter marks for all subjects to enable submission
@@ -541,27 +596,45 @@ const AddMark = () => {
 
         {selectedClass && subjects?.length > 0 && (
           <div className="w-full mx-auto mt-8">
-            <h3 className="text-black font-medium mb-4 text-left">Your Added Grades:</h3>
-            
+            <h3 className="text-black font-medium mb-4 text-left">
+              Your Added Grades:
+            </h3>
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {subjects.map((subject, index) => (
-                <div 
-                  key={subject._id} 
+                <div
+                  key={subject._id}
                   className="bg-gray-900 border border-gray-800 rounded-lg overflow-hidden shadow-lg relative"
                 >
                   <div className="px-4 py-4 flex items-start justify-between">
                     <div>
                       <div className="flex items-center">
-                        <div className={`h-2 w-2 rounded-full ${subjectMarks[index]?.marksObtained ? 'bg-green-500' : 'bg-red-500'} mr-2`}></div>
-                        <h4 className="text-gray-300 font-medium text-sm truncate">{subject.name}</h4>
+                        <div
+                          className={`h-2 w-2 rounded-full ${
+                            subjectMarks[index]?.marksObtained
+                              ? "bg-green-500"
+                              : "bg-red-500"
+                          } mr-2`}
+                        ></div>
+                        <h4 className="text-gray-300 font-medium text-sm truncate">
+                          {subject.name}
+                        </h4>
                       </div>
                       <p className="text-gray-400 text-xs mt-1">Subject</p>
                     </div>
-                    <div className={`text-xs px-2 py-1 rounded-full ${subjectMarks[index]?.marksObtained ? 'bg-green-500 bg-opacity-20 text-green-400' : 'bg-red-500 bg-opacity-20 text-red-400'}`}>
-                      {subjectMarks[index]?.marksObtained ? 'Completed' : 'Incomplete'}
+                    <div
+                      className={`text-xs px-2 py-1 rounded-full ${
+                        subjectMarks[index]?.marksObtained
+                          ? "bg-green-500 bg-opacity-20 text-green-400"
+                          : "bg-red-500 bg-opacity-20 text-red-400"
+                      }`}
+                    >
+                      {subjectMarks[index]?.marksObtained
+                        ? "Completed"
+                        : "Incomplete"}
                     </div>
                   </div>
-                  
+
                   <div className="px-4 py-2">
                     <div className="mb-2">
                       <label className="text-gray-400 text-xs block mb-1">
@@ -569,12 +642,20 @@ const AddMark = () => {
                       </label>
                       <input
                         type="number"
-                        value={subjectMarks[index]?.marksObtained || ''}
+                        value={subjectMarks[index]?.marksObtained || ""}
                         onChange={(e) => {
-                          const value = e.target.value === '' ? '' : Number(e.target.value)
-                          const maxMarks = subjectMarks[index]?.maxMarks || 100
-                          if (value === '' || (value <= maxMarks && value >= 0)) {
-                            handleSubjectMarksChange(index, 'marksObtained', value)
+                          const value =
+                            e.target.value === "" ? "" : Number(e.target.value);
+                          const maxMarks = subjectMarks[index]?.maxMarks || 100;
+                          if (
+                            value === "" ||
+                            (value <= maxMarks && value >= 0)
+                          ) {
+                            handleSubjectMarksChange(
+                              index,
+                              "marksObtained",
+                              value
+                            );
                           }
                         }}
                         className="w-full px-3 py-2 bg-gray-800 text-white border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-purpleColor"
@@ -584,7 +665,7 @@ const AddMark = () => {
                         placeholder="Enter marks"
                       />
                     </div>
-                    
+
                     <div>
                       <label className="text-gray-400 text-xs block mb-1">
                         Max Marks
@@ -593,9 +674,13 @@ const AddMark = () => {
                         type="number"
                         value={subjectMarks[index]?.maxMarks || 100}
                         onChange={(e) => {
-                          const value = Number(e.target.value)
+                          const value = Number(e.target.value);
                           if (value >= 0 && value <= 100) {
-                            handleSubjectMarksChange(index, 'maxMarks', value || 100)
+                            handleSubjectMarksChange(
+                              index,
+                              "maxMarks",
+                              value || 100
+                            );
                           }
                         }}
                         className="w-full px-3 py-2 bg-gray-800 text-white border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-purpleColor"
@@ -604,8 +689,8 @@ const AddMark = () => {
                         max="100"
                         placeholder="Max marks"
                       />
-                    </div>                     
-                  </div>                   
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
@@ -613,7 +698,7 @@ const AddMark = () => {
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default AddMark
+export default AddMark;

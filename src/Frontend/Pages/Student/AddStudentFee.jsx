@@ -30,7 +30,7 @@
 //   const [isStudentDropdownOpen, setIsStudentDropdownOpen] = useState(false)
 //   const [isMonthDropdownOpen, setIsMonthDropdownOpen] = useState(false)
 //   const [isStatusDropdownOpen, setIsStatusDropdownOpen] = useState(false)
-  
+
 //   // Selected display names
 //   const [selectedClassName, setSelectedClassName] = useState('')
 //   const [selectedStudentName, setSelectedStudentName] = useState('')
@@ -38,7 +38,7 @@
 
 //   // Months array
 //   const months = [
-//     "January", "February", "March", "April", "May", "June", 
+//     "January", "February", "March", "April", "May", "June",
 //     "July", "August", "September", "October", "November", "December"
 //   ]
 
@@ -46,7 +46,7 @@
 //   const statusOptions = ["paid", "not paid"]
 
 //   const { register, handleSubmit, reset, watch, formState: { errors } } = useForm()
-//   const url = import.meta.env.VITE_API_BASE_URL
+//   const url = "https://little-scholar.onrender.com/api/v1/"
 //   const token = Cookies.get('token')
 //   const lateFineChecked = watch("lateFine")
 //   const isAdvancePaymentChecked = watch("isAdvancePayment")
@@ -82,7 +82,7 @@
 //     const response = await GetAllClassesAPI(url)
 //     if (response.status === 200 || response.status === 204 || response.status === 201) {
 //       dispatch(setClassData(response.data.classes))
-      
+
 //     } else {
 //       dispatch(setClassData([]))
 //       setToastMessage(response.message)
@@ -173,7 +173,7 @@
 //     }
 
 //     setLoading(true)
-    
+
 //     const feeData = {
 //       student: selectedStudent,
 //       months: selectedMonths,
@@ -185,7 +185,7 @@
 //       isAdvancePayment: data.isAdvancePayment === true,
 //       paymentDate: data.isAdvancePayment ? data.paymentDate : null
 //     }
-    
+
 //     try {
 //       const response = await AddStudentTransactionAPI(url, feeData, token)
 
@@ -193,7 +193,7 @@
 //         setToastMessage(response.message || 'Fee added successfully!')
 //         setToastType("success")
 //         setShowToast(true)
-        
+
 //         // Reset form
 //         reset()
 //         setSelectedClass('')
@@ -208,11 +208,11 @@
 //         setToastMessage('Failed to add fee')
 //         setToastType("error")
 //         setShowToast(true)
-      
-//         if (response.status === 401) {  
+
+//         if (response.status === 401) {
 //           Cookies.remove('user')
 //           Cookies.remove('token')
-//           window.location.href = '/user-options'                      
+//           window.location.href = '/user-options'
 //         }
 //       }
 //     } catch (error) {
@@ -332,7 +332,7 @@
 //                   <div className="flex items-center w-full">
 //                     <Calendar className="w-4 h-4 md:w-5 md:h-5 mr-2 text-danger flex-shrink-0" />
 //                     <span className="h5 text-black truncate max-w-[80%]">
-//                       {selectedMonths.length > 0 
+//                       {selectedMonths.length > 0
 //                         ? selectedMonths.join(", ")
 //                         : "Select Months"
 //                       }
@@ -467,9 +467,8 @@
 //               )
 //             }
 
-
 //             {/* Advance Payment Date (conditionally rendered) */}
-        
+
 //               <div className="w-full sm:w-96 md:w-[24rem] lg:w-[28rem] mx-auto">
 //                 <div className="relative">
 //                   <label className="block text-black-300 mb-1" htmlFor="paymentDate">
@@ -490,7 +489,6 @@
 //                   )}
 //                 </div>
 //               </div>
-   
 
 //             {/* Submit Button */}
 //             <div className="w-full sm:w-96 md:w-[24rem] lg:w-[28rem] mx-auto mt-8">
@@ -517,67 +515,99 @@
 
 // export default AddStudentFees
 
-import { useState, useEffect } from 'react'
-import { useForm } from 'react-hook-form'
-import Cookies from "js-cookie"
-import { School2, ChevronDown, Check, School, BookOpen, User, FileText, Calendar, IndianRupee } from 'lucide-react'
-import { setClassData } from '../../../Store/slice'
-import { GetClasses, GetAllClassesAPI, GetStudentByClassAPI, AddStudentTransactionAPI } from '../../../service/api'
-import { useSelector, useDispatch } from 'react-redux'
-import Toast from '../../Components/Toast'
-import Input from "../../Components/Elements/Input"
-import { toast } from 'react-toastify'
+import { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import Cookies from "js-cookie";
+import {
+  School2,
+  ChevronDown,
+  Check,
+  School,
+  BookOpen,
+  User,
+  FileText,
+  Calendar,
+  IndianRupee,
+} from "lucide-react";
+import { setClassData } from "../../../Store/slice";
+import {
+  GetClasses,
+  GetAllClassesAPI,
+  GetStudentByClassAPI,
+  AddStudentTransactionAPI,
+} from "../../../service/api";
+import { useSelector, useDispatch } from "react-redux";
+import Toast from "../../Components/Toast";
+import Input from "../../Components/Elements/Input";
+import { toast } from "react-toastify";
 
 const AddStudentFees = () => {
-  const [loading, setLoading] = useState(false)
-  const [students, setStudents] = useState([])
-  const [selectedClass, setSelectedClass] = useState('')
-  const [selectedStudent, setSelectedStudent] = useState('')
-  const [selectedMonths, setSelectedMonths] = useState([])
-  const [selectedStatus, setSelectedStatus] = useState('')
-  const [showToast, setShowToast] = useState(false)
-  const [toastMessage, setToastMessage] = useState('')
-  const [toastType, setToastType] = useState('')
-  const [classFee, setClassFee] = useState(0)
-  const [lateFine, setLateFine] = useState()
-  const [calculatedBaseAmount, setCalculatedBaseAmount] = useState(0)
-  const classes = useSelector((state) => state.userData.ClassData)
-  const dispatch = useDispatch()
+  const [loading, setLoading] = useState(false);
+  const [students, setStudents] = useState([]);
+  const [selectedClass, setSelectedClass] = useState("");
+  const [selectedStudent, setSelectedStudent] = useState("");
+  const [selectedMonths, setSelectedMonths] = useState([]);
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState("");
+  const [classFee, setClassFee] = useState(0);
+  const [lateFine, setLateFine] = useState();
+  const [calculatedBaseAmount, setCalculatedBaseAmount] = useState(0);
+  const classes = useSelector((state) => state.userData.ClassData);
+  const dispatch = useDispatch();
 
   // Dropdown states
-  const [isClassDropdownOpen, setIsClassDropdownOpen] = useState(false)
-  const [isStudentDropdownOpen, setIsStudentDropdownOpen] = useState(false)
-  const [isMonthDropdownOpen, setIsMonthDropdownOpen] = useState(false)
-  const [isStatusDropdownOpen, setIsStatusDropdownOpen] = useState(false)
-  
+  const [isClassDropdownOpen, setIsClassDropdownOpen] = useState(false);
+  const [isStudentDropdownOpen, setIsStudentDropdownOpen] = useState(false);
+  const [isMonthDropdownOpen, setIsMonthDropdownOpen] = useState(false);
+  const [isStatusDropdownOpen, setIsStatusDropdownOpen] = useState(false);
+
   // Selected display names
-  const [selectedClassName, setSelectedClassName] = useState('')
-  const [selectedStudentName, setSelectedStudentName] = useState('')
-  const [selectedStatusName, setSelectedStatusName] = useState('')
+  const [selectedClassName, setSelectedClassName] = useState("");
+  const [selectedStudentName, setSelectedStudentName] = useState("");
+  const [selectedStatusName, setSelectedStatusName] = useState("");
 
   // Get current month to limit available months
-  const currentDate = new Date()
-  const currentMonth = currentDate.getMonth() // 0-11
+  const currentDate = new Date();
+  const currentMonth = currentDate.getMonth(); // 0-11
 
   // Months array - only show up to current month
   const allMonths = [
-    "January", "February", "March", "April", "May", "June", 
-    "July", "August", "September", "October", "November", "December"
-  ]
-  const availableMonths = allMonths.slice(0, currentMonth + 1)
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+  const availableMonths = allMonths.slice(0, currentMonth + 1);
 
   // Status options
-  const statusOptions = ["paid", "not paid"]
+  const statusOptions = ["paid", "not paid"];
 
-  const { register, handleSubmit, reset, watch, setValue, formState: { errors } } = useForm()
-  const url = import.meta.env.VITE_API_BASE_URL
-  const token = Cookies.get('token')
-  const lateFineChecked = watch("lateFine")
-  const isAdvancePaymentChecked = watch("isAdvancePayment")
+  const {
+    register,
+    handleSubmit,
+    reset,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useForm();
+  const url = "https://little-scholar.onrender.com/api/v1/";
+  const token = Cookies.get("token");
+  const lateFineChecked = watch("lateFine");
+  const isAdvancePaymentChecked = watch("isAdvancePayment");
 
   // Get current date for max date validation
-  const today = new Date()
-  const formattedDate = today.toISOString().split('T')[0]
+  const today = new Date();
+  const formattedDate = today.toISOString().split("T")[0];
 
   useEffect(() => {
     if (showToast) {
@@ -588,136 +618,143 @@ const AddStudentFees = () => {
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
-      })
+      });
     }
-  }, [showToast, toastMessage, toastType])
+  }, [showToast, toastMessage, toastType]);
 
   useEffect(() => {
-    fetchClasses()
-  }, [])
+    fetchClasses();
+  }, []);
 
   useEffect(() => {
     if (selectedClass) {
-      fetchStudents(selectedClass)
+      fetchStudents(selectedClass);
     }
-  }, [selectedClass])
+  }, [selectedClass]);
 
   // Calculate base amount when months or class fee changes
   useEffect(() => {
-    const totalAmount = selectedMonths.length * classFee
-    setCalculatedBaseAmount(totalAmount)
-    setValue('baseAmount', totalAmount)
-  }, [selectedMonths, classFee])
+    const totalAmount = selectedMonths.length * classFee;
+    setCalculatedBaseAmount(totalAmount);
+    setValue("baseAmount", totalAmount);
+  }, [selectedMonths, classFee]);
 
   const fetchClasses = async () => {
-    const response = await GetAllClassesAPI(url)
-    if (response.status === 200 || response.status === 204 || response.status === 201) {
-      dispatch(setClassData(response.data.classes))
-      
+    const response = await GetAllClassesAPI(url);
+    if (
+      response.status === 200 ||
+      response.status === 204 ||
+      response.status === 201
+    ) {
+      dispatch(setClassData(response.data.classes));
     } else {
-      dispatch(setClassData([]))
-      setToastMessage(response.message)
-      setToastType("error")
-      setShowToast(true)
+      dispatch(setClassData([]));
+      setToastMessage(response.message);
+      setToastType("error");
+      setShowToast(true);
     }
-  }
+  };
 
   const fetchStudents = async (classId) => {
-    const response = await GetStudentByClassAPI(url, classId)
-    if (response.status === 200 || response.status === 201 || response.status === 204) {
-      setStudents(response.data.students)
+    const response = await GetStudentByClassAPI(url, classId);
+    if (
+      response.status === 200 ||
+      response.status === 201 ||
+      response.status === 204
+    ) {
+      setStudents(response.data.students);
     } else {
-      setStudents([])
-      setToastMessage(response.message)
-      setToastType("error")
-      setShowToast(true)
+      setStudents([]);
+      setToastMessage(response.message);
+      setToastType("error");
+      setShowToast(true);
     }
-  }
+  };
 
   const selectClass = (classItem) => {
-    setLateFine(classItem?.lateFineAmount)
-    setClassFee(classItem?.fee)
-    setSelectedClass(classItem._id)
-    setSelectedClassName(classItem.className)
-    setIsClassDropdownOpen(false)
-    
+    setLateFine(classItem?.lateFineAmount);
+    setClassFee(classItem?.fee);
+    setSelectedClass(classItem._id);
+    setSelectedClassName(classItem.className);
+    setIsClassDropdownOpen(false);
+
     // Reset months when class changes
-    setSelectedMonths([])
-    setCalculatedBaseAmount(0)
-    setValue('baseAmount', 0)
-  }
+    setSelectedMonths([]);
+    setCalculatedBaseAmount(0);
+    setValue("baseAmount", 0);
+  };
 
   const selectStudent = (student) => {
-    setSelectedStudent(student._id)
-    setSelectedStudentName(student.name)
-    setIsStudentDropdownOpen(false)
-  }
+    setSelectedStudent(student._id);
+    setSelectedStudentName(student.name);
+    setIsStudentDropdownOpen(false);
+  };
 
   const toggleMonth = (month) => {
-    setSelectedMonths(prevMonths => {
+    setSelectedMonths((prevMonths) => {
       let newMonths;
       if (prevMonths.includes(month)) {
-        newMonths = prevMonths.filter(m => m !== month);
+        newMonths = prevMonths.filter((m) => m !== month);
       } else {
         newMonths = [...prevMonths, month];
       }
-      
+
       // Immediately update the base amount
       const totalAmount = newMonths.length * classFee;
       setCalculatedBaseAmount(totalAmount);
-      setValue('baseAmount', totalAmount);
-      
+      setValue("baseAmount", totalAmount);
+
       return newMonths;
     });
-  }
+  };
 
   const selectStatus = (status) => {
-    setSelectedStatus(status)
-    setSelectedStatusName(status)
-    setIsStatusDropdownOpen(false)
-  }
+    setSelectedStatus(status);
+    setSelectedStatusName(status);
+    setIsStatusDropdownOpen(false);
+  };
 
   const validateForm = () => {
     if (!selectedClass) {
-      setToastMessage('Please select a class')
-      setToastType("error")
-      setShowToast(true)
-      return false
+      setToastMessage("Please select a class");
+      setToastType("error");
+      setShowToast(true);
+      return false;
     }
     if (!selectedStudent) {
-      setToastMessage('Please select a student')
-      setToastType("error")
-      setShowToast(true)
-      return false
+      setToastMessage("Please select a student");
+      setToastType("error");
+      setShowToast(true);
+      return false;
     }
     if (selectedMonths.length === 0) {
-      setToastMessage('Please select at least one month')
-      setToastType("error")
-      setShowToast(true)
-      return false
+      setToastMessage("Please select at least one month");
+      setToastType("error");
+      setShowToast(true);
+      return false;
     }
     if (!selectedStatus) {
-      setToastMessage('Please select a payment status')
-      setToastType("error")
-      setShowToast(true)
-      return false
+      setToastMessage("Please select a payment status");
+      setToastType("error");
+      setShowToast(true);
+      return false;
     }
-    return true
-  }
+    return true;
+  };
 
   const onSubmit = async (data) => {
-    if (!validateForm()) return
+    if (!validateForm()) return;
 
     // Validate advance payment date if selected
     if (new Date(data.paymentDate) > new Date()) {
-      setToastMessage('Advance payment date cannot be in the future')
-      setToastType("error")
-      setShowToast(true)
-      return
+      setToastMessage("Advance payment date cannot be in the future");
+      setToastType("error");
+      setShowToast(true);
+      return;
     }
 
-    setLoading(true)
-    
+    setLoading(true);
+
     const feeData = {
       student: selectedStudent,
       months: selectedMonths,
@@ -727,57 +764,68 @@ const AddStudentFees = () => {
       lateFineAmount: data.lateFine ? data.lateFineAmount : 0,
       finePaid: data.paidFine === true,
       isAdvancePayment: false,
-      paymentDate: data.isAdvancePayment ? data.paymentDate : null
-    }
-    
-    try {
-      const response = await AddStudentTransactionAPI(url, feeData, token)
+      paymentDate: data.isAdvancePayment ? data.paymentDate : null,
+    };
 
-      if (response.status === 201 || response.status === 200 || response.status === 204) {
-        setToastMessage(response.message || 'Fee added successfully!')
-        setToastType("success")
-        setShowToast(true)
-        
+    try {
+      const response = await AddStudentTransactionAPI(url, feeData, token);
+
+      if (
+        response.status === 201 ||
+        response.status === 200 ||
+        response.status === 204
+      ) {
+        setToastMessage(response.message || "Fee added successfully!");
+        setToastType("success");
+        setShowToast(true);
+
         // Reset form
-        reset()
-        setSelectedClass('')
-        setSelectedClassName('')
-        setSelectedStudent('')
-        setSelectedStudentName('')
-        setSelectedMonths([])
-        setSelectedStatus('')
-        setSelectedStatusName('')
-        setCalculatedBaseAmount(0)
+        reset();
+        setSelectedClass("");
+        setSelectedClassName("");
+        setSelectedStudent("");
+        setSelectedStudentName("");
+        setSelectedMonths([]);
+        setSelectedStatus("");
+        setSelectedStatusName("");
+        setCalculatedBaseAmount(0);
       } else {
-        reset()
-        setToastMessage('Failed to add fee')
-        setToastType("error")
-        setShowToast(true)
-      
-        if (response.status === 401) {  
-          Cookies.remove('user')
-          Cookies.remove('token')
-          window.location.href = '/user-options'                      
+        reset();
+        setToastMessage("Failed to add fee");
+        setToastType("error");
+        setShowToast(true);
+
+        if (response.status === 401) {
+          Cookies.remove("user");
+          Cookies.remove("token");
+          window.location.href = "/user-options";
         }
       }
     } catch (error) {
-      setToastMessage('Error adding fee: ' + (error.message || 'Unknown error'))
-      setToastType("error")
-      setShowToast(true)
+      setToastMessage(
+        "Error adding fee: " + (error.message || "Unknown error")
+      );
+      setToastType("error");
+      setShowToast(true);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen p-4 w-full">
       <div className="min-h-full max-w-3xl flex items-center justify-center p-4">
         <div className="h-full w-full space-y-10 bg-white">
           <div className="text-left">
-            <h2 className="h2 text-black mt-5 flex flex-col items-start">Add Student Fee</h2>
+            <h2 className="h2 text-black mt-5 flex flex-col items-start">
+              Add Student Fee
+            </h2>
           </div>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="mt-[32px] space-y-8 mb-[16px]">
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="mt-[32px] space-y-8 mb-[16px]"
+          >
             {/* Class Selection */}
             <div className="relative w-full sm:w-96 md:w-[24rem] lg:w-[28rem] mx-auto">
               <div className="relative bg-transparent border-2 border-black-200 text-black-300 rounded-lg focus:outline">
@@ -826,9 +874,13 @@ const AddStudentFees = () => {
               <div className="relative bg-transparent border-2 border-black-200 text-black-300 rounded-lg focus:outline">
                 <button
                   type="button"
-                  onClick={() => setIsStudentDropdownOpen(!isStudentDropdownOpen)}
+                  onClick={() =>
+                    setIsStudentDropdownOpen(!isStudentDropdownOpen)
+                  }
                   disabled={!selectedClass}
-                  className={`w-full flex items-center justify-between px-2 py-1.5 md:py-2 border rounded-lg bg-white text-sm md:text-base ${!selectedClass ? 'opacity-70 cursor-not-allowed' : ''}`}
+                  className={`w-full flex items-center justify-between px-2 py-1.5 md:py-2 border rounded-lg bg-white text-sm md:text-base ${
+                    !selectedClass ? "opacity-70 cursor-not-allowed" : ""
+                  }`}
                 >
                   <div className="flex items-center">
                     <User className="w-4 h-4 md:w-5 md:h-5 mr-2 text-danger" />
@@ -872,15 +924,16 @@ const AddStudentFees = () => {
                   type="button"
                   onClick={() => setIsMonthDropdownOpen(!isMonthDropdownOpen)}
                   disabled={!selectedStudent}
-                  className={`w-full flex items-center justify-between px-2 py-1.5 md:py-2 border rounded-lg bg-white text-sm md:text-base ${!selectedStudent ? 'opacity-70 cursor-not-allowed' : ''}`}
+                  className={`w-full flex items-center justify-between px-2 py-1.5 md:py-2 border rounded-lg bg-white text-sm md:text-base ${
+                    !selectedStudent ? "opacity-70 cursor-not-allowed" : ""
+                  }`}
                 >
                   <div className="flex items-center w-full">
                     <Calendar className="w-4 h-4 md:w-5 md:h-5 mr-2 text-danger flex-shrink-0" />
                     <span className="h5 text-black truncate max-w-[80%]">
-                      {selectedMonths.length > 0 
+                      {selectedMonths.length > 0
                         ? selectedMonths.join(", ")
-                        : "Select Months"
-                      }
+                        : "Select Months"}
                     </span>
                   </div>
                   <ChevronDown size={24} className="text-black" />
@@ -919,7 +972,11 @@ const AddStudentFees = () => {
                   type="button"
                   onClick={() => setIsStatusDropdownOpen(!isStatusDropdownOpen)}
                   disabled={selectedMonths.length === 0}
-                  className={`w-full flex items-center justify-between px-2 py-1.5 md:py-2 border rounded-lg bg-white text-sm md:text-base ${selectedMonths.length === 0 ? 'opacity-70 cursor-not-allowed' : ''}`}
+                  className={`w-full flex items-center justify-between px-2 py-1.5 md:py-2 border rounded-lg bg-white text-sm md:text-base ${
+                    selectedMonths.length === 0
+                      ? "opacity-70 cursor-not-allowed"
+                      : ""
+                  }`}
                 >
                   <div className="flex items-center">
                     <FileText className="w-4 h-4 md:w-5 md:h-5 mr-2 text-danger" />
@@ -967,7 +1024,7 @@ const AddStudentFees = () => {
               value={calculatedBaseAmount}
               onChange={(e) => {
                 // Allow manual override of the calculated value
-                setValue('baseAmount', e.target.value);
+                setValue("baseAmount", e.target.value);
               }}
             />
 
@@ -979,7 +1036,9 @@ const AddStudentFees = () => {
                 {...register("lateFine")}
                 className="mr-2 w-4 h-4"
               />
-              <label htmlFor="lateFine" className="text-black-300">Late Fine</label>
+              <label htmlFor="lateFine" className="text-black-300">
+                Late Fine
+              </label>
             </div>
 
             {/* Late Fine Amount (conditionally rendered) */}
@@ -1008,15 +1067,20 @@ const AddStudentFees = () => {
                   {...register("paidFine")}
                   className="mr-2 w-4 h-4"
                 />
-                <label htmlFor="paidFine" className="text-black-300">Paid Fine</label>
+                <label htmlFor="paidFine" className="text-black-300">
+                  Paid Fine
+                </label>
               </div>
             )}
 
             {/* Advance Payment Date */}
             <div className="w-full sm:w-96 md:w-[24rem] lg:w-[28rem] mx-auto">
               <div className="relative">
-                <label className="block text-black-300 mb-1" htmlFor="paymentDate">
-                Payment Date
+                <label
+                  className="block text-black-300 mb-1"
+                  htmlFor="paymentDate"
+                >
+                  Payment Date
                 </label>
                 <input
                   type="date"
@@ -1024,12 +1088,17 @@ const AddStudentFees = () => {
                   max={formattedDate}
                   {...register("paymentDate", {
                     required: isAdvancePaymentChecked,
-                    validate: value => !isAdvancePaymentChecked || new Date(value) <= new Date() || "Date cannot be in the future"
+                    validate: (value) =>
+                      !isAdvancePaymentChecked ||
+                      new Date(value) <= new Date() ||
+                      "Date cannot be in the future",
                   })}
                   className="w-full p-2 border-2 border-black-200 bg-transparent text-black-300 rounded-lg focus:outline-none [color-scheme:light]"
                 />
                 {errors.paymentDate && (
-                  <p className="text-danger text-sm mt-1">{errors.paymentDate.message}</p>
+                  <p className="text-danger text-sm mt-1">
+                    {errors.paymentDate.message}
+                  </p>
                 )}
               </div>
             </div>
@@ -1044,9 +1113,7 @@ const AddStudentFees = () => {
                 {loading ? (
                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
                 ) : (
-                  <>
-                    Add Fee
-                  </>
+                  <>Add Fee</>
                 )}
               </button>
             </div>
@@ -1054,7 +1121,7 @@ const AddStudentFees = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default AddStudentFees
+export default AddStudentFees;

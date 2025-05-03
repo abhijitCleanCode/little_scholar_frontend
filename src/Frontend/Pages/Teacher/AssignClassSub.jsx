@@ -1,13 +1,26 @@
 import { useState, useEffect } from "react";
-import { Check, ArrowRight, ChevronDown, School, BookOpen, User } from "lucide-react";
-import { toast } from 'react-toastify';
+import {
+  Check,
+  ArrowRight,
+  ChevronDown,
+  School,
+  BookOpen,
+  User,
+} from "lucide-react";
+import { toast } from "react-toastify";
 import axios from "axios";
 import Cookies from "js-cookie";
-import { GetAllClass,GetAllClasses, GetAllTeacher,GetAllTeachers, AssignClassSubject } from '../../Route';
-import { GetSubjectByClassAPI } from '../../../service/api';
+import {
+  GetAllClass,
+  GetAllClasses,
+  GetAllTeacher,
+  GetAllTeachers,
+  AssignClassSubject,
+} from "../../Route";
+import { GetSubjectByClassAPI } from "../../../service/api";
 
 const AssignClassSub = () => {
-  const [activeTab, setActiveTab] = useState('assign');
+  const [activeTab, setActiveTab] = useState("assign");
   const [selectedTeacher, setSelectedTeacher] = useState("");
   const [teachers, setTeachers] = useState([]);
   const [isTeacherDropdownOpen, setIsTeacherDropdownOpen] = useState(false);
@@ -22,13 +35,13 @@ const AssignClassSub = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  
+
   const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState('');
-  const [toastType, setToastType] = useState('');
-  
-  const url = import.meta.env.VITE_API_BASE_URL;
-  const token = Cookies.get('token');
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState("");
+
+  const url = "https://little-scholar.onrender.com/api/v1/";
+  const token = Cookies.get("token");
 
   useEffect(() => {
     if (showToast) {
@@ -47,7 +60,7 @@ const AssignClassSub = () => {
     try {
       const response = await axios.get(`${url}${GetAllClasses}`, {
         headers: {
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
       setClassData(response.data.data.classes);
@@ -66,9 +79,9 @@ const AssignClassSub = () => {
         const response = await axios.get(`${url}${GetAllTeachers}`);
         setTeachers(response.data.data.teachers);
       } catch (error) {
-        console.error('Error fetching teachers:', error);
+        console.error("Error fetching teachers:", error);
       }
-    }
+    };
     fetchTeachers();
   }, []);
 
@@ -78,25 +91,32 @@ const AssignClassSub = () => {
         setSubjectData([]);
         return;
       }
-      
+
       setLoading(true);
       try {
         const response = await GetSubjectByClassAPI(url, selectedClassId);
 
-        if (response.status === 200 || response.status === 204 || response.status === 201) {
+        if (
+          response.status === 200 ||
+          response.status === 204 ||
+          response.status === 201
+        ) {
           setSubjectData(response.data);
           setSelectedSubjects([]);
           setSelectedSubjectIds([]);
-      
         } else {
           setShowToast(true);
-          setToastMessage(response.message || "No subjexts found for the class");
+          setToastMessage(
+            response.message || "No subjexts found for the class"
+          );
           setToastType("error");
         }
       } catch (error) {
         console.error("Error fetching subjects:", error);
         setShowToast(true);
-        setToastMessage(error.response.data.message || "Failed to fetch subjects");
+        setToastMessage(
+          error.response.data.message || "Failed to fetch subjects"
+        );
         setToastType("error");
       } finally {
         setLoading(false);
@@ -122,7 +142,7 @@ const AssignClassSub = () => {
         ? prev.filter((s) => s !== subject)
         : [...prev, subject]
     );
-    
+
     setSelectedSubjectIds((prev) =>
       prev.includes(subjectId)
         ? prev.filter((id) => id !== subjectId)
@@ -133,64 +153,70 @@ const AssignClassSub = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    const selectedTeacherData = teachers.find(teacher => teacher.email === selectedTeacher);
-    
+    const selectedTeacherData = teachers.find(
+      (teacher) => teacher.email === selectedTeacher
+    );
+
     try {
-      if (activeTab === 'assign') {
-
-     await axios.post(`${url}${AssignClassSubject}/${selectedTeacherData._id}`, {
-          classIds: [selectedClassId],
-          subjectIds: selectedSubjectIds
-        }, {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
-       
-          setShowToast(true);
-          setToastMessage("Successfully assigned class and subjects");
-          setToastType("success");
-
-
-
-      } 
-      
-      else {
-        await axios.delete(`${url}teacher/${selectedTeacherData._id}/delete-assignments`, {
-          data: {
-            classesToRemove: [selectedClassId],
-            subjectsToRemove: selectedSubjectIds.length > 0 ? selectedSubjectIds : []
+      if (activeTab === "assign") {
+        await axios.post(
+          `${url}${AssignClassSubject}/${selectedTeacherData._id}`,
+          {
+            classIds: [selectedClassId],
+            subjectIds: selectedSubjectIds,
           },
-          headers: {
-            Authorization: `Bearer ${token}`
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           }
-        });
+        );
+
+        setShowToast(true);
+        setToastMessage("Successfully assigned class and subjects");
+        setToastType("success");
+      } else {
+        await axios.delete(
+          `${url}teacher/${selectedTeacherData._id}/delete-assignments`,
+          {
+            data: {
+              classesToRemove: [selectedClassId],
+              subjectsToRemove:
+                selectedSubjectIds.length > 0 ? selectedSubjectIds : [],
+            },
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         setShowToast(true);
         setToastMessage("Successfully removed assignment");
         setToastType("success");
       }
-      
+
       setSelectedClass("");
       setSelectedClassId("");
       setSelectedSubjects([]);
       setSelectedSubjectIds([]);
       setSelectedTeacher("");
-      
     } catch (error) {
       setShowToast(true);
       setToastMessage(error.response?.data?.message || "An error occurred");
       setToastType("error");
-      if (error.status === 401) {  
-        Cookies.remove('user');
-        Cookies.remove('token');
-        window.location.href = '/user-options';                      
+      if (error.status === 401) {
+        Cookies.remove("user");
+        Cookies.remove("token");
+        window.location.href = "/user-options";
       }
     } finally {
       setIsLoading(false);
     }
   };
 
-  const isFormValid = selectedTeacher && selectedClassId && (activeTab === 'delete' || selectedSubjectIds.length > 0);
+  const isFormValid =
+    selectedTeacher &&
+    selectedClassId &&
+    (activeTab === "delete" || selectedSubjectIds.length > 0);
   return (
     <div className="min-h-screen p-4 md:p-8">
       <div className="max-w-2xl mx-auto bg-white rounded-md p-4 md:p-6">
@@ -210,7 +236,9 @@ const AssignClassSub = () => {
         </div> */}
 
         <h2 className="text-xl md:text-2xl text-left font-bold mb-8 md:mb-12 mt-4 text-gray-800">
-          {activeTab === 'assign' ? 'Assign Class and Subjects' : 'Remove Class and Subjects Assignment'}
+          {activeTab === "assign"
+            ? "Assign Class and Subjects"
+            : "Remove Class and Subjects Assignment"}
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
@@ -224,7 +252,9 @@ const AssignClassSub = () => {
                 <div className="h5 flex items-center">
                   <User className="w-4 h-4 md:w-5 md:h-5 mr-2 text-danger" />
                   <span className="text-black">
-                    {selectedTeacher ? teachers.find(t => t.email === selectedTeacher)?.name : "Select Teacher"}
+                    {selectedTeacher
+                      ? teachers.find((t) => t.email === selectedTeacher)?.name
+                      : "Select Teacher"}
                   </span>
                 </div>
                 <ChevronDown size={24} className="text-black" />
@@ -235,7 +265,9 @@ const AssignClassSub = () => {
                     <div
                       key={teacher._id}
                       onClick={() => {
-                        handleTeacherSelect({ target: { value: teacher.email }});
+                        handleTeacherSelect({
+                          target: { value: teacher.email },
+                        });
                         setIsTeacherDropdownOpen(false);
                       }}
                       className="flex items-center px-2 md:px-4 py-1.5 md:py-2 hover:bg-gray-100 cursor-pointer text-gray-600 text-sm md:text-base"
@@ -278,7 +310,9 @@ const AssignClassSub = () => {
                 {classData.map((classItem) => (
                   <div
                     key={classItem._id}
-                    onClick={() => handleClassSelect(classItem.className, classItem._id)}
+                    onClick={() =>
+                      handleClassSelect(classItem.className, classItem._id)
+                    }
                     className="flex items-center px-2 md:px-4 py-1.5 md:py-2 hover:bg-gray-100 cursor-pointer text-gray-600 text-sm md:text-base"
                   >
                     <div
@@ -302,16 +336,25 @@ const AssignClassSub = () => {
           <div className="relative bg-transparent border-2 border-black-200 text-gray-600 rounded-lg focus:outline">
             <button
               type="button"
-              onClick={() => selectedClassId && setIsSubjectDropdownOpen(!isSubjectDropdownOpen)}
+              onClick={() =>
+                selectedClassId &&
+                setIsSubjectDropdownOpen(!isSubjectDropdownOpen)
+              }
               disabled={!selectedClassId || loading}
-              className={`w-full flex items-center justify-between px-2 py-1.5 md:py-2 border rounded-lg bg-white text-sm md:text-base ${!selectedClassId ? 'opacity-60 cursor-not-allowed' : ''}`}
+              className={`w-full flex items-center justify-between px-2 py-1.5 md:py-2 border rounded-lg bg-white text-sm md:text-base ${
+                !selectedClassId ? "opacity-60 cursor-not-allowed" : ""
+              }`}
             >
               <div className="h5 flex items-center gap-2">
                 <BookOpen size={20} className="text-brand" />
                 <span className="text-black">
-                  {loading ? "Loading subjects..." :
-                    !selectedClassId ? "Select class first" :
-                    selectedSubjects.length ? selectedSubjects.join(", ") : "Select subjects"}
+                  {loading
+                    ? "Loading subjects..."
+                    : !selectedClassId
+                    ? "Select class first"
+                    : selectedSubjects.length
+                    ? selectedSubjects.join(", ")
+                    : "Select subjects"}
                 </span>
               </div>
               <ChevronDown size={24} className="text-black" />
@@ -339,13 +382,15 @@ const AssignClassSub = () => {
                     {subject.name}
                   </div>
                 ))}
-                
+
                 {subjectData.length === 0 && !loading && (
-                  <div className="px-4 py-2 text-gray-500">No subjects available for this class</div>
+                  <div className="px-4 py-2 text-gray-500">
+                    No subjects available for this class
+                  </div>
                 )}
               </div>
             )}
-            
+
             {isSubjectDropdownOpen && loading && (
               <div className="absolute z-10 w-full mt-1 bg-white border rounded-lg shadow-lg">
                 <div className="px-4 py-2 text-center">
@@ -359,7 +404,11 @@ const AssignClassSub = () => {
             type="submit"
             disabled={!isFormValid || isLoading}
             className={`w-full flex items-center justify-center py-3 px-4 rounded-lg ${
-              isFormValid ? activeTab === 'assign' ? "bg-success-500" : "bg-red-500" : "bg-gray-300"
+              isFormValid
+                ? activeTab === "assign"
+                  ? "bg-success-500"
+                  : "bg-red-500"
+                : "bg-gray-300"
             } text-white hover:scale-105 transition duration-200 focus:outline-none ${
               !isFormValid && "cursor-not-allowed"
             }`}
@@ -368,7 +417,9 @@ const AssignClassSub = () => {
               <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
             ) : (
               <>
-                {activeTab === 'assign' ? 'Assign Class and Subjects' : 'Remove Assignment'}
+                {activeTab === "assign"
+                  ? "Assign Class and Subjects"
+                  : "Remove Assignment"}
                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1" />
               </>
             )}

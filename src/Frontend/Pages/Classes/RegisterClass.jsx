@@ -10,12 +10,16 @@ import {
   IndianRupee,
 } from "lucide-react";
 import Cookies from "js-cookie";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 import { useSelector, useDispatch } from "react-redux";
 import { setTeacherData, setClassData } from "../../../Store/slice";
-import { GetTeachers,GetAllTeachersAPI, CreateClassAPI } from '../../../service/api';
-import SelectDropdown from "../../Components/Elements/SelectDropDown"
-import Input from "../../Components/Elements/Input"; 
+import {
+  GetTeachers,
+  GetAllTeachersAPI,
+  CreateClassAPI,
+} from "../../../service/api";
+import SelectDropdown from "../../Components/Elements/SelectDropDown";
+import Input from "../../Components/Elements/Input";
 
 const RegisterClass = () => {
   const {
@@ -36,13 +40,17 @@ const RegisterClass = () => {
   const classes = useSelector((state) => state.userData.ClassData);
 
   const dispatch = useDispatch();
-  const url = import.meta.env.VITE_API_BASE_URL;
+  const url = "https://little-scholar.onrender.com/api/v1/";
   const token = Cookies.get("token");
 
   useEffect(() => {
     const fetchTeachers = async () => {
       const response = await GetAllTeachersAPI(url);
-      if (response.status === 200 || response.status === 204 || response.status === 201) {
+      if (
+        response.status === 200 ||
+        response.status === 204 ||
+        response.status === 201
+      ) {
         dispatch(setTeacherData(response.data.teachers));
       } else {
         setError(response.message);
@@ -102,7 +110,7 @@ const RegisterClass = () => {
       classTeacher: selectedTeacherData._id,
       classTeacherEmail: selectedTeacherData.email,
       students: studentsData,
-      fee:data.fee,
+      fee: data.fee,
       lateFineAmount: data.lateFineAmount,
       subjects: [],
       timetable: [],
@@ -110,15 +118,19 @@ const RegisterClass = () => {
     const AddData = {
       className: data.className,
       section: data.section,
-      classTeacher: {name: selectedTeacherData.name},
+      classTeacher: { name: selectedTeacherData.name },
       students: studentsData,
       subjects: [],
       timetable: [],
-    }    
+    };
     const response = await CreateClassAPI(url, classData, token);
 
-    if (response.status === 200 || response.status === 201 || response.status === 204) {
-      dispatch(setClassData([...classes, AddData]))
+    if (
+      response.status === 200 ||
+      response.status === 201 ||
+      response.status === 204
+    ) {
+      dispatch(setClassData([...classes, AddData]));
       setShowToast(true);
       setToastMessage(response.message);
       setToastType("success");
@@ -128,10 +140,10 @@ const RegisterClass = () => {
       setToastMessage(response.message);
       setToastType("error");
       reset();
-      if (response.status === 401) {  
-        Cookies.remove('user');
-        Cookies.remove('token');
-        window.location.href = '/user-options';                      
+      if (response.status === 401) {
+        Cookies.remove("user");
+        Cookies.remove("token");
+        window.location.href = "/user-options";
       }
     }
     setLoading(false);
@@ -172,7 +184,7 @@ const RegisterClass = () => {
           <Input
             id="fee"
             name="fee"
-            type = "number"
+            type="number"
             label="Class Fee (eg. Rs.1000)"
             register={register}
             errors={errors}
@@ -182,7 +194,7 @@ const RegisterClass = () => {
           <Input
             id="lateFineAmount"
             name="lateFineAmount"
-            type = "number"
+            type="number"
             label="Late Fine (eg. Rs.100)"
             register={register}
             errors={errors}
@@ -195,7 +207,7 @@ const RegisterClass = () => {
           <h3 className="text-lg font-semibold mb-6 text-black">
             Class Teacher Details
           </h3>
-          
+
           <SelectDropdown
             options={teachers || []}
             selectedValue={selectedTeacher}
@@ -208,7 +220,6 @@ const RegisterClass = () => {
           />
         </div>
 
-      
         <button
           type="submit"
           disabled={loading}

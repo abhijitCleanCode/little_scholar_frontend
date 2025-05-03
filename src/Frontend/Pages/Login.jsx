@@ -1,14 +1,14 @@
-import { useState, useEffect} from "react";
+import { useState, useEffect } from "react";
 import { LogIn, Mail, Lock } from "lucide-react";
 import Cookies from "js-cookie";
 import { useForm } from "react-hook-form";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 import { useSelector, useDispatch } from "react-redux";
-import { education,  onboarding } from "../../assets";
-import { Link } from 'react-router-dom';
-import { LoginUser } from '../../service/api';
-import Input from '../Components/Elements/Input';
-import PasswordInput from '../Components/Elements/PasswordInput';
+import { education, onboarding } from "../../assets";
+import { Link } from "react-router-dom";
+import { LoginUser } from "../../service/api";
+import Input from "../Components/Elements/Input";
+import PasswordInput from "../Components/Elements/PasswordInput";
 
 const Login = () => {
   const role = useSelector((state) => state.userData.role);
@@ -20,18 +20,18 @@ const Login = () => {
     formState: { errors },
   } = useForm();
   const [loading, setLoading] = useState(false);
-  const [showToast, setShowToast]=useState(false)
-  const [toastMessage, setToastMessage]=useState('')
-  const [toastType, setToastType]=useState('')
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState("");
   const [error, setError] = useState("");
-  const url = import.meta.env.VITE_API_BASE_URL;
+  const url = "https://little-scholar.onrender.com/api/v1/";
 
   useEffect(() => {
-    document.title = "Login to EduCloud";
-    if(role === ""){
-      window.location.href="/user-options"
+    document.title = "Login to Little Scholar Central School";
+    if (role === "") {
+      window.location.href = "/user-options";
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
     if (showToast) {
@@ -52,23 +52,19 @@ const Login = () => {
 
     const payload = {
       email: data.email,
-      password: data.password
-    }
+      password: data.password,
+    };
 
-    const response = await LoginUser(url, payload, role)
-    
-    if (response.status === 200 || response.status === 201 || response.status === 204) {
-      Cookies.set(
-        "token", response.data.token
-      );
-      Cookies.set(
-        "user",
-        JSON.stringify(
-          response.data.user
-        ),
-        { expires: 7 }
-      );
-      
+    const response = await LoginUser(url, payload, role);
+
+    if (
+      response.status === 200 ||
+      response.status === 201 ||
+      response.status === 204
+    ) {
+      Cookies.set("token", response.data.token);
+      Cookies.set("user", JSON.stringify(response.data.user), { expires: 7 });
+
       setShowToast(true);
       setToastMessage(response.message);
       setToastType("success");
@@ -76,14 +72,11 @@ const Login = () => {
       setTimeout(() => {
         window.location.href = "/dashboard";
       }, 1000);
-    }
-    else {
- 
+    } else {
       setShowToast(true);
       setToastMessage(response.message);
       setToastType("error");
-      
-    
+
       reset();
     }
     setLoading(false);
@@ -101,15 +94,16 @@ const Login = () => {
             className="mb-12 h-10 w-fit"
           />
 
-
           <div>
             <div className="mb-12 space-y-4 text-left">
               <h1 className="text-black text-[32px] md:text-[36px] leading-[36px] font-bold">
                 Hi there 👋
               </h1>
               <h2 className="mt-6 text-black">
-                Get Started with <span className="text-purpleColor">Edu</span>
-                cloud 🚀
+                Get Started with{" "}
+                <span className="text-purpleColor">
+                  Little Scholar Central School
+                </span>
               </h2>
               {role !== "principal" && (
                 <span className="text-purpleColor">
@@ -132,11 +126,11 @@ const Login = () => {
                   required: "Email is required",
                   pattern: {
                     value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                    message: "Invalid email address"
-                  }
+                    message: "Invalid email address",
+                  },
                 }}
               />
-              
+
               <PasswordInput
                 id="password"
                 label="Password"
@@ -144,7 +138,7 @@ const Login = () => {
                 name="password"
                 errors={errors}
                 validation={{
-                  required: "Password is required"
+                  required: "Password is required",
                 }}
               />
             </div>
@@ -169,19 +163,21 @@ const Login = () => {
                 )}
               </button>
             </div>
-            {role === 'principal' && (
+            {role === "principal" && (
               <div className="text-center text-black my-4">
                 Don't have an account?{" "}
-                <Link to="/admin-signup" className="text-purpleColor font-semibold">
+                <Link
+                  to="/admin-signup"
+                  className="text-purpleColor font-semibold"
+                >
                   Register
                 </Link>
               </div>
             )}
-            
           </form>
           <div className="text-14-regular mt-20 flex justify-between">
             <p className="justify-items-end text-black-300 xl:text-left">
-              © 2025 EduCloud. All rights reserved
+              © 2025 Little Scholar Central School. All rights reserved
             </p>
           </div>
         </div>

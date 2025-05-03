@@ -2,28 +2,28 @@ import { useState, useEffect } from "react";
 import { Check, ArrowRight, ChevronDown, School, User } from "lucide-react";
 import axios from "axios";
 import Cookies from "js-cookie";
-import { GetAllClasses, GetAllTeachers } from '../../Route';
+import { GetAllClasses, GetAllTeachers } from "../../Route";
 import { useForm } from "react-hook-form";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 
-  const MakeClassTeacher = () => {
+const MakeClassTeacher = () => {
   const [selectedTeacher, setSelectedTeacher] = useState("");
   const [teachers, setTeachers] = useState([]);
   const [isTeacherDropdownOpen, setIsTeacherDropdownOpen] = useState(false);
-  
+
   const [selectedClass, setSelectedClass] = useState("");
   const [selectedClassId, setSelectedClassId] = useState("");
-  
+
   const [isClassDropdownOpen, setIsClassDropdownOpen] = useState(false);
   const [classData, setClassData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState('');
-  const [toastType, setToastType] = useState('');
-  
-  const url = import.meta.env.VITE_API_BASE_URL;
-  const token = Cookies.get('token');
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState("");
+
+  const url = "https://little-scholar.onrender.com/api/v1/";
+  const token = Cookies.get("token");
   const {
     register,
     reset,
@@ -34,7 +34,7 @@ import { toast } from 'react-toastify';
     try {
       const response = await axios.get(`${url}${GetAllClasses}`, {
         headers: {
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
       setClassData(response.data.data.classes);
@@ -53,9 +53,9 @@ import { toast } from 'react-toastify';
         const response = await axios.get(`${url}${GetAllTeachers}`);
         setTeachers(response.data.data.teachers);
       } catch (error) {
-        console.error('Error fetching teachers:', error);
+        console.error("Error fetching teachers:", error);
       }
-    }
+    };
     fetchTeachers();
   }, []);
 
@@ -85,33 +85,40 @@ import { toast } from 'react-toastify';
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    const selectedTeacherData = teachers.find(teacher => teacher.email === selectedTeacher);
-    
+    const selectedTeacherData = teachers.find(
+      (teacher) => teacher.email === selectedTeacher
+    );
+
     try {
-      await axios.put(`${url}teacher/${selectedTeacherData._id}/make-class-teacher`, {
-        classId: selectedClassId
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`
+      await axios.put(
+        `${url}teacher/${selectedTeacherData._id}/make-class-teacher`,
+        {
+          classId: selectedClassId,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-      });
-      
+      );
+
       setShowToast(true);
       setToastMessage("Successfully assigned class teacher");
       setToastType("success");
-     
+
       setSelectedClass("");
       setSelectedClassId("");
       setSelectedTeacher("");
-      
     } catch (error) {
       setShowToast(true);
-      setToastMessage(error.response.data.message || "Failed to assign class teacher");
+      setToastMessage(
+        error.response.data.message || "Failed to assign class teacher"
+      );
       setToastType("error");
-      if (error.status === 401) {  
-        Cookies.remove('user');
-        Cookies.remove('token');
-        window.location.href = '/user-options';                      
+      if (error.status === 401) {
+        Cookies.remove("user");
+        Cookies.remove("token");
+        window.location.href = "/user-options";
       }
     } finally {
       setIsLoading(false);
@@ -122,7 +129,7 @@ import { toast } from 'react-toastify';
   };
 
   const isFormValid = selectedTeacher && selectedClassId;
-  
+
   return (
     <div className="min-h-screen p-4 md:p-8 overflow-y-auto">
       <div className="max-w-2xl mx-auto bg-white rounded-md p-4 md:p-6">
@@ -141,7 +148,9 @@ import { toast } from 'react-toastify';
                 <div className="h5 flex items-center">
                   <User className="w-4 h-4 md:w-5 md:h-5 mr-2 text-danger" />
                   <span className="text-black">
-                    {selectedTeacher ? teachers.find(t => t.email === selectedTeacher)?.name : "Select Teacher"}
+                    {selectedTeacher
+                      ? teachers.find((t) => t.email === selectedTeacher)?.name
+                      : "Select Teacher"}
                   </span>
                 </div>
                 <ChevronDown size={24} className="text-black" />
@@ -152,7 +161,9 @@ import { toast } from 'react-toastify';
                     <div
                       key={teacher._id}
                       onClick={() => {
-                        handleTeacherSelect({ target: { value: teacher.email }});
+                        handleTeacherSelect({
+                          target: { value: teacher.email },
+                        });
                         setIsTeacherDropdownOpen(false);
                       }}
                       className="flex items-center px-2 md:px-4 py-1.5 md:py-2 hover:bg-gray-100 cursor-pointer text-gray-600 text-sm md:text-base"
@@ -195,7 +206,9 @@ import { toast } from 'react-toastify';
                 {classData.map((classItem) => (
                   <div
                     key={classItem._id}
-                    onClick={() => handleClassSelect(classItem.className, classItem._id)}
+                    onClick={() =>
+                      handleClassSelect(classItem.className, classItem._id)
+                    }
                     className="flex items-center px-2 md:px-4 py-1.5 md:py-2 hover:bg-gray-100 cursor-pointer text-gray-600 text-sm md:text-base"
                   >
                     <div
@@ -220,7 +233,9 @@ import { toast } from 'react-toastify';
             type="submit"
             disabled={!isFormValid || isLoading}
             className={`w-full flex items-center justify-center py-3 px-4 rounded-lg ${
-              isFormValid ? "bg-success-500 text-white hover:scale-105 transition duration-200" : "bg-gray-300 text-gray-500 cursor-not-allowed"
+              isFormValid
+                ? "bg-success-500 text-white hover:scale-105 transition duration-200"
+                : "bg-gray-300 text-gray-500 cursor-not-allowed"
             } focus:outline-none`}
           >
             {isLoading ? (

@@ -2,11 +2,11 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Mail, Lock, User, Eye, EyeOff, CalendarDays } from "lucide-react";
 import { Link } from "react-router-dom";
-import { toast } from 'react-toastify';
-import { education, onboarding} from "../../../assets";
-import Input from '../../Components/Elements/Input';
-import PasswordInput from '../../Components/Elements/PasswordInput';
-import { RegisterPrincipalAccount } from '../../../service/api';
+import { toast } from "react-toastify";
+import { education, onboarding } from "../../../assets";
+import Input from "../../Components/Elements/Input";
+import PasswordInput from "../../Components/Elements/PasswordInput";
+import { RegisterPrincipalAccount } from "../../../service/api";
 import { useSelector, useDispatch } from "react-redux";
 
 const RegisterPrincipal = () => {
@@ -18,48 +18,42 @@ const RegisterPrincipal = () => {
     formState: { errors },
   } = useForm();
   const [loading, setLoading] = useState(false);
-  const [showToast, setShowToast]=useState(false)
-  const [toastMessage, setToastMessage]=useState('')
-  const [toastType, setToastType]=useState('')
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState("");
 
-  const url = import.meta.env.VITE_API_BASE_URL;
+  const url = "https://little-scholar.onrender.com/api/v1/";
   const role = useSelector((state) => state.userData.role);
 
   useEffect(() => {
     document.title = "Create Your Account";
-    if(role === ""){
-
-      window.location.href="/user-options"
+    if (role === "") {
+      window.location.href = "/user-options";
     }
-}, []);
-
-
-
+  }, []);
 
   const onSubmit = async (data) => {
     setLoading(true);
 
     const response = await RegisterPrincipalAccount(url, data);
 
-
- 
-      if (response.status === 200 || response.status === 204 || response.status === 201) {
-        setShowToast(true);
-        setToastMessage(response.message);
-        setToastType("success");
-        setTimeout(() => {
-                  window.location.href = "/login";
-                }, 2000);
-        
-      } 
-    else {
+    if (
+      response.status === 200 ||
+      response.status === 204 ||
+      response.status === 201
+    ) {
+      setShowToast(true);
+      setToastMessage(response.message);
+      setToastType("success");
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 2000);
+    } else {
       setShowToast(true);
       setToastMessage(response.message);
       setToastType("error");
-      setTimeout(() => {
-      }, 2000);
+      setTimeout(() => {}, 2000);
       reset();
-     
     }
     setLoading(false);
   };
@@ -75,7 +69,6 @@ const RegisterPrincipal = () => {
       });
     }
   }, [showToast, toastMessage, toastType]);
-
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -101,8 +94,8 @@ const RegisterPrincipal = () => {
                 </h2>
                 <p className="text-black-300">
                   <i>
-                    Be the part of EduCloud! The perfect platform to shape the future
-                    of education
+                    Be the part of Little Scholar Central School! The perfect
+                    platform to shape the future of education
                   </i>
                 </p>
               </div>
@@ -118,7 +111,7 @@ const RegisterPrincipal = () => {
                   name="name"
                   errors={errors}
                   validation={{
-                    required: "Name is required"
+                    required: "Name is required",
                   }}
                 />
 
@@ -212,7 +205,7 @@ const RegisterPrincipal = () => {
 
             <div className="text-14-regular mt-20 flex justify-between pb-16 lg:pb-18">
               <p className="justify-items-end text-black-300 xl:text-left">
-                © 2025 EduCloud. All rights reserved
+                © 2025 Little Scholar Central School. All rights reserved
               </p>
             </div>
           </div>

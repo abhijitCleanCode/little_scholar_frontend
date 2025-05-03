@@ -2,31 +2,31 @@ import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
 import { ArrowRight, IndianRupee } from "lucide-react";
 import Cookies from "js-cookie";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 import { setTransactionUpdate } from "../../../Store/slice";
-import {  SendAdvPayReqApi } from '../../../service/api';
-import Input from "../../Components/Elements/Input"; 
+import { SendAdvPayReqApi } from "../../../service/api";
+import Input from "../../Components/Elements/Input";
 
 const AddTransactions = () => {
   const [loading, setLoading] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState("");
-  
+
   const user = useSelector((state) => state.userData.user);
-  const url = import.meta.env.VITE_API_BASE_URL;
-  const dispatch= useDispatch()
+  const url = "https://little-scholar.onrender.com/api/v1/";
+  const dispatch = useDispatch();
   const {
     register,
     handleSubmit,
     formState: { errors },
-    reset
+    reset,
   } = useForm({
     defaultValues: {
       amount: "",
-      date: new Date().toISOString().slice(0, 10)
-    }
+      date: new Date().toISOString().slice(0, 10),
+    },
   });
 
   useEffect(() => {
@@ -42,25 +42,27 @@ const AddTransactions = () => {
     }
   }, [showToast, toastMessage, toastType]);
 
-
-
   const onSubmit = async (data) => {
     setLoading(true);
 
     const transactionData = {
       teacherId: user?._id,
       date: data.date,
-      amount: Number(data.amount)
+      amount: Number(data.amount),
     };
 
     try {
       const response = await SendAdvPayReqApi(url, transactionData);
-      
-      if (response.status === 200 || response.status === 201 || response.status === 204) {
+
+      if (
+        response.status === 200 ||
+        response.status === 201 ||
+        response.status === 204
+      ) {
         setToastMessage(response.message);
         setToastType("success");
         setShowToast(true);
-        dispatch(setTransactionUpdate(true))
+        dispatch(setTransactionUpdate(true));
         reset();
       } else {
         setToastMessage(response.message);
@@ -72,7 +74,7 @@ const AddTransactions = () => {
       setToastType("error");
       setShowToast(true);
     }
-    
+
     setLoading(false);
   };
 
@@ -99,7 +101,10 @@ const AddTransactions = () => {
           </div>
 
           <div className="w-full sm:w-96 md:w-[24rem] lg:w-[28rem] mx-auto">
-            <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="date"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Date
             </label>
             <input
@@ -123,7 +128,7 @@ const AddTransactions = () => {
                 <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
               ) : (
                 <>
-                 Submit Request
+                  Submit Request
                   <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1" />
                 </>
               )}

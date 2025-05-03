@@ -1,19 +1,13 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import Cookies from "js-cookie";
-import {
-  Mail,
-  User,
-  ArrowRight,
-  Briefcase,
-  IndianRupee,
-} from "lucide-react";
-import { toast } from 'react-toastify';
-import { RegisterTeacherAccount } from '../../../service/api';
-import { setTeacherData,setIsTeacherUpdate } from "../../../Store/slice";
+import { Mail, User, ArrowRight, Briefcase, IndianRupee } from "lucide-react";
+import { toast } from "react-toastify";
+import { RegisterTeacherAccount } from "../../../service/api";
+import { setTeacherData, setIsTeacherUpdate } from "../../../Store/slice";
 import { useSelector, useDispatch } from "react-redux";
-import Input from '../../Components/Elements/Input';
-import PasswordInput from '../../Components/Elements/PasswordInput';
+import Input from "../../Components/Elements/Input";
+import PasswordInput from "../../Components/Elements/PasswordInput";
 
 const AddTeachers = () => {
   const {
@@ -27,7 +21,7 @@ const AddTeachers = () => {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState("");
-  const url = import.meta.env.VITE_API_BASE_URL;
+  const url = "https://little-scholar.onrender.com/api/v1/";
   const token = Cookies.get("token");
   const teachers = useSelector((state) => state.userData.TeacherData);
   const dispatch = useDispatch();
@@ -47,35 +41,34 @@ const AddTeachers = () => {
 
   const onSubmit = async (data) => {
     setLoading(true);
-   
-    const response = await RegisterTeacherAccount(url, token,data);
-    if (response.status === 200 || response.status === 204 || response.status === 201) 
-      {
 
+    const response = await RegisterTeacherAccount(url, token, data);
+    if (
+      response.status === 200 ||
+      response.status === 204 ||
+      response.status === 201
+    ) {
       // dispatch(setTeacherData([...teachers, data]))
-      dispatch(setIsTeacherUpdate(true))
+      dispatch(setIsTeacherUpdate(true));
       setShowToast(true);
       setToastMessage(response.message);
       setToastType("success");
-    } 
-    else {
+    } else {
       setShowToast(true);
       setToastMessage(response.message);
       setToastType("error");
 
-    
-
-         if (response.status === 401) {  
-                Cookies.remove('user');
-                Cookies.remove('token');
-                window.location.href = '/user-options';                      
-              }
-  }
+      if (response.status === 401) {
+        Cookies.remove("user");
+        Cookies.remove("token");
+        window.location.href = "/user-options";
+      }
+    }
 
     setLoading(false);
     reset();
   };
-  
+
   return (
     <div className="min-h-full max-w-3xl flex items-center justify-center p-6">
       <div className="h-full w-full  space-y-12 bg-white ">
@@ -97,7 +90,7 @@ const AddTeachers = () => {
             name="name"
             errors={errors}
             validation={{
-              required: "Name is required"
+              required: "Name is required",
             }}
           />
 

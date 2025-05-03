@@ -1,14 +1,14 @@
-import { useState, useEffect } from 'react';
-import { Loader, FileSpreadsheet, FileText } from 'lucide-react';
-import { GetExamsAPI } from '../../../service/api';
+import { useState, useEffect } from "react";
+import { Loader, FileSpreadsheet, FileText } from "lucide-react";
+import { GetExamsAPI } from "../../../service/api";
 import { useSelector } from "react-redux";
-import axios from 'axios';
-import { toast } from 'react-toastify';
-import StudentMarksheet from '../../Pages/Student/ViewStudentsDetails/Marksheet';
+import axios from "axios";
+import { toast } from "react-toastify";
+import StudentMarksheet from "../../Pages/Student/ViewStudentsDetails/Marksheet";
 
 const ExamMarkDetails = (StudentData) => {
-  const [selectedExam, setSelectedExam] = useState('');
-  const [selectedExamName, setSelectedExamName] = useState('');
+  const [selectedExam, setSelectedExam] = useState("");
+  const [selectedExamName, setSelectedExamName] = useState("");
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -17,7 +17,7 @@ const ExamMarkDetails = (StudentData) => {
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState("");
   const [showMarksheet, setShowMarksheet] = useState(false);
-  const url = import.meta.env.VITE_API_BASE_URL;
+  const url = "https://little-scholar.onrender.com/api/v1/";
   const user = useSelector((state) => state.userData.user);
 
   const fetchResults = async (examType) => {
@@ -25,7 +25,9 @@ const ExamMarkDetails = (StudentData) => {
     setError(null);
     setShowMarksheet(false);
     try {
-      const response = await axios.get(`${url}mark/students/${user?._id}/exams/${examType}`);
+      const response = await axios.get(
+        `${url}mark/students/${user?._id}/exams/${examType}`
+      );
       setResults(response.data.data.data);
     } catch (err) {
       setError(err.response.data.message);
@@ -42,17 +44,21 @@ const ExamMarkDetails = (StudentData) => {
 
   const fetchExams = async () => {
     const response = await GetExamsAPI(url);
-    if (response.status === 200 || response.status === 201 || response.status === 204) {
-      setExams(response.data.exams)
+    if (
+      response.status === 200 ||
+      response.status === 201 ||
+      response.status === 204
+    ) {
+      setExams(response.data.exams);
       setShowToast(true);
-      setToastMessage(response.message ||'Exams fetched successfully');
-      setToastType('success');
+      setToastMessage(response.message || "Exams fetched successfully");
+      setToastType("success");
     } else {
       setShowToast(true);
-      setToastMessage(response.message || 'Failed to fetch exams');
-      setToastType('error');
+      setToastMessage(response.message || "Failed to fetch exams");
+      setToastType("error");
     }
-  }
+  };
 
   useEffect(() => {
     fetchExams();
@@ -76,10 +82,7 @@ const ExamMarkDetails = (StudentData) => {
   };
   return (
     <div className="w-full min-h-screen p-4 bg-gray-50">
-      {showToast && (
-        <div className="fixed top-4 right-4 z-50">
-        </div>
-      )}
+      {showToast && <div className="fixed top-4 right-4 z-50"></div>}
 
       <div className="w-full">
         <h2 className="h2 text-black-300 text-left mb-6"> My Results</h2>
@@ -88,13 +91,15 @@ const ExamMarkDetails = (StudentData) => {
           <select
             value={selectedExam}
             onChange={(e) => {
-              setSelectedExam(e.target.value)
-              const exam = exams.find(exam => exam._id === e.target.value)
-              setSelectedExamName(exam?.name)
+              setSelectedExam(e.target.value);
+              const exam = exams.find((exam) => exam._id === e.target.value);
+              setSelectedExamName(exam?.name);
             }}
             className="w-full md:w-64 p-2 border rounded-lg shadow-sm bg-primary-300 text-black-300 border-lamaSkyLight"
           >
-            <option value="">{!exams ? "Loading Exams" : "Select Exam Type"}</option>
+            <option value="">
+              {!exams ? "Loading Exams" : "Select Exam Type"}
+            </option>
             {exams.map((exam) => (
               <option key={exam?._id} value={exam?._id}>
                 {exam.name}
@@ -146,19 +151,28 @@ const ExamMarkDetails = (StudentData) => {
                     </tr>
                   ) : !selectedExam ? (
                     <tr>
-                      <td colSpan="3" className="px-6 py-4 text-center text-gray-500">
+                      <td
+                        colSpan="3"
+                        className="px-6 py-4 text-center text-gray-500"
+                      >
                         Please select your exam
                       </td>
                     </tr>
                   ) : error ? (
                     <tr>
-                      <td colSpan="3" className="px-6 py-4 text-center text-gray-500">
+                      <td
+                        colSpan="3"
+                        className="px-6 py-4 text-center text-gray-500"
+                      >
                         {error}
                       </td>
                     </tr>
                   ) : results.length === 0 ? (
                     <tr>
-                      <td colSpan="3" className="px-6 py-4 text-center text-gray-500">
+                      <td
+                        colSpan="3"
+                        className="px-6 py-4 text-center text-gray-500"
+                      >
                         No results found for the selected exam type
                       </td>
                     </tr>
@@ -168,7 +182,9 @@ const ExamMarkDetails = (StudentData) => {
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center">
                             <FileSpreadsheet className="h-5 w-5 text-gray-400 mr-2" />
-                            <span className="text-sm text-gray-700">{result.subject}</span>
+                            <span className="text-sm text-gray-700">
+                              {result.subject}
+                            </span>
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">

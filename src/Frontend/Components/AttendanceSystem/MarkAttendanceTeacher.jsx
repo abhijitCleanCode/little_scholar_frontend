@@ -20,7 +20,7 @@
 //   const [startDate, setStartDate] = useState("");
 //   const [endDate, setEndDate] = useState("");
 //   const [viewMode, setViewMode] = useState("mark"); // "mark" or "history"
-//   const url = import.meta.env.VITE_API_BASE_URL;
+//   const url = "https://little-scholar.onrender.com/api/v1/";
 //   const token = Cookies.get("token");
 //   useEffect(() => {
 //     fetchTeachers();
@@ -76,12 +76,12 @@
 //       dispatch(setTeacherAttendanceData([]))
 //       console.error("Error fetching attendance history:", error);
 //       setMessage(error.response.data.message||error?.message);
-//       if (error.status === 401) {  
+//       if (error.status === 401) {
 //         Cookies.remove('user');
 //         Cookies.remove('token');
-//         window.location.href = '/user-options';                      
+//         window.location.href = '/user-options';
 //       }
-     
+
 //     } finally {
 //       setLoading(false);
 //     }
@@ -130,12 +130,12 @@
 //       setMessage("Attendance saved successfully");
 //     } catch (error) {
 //       setMessage(error.response?.data?.message || "Failed to save attendance");
-//       if (error.status === 401) {  
+//       if (error.status === 401) {
 //         Cookies.remove('user');
 //         Cookies.remove('token');
-//         window.location.href = '/user-options';                      
+//         window.location.href = '/user-options';
 //       }
-     
+
 //     } finally {
 //       setLoading(false);
 //     }
@@ -221,14 +221,12 @@
 //                 </div>
 //               </div>
 
-              
 //                             {!selectedTeacher && (
 //                               <div className="col-span-2 mt-4">
 //                                 <p className="text-black-200 text-sm">Please select a teacher</p>
 //                               </div>
 //                             )}
-                            
-              
+
 //             </div>
 
 //             {selectedTeacher && (
@@ -439,14 +437,21 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Calendar, Save, CheckCircle, XCircle, Filter } from "lucide-react";
-import{GetAllTeacher,GetAllTeachers,GetTeacherAttendance,MarkTeacherAttendance} from '../../Route'
-import {useSelector,useDispatch} from 'react-redux'
-import {setTeacherAttendanceData} from '../../../Store/slice'
+import {
+  GetAllTeacher,
+  GetAllTeachers,
+  GetTeacherAttendance,
+  MarkTeacherAttendance,
+} from "../../Route";
+import { useSelector, useDispatch } from "react-redux";
+import { setTeacherAttendanceData } from "../../../Store/slice";
 import Cookies from "js-cookie";
 
 const TeacherAttendanceSystem = () => {
-  const dispatch = useDispatch()
-  const attendanceHistory = useSelector((state) => state.userData.TeacherAttendanceData);
+  const dispatch = useDispatch();
+  const attendanceHistory = useSelector(
+    (state) => state.userData.TeacherAttendanceData
+  );
   const [teachers, setTeachers] = useState([]);
   const [selectedTeacher, setSelectedTeacher] = useState("");
   // const [selectedDate, setSelectedDate] = useState(
@@ -455,7 +460,7 @@ const TeacherAttendanceSystem = () => {
   const [selectedDate, setSelectedDate] = useState(() => {
     const today = new Date();
     today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
-    return today.toISOString().split('T')[0];
+    return today.toISOString().split("T")[0];
   });
   const [attendanceStatus, setAttendanceStatus] = useState("");
   const [loading, setLoading] = useState(false);
@@ -463,9 +468,9 @@ const TeacherAttendanceSystem = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [viewMode, setViewMode] = useState("mark"); // "mark" or "history"
-  const url = import.meta.env.VITE_API_BASE_URL;
+  const url = "https://little-scholar.onrender.com/api/v1/";
   const token = Cookies.get("token");
-  
+
   useEffect(() => {
     fetchTeachers();
   }, []);
@@ -492,7 +497,7 @@ const TeacherAttendanceSystem = () => {
       setTeachers(response.data.data.teachers);
     } catch (error) {
       console.error("Error fetching teachers:", error);
-      setMessage(error?.response?.data?.message|| "Network Error");
+      setMessage(error?.response?.data?.message || "Network Error");
     } finally {
       setLoading(false);
     }
@@ -510,21 +515,20 @@ const TeacherAttendanceSystem = () => {
         `${url}${GetTeacherAttendance}/:${selectedTeacher}?startDate=${startDate}=&endDate=${endDate}=`,
         {
           headers: {
-            Authorization: `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
-      dispatch(setTeacherAttendanceData(response.data.data))
+      dispatch(setTeacherAttendanceData(response.data.data));
     } catch (error) {
-      dispatch(setTeacherAttendanceData([]))
+      dispatch(setTeacherAttendanceData([]));
       console.error("Error fetching attendance history:", error);
-      setMessage(error.response.data.message||error?.message);
-      if (error.status === 401) {  
-        Cookies.remove('user');
-        Cookies.remove('token');
-        window.location.href = '/user-options';                      
+      setMessage(error.response.data.message || error?.message);
+      if (error.status === 401) {
+        Cookies.remove("user");
+        Cookies.remove("token");
+        window.location.href = "/user-options";
       }
-     
     } finally {
       setLoading(false);
     }
@@ -579,19 +583,18 @@ const TeacherAttendanceSystem = () => {
 
       await axios.post(`${url}${MarkTeacherAttendance}`, payload, {
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       setMessage("Attendance saved successfully");
     } catch (error) {
       setMessage(error.response?.data?.message || "Failed to save attendance");
-      if (error.status === 401) {  
-        Cookies.remove('user');
-        Cookies.remove('token');
-        window.location.href = '/user-options';                      
+      if (error.status === 401) {
+        Cookies.remove("user");
+        Cookies.remove("token");
+        window.location.href = "/user-options";
       }
-     
     } finally {
       setLoading(false);
     }
@@ -676,10 +679,12 @@ const TeacherAttendanceSystem = () => {
                   />
                 </div>
               </div>
-              
+
               {!selectedTeacher && (
                 <div className="col-span-2 mt-4">
-                  <p className="text-black-200 text-sm">Please select a teacher</p>
+                  <p className="text-black-200 text-sm">
+                    Please select a teacher
+                  </p>
                 </div>
               )}
             </div>
@@ -691,7 +696,7 @@ const TeacherAttendanceSystem = () => {
                 <div className="p-4 border rounded-lg bg-gray-50">
                   <div className="flex gap-4">
                     {/* Present option - modified to use a div wrapper that can be clicked */}
-                    <div 
+                    <div
                       className={`flex items-center gap-1 cursor-pointer p-2 rounded-md ${
                         attendanceStatus === "present" ? "bg-success-100" : ""
                       }`}
@@ -856,7 +861,8 @@ const TeacherAttendanceSystem = () => {
                           {new Date(record.date).toLocaleDateString()}
                         </td>
                         <td className="px-6 py-4 text-left">
-                          {record.teacher.name || getTeacherName(record.teacher)}
+                          {record.teacher.name ||
+                            getTeacherName(record.teacher)}
                         </td>
                         <td className="px-6 py-4 text-left">
                           <span

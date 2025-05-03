@@ -1,22 +1,28 @@
-import { useForm } from 'react-hook-form';
-import { useState, useEffect } from 'react';
+import { useForm } from "react-hook-form";
+import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import Cookies from "js-cookie";
 import Toast from "../../Components/Toast";
-import axios from 'axios';
-import {  GetAllClasses } from '../../Route';
-import { Upload, School } from 'lucide-react';
-import SelectDropdown from '../../Components/Elements/SelectDropDown';
+import axios from "axios";
+import { GetAllClasses } from "../../Route";
+import { Upload, School } from "lucide-react";
+import SelectDropdown from "../../Components/Elements/SelectDropDown";
 
 const UploadTimeTable = () => {
-  const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    watch,
+  } = useForm();
   const [loading, setLoading] = useState(false);
   const [classes, setClasses] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
   const [toastMessage, setToastMessage] = useState("");
   const [selectedClass, setSelectedClass] = useState("");
-  const url = import.meta.env.VITE_API_BASE_URL;
-  const token = Cookies.get('token');
+  const url = "https://little-scholar.onrender.com/api/v1/";
+  const token = Cookies.get("token");
 
   useEffect(() => {
     document.title = "Upload TimeTable";
@@ -34,18 +40,20 @@ const UploadTimeTable = () => {
           setClasses(response.data.data.classes);
         }
       } catch (error) {
-        console.error('Error fetching classes:', error);
+        console.error("Error fetching classes:", error);
       }
     };
     fetchClasses();
   }, []);
-console.log(selectedFile)
+  console.log(selectedFile);
   const onSubmit = async (data) => {
     setLoading(true);
     const formData = new FormData();
-    formData.append('timetable', selectedFile);
-   
-    const classInfo = classes.find(classItem => classItem.className === selectedClass);
+    formData.append("timetable", selectedFile);
+
+    const classInfo = classes.find(
+      (classItem) => classItem.className === selectedClass
+    );
     const classId = classInfo ? classInfo._id : null;
 
     if (!classId) {
@@ -55,27 +63,34 @@ console.log(selectedFile)
     }
 
     try {
-      const response = await axios.post(`${url}class/${classId}/upload-timetable`, formData);
+      const response = await axios.post(
+        `${url}class/${classId}/upload-timetable`,
+        formData
+      );
 
-      if (response.status === 200||response.status===201||response.status===204) {
+      if (
+        response.status === 200 ||
+        response.status === 201 ||
+        response.status === 204
+      ) {
         setToastMessage("Time table uploaded successfully");
         setSelectedFile(null);
-        setValue('timeTable', '');
+        setValue("timeTable", "");
         setSelectedClass("");
       } else {
         setToastMessage("Failed to upload time table");
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
       setToastMessage("Error uploading time table");
     } finally {
       setLoading(false);
     }
   };
 
-  const classOptions = classes.map(classItem => ({
+  const classOptions = classes.map((classItem) => ({
     name: classItem.className,
-    email: classItem.className
+    email: classItem.className,
   }));
 
   return (
@@ -86,12 +101,15 @@ console.log(selectedFile)
           iconName={toastMessage.includes("successfully") ? "right" : "wrong"}
         />
       )}
-      
-      <form onSubmit={handleSubmit(onSubmit)} className="max-w-2xl mx-auto bg-white rounded-lg p-8 transition-all duration-300 ">
+
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="max-w-2xl mx-auto bg-white rounded-lg p-8 transition-all duration-300 "
+      >
         <h2 className="h2 text-xl md:text-2xl text-left font-bold mb-8 md:mb-12 mt-4 text-black-300">
           Upload Time Table
         </h2>
-        
+
         <SelectDropdown
           options={classOptions}
           selectedValue={selectedClass}
@@ -123,23 +141,25 @@ console.log(selectedFile)
                   d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
                 />
               </svg>
-              {selectedFile ? 'Change File' : 'Upload File'}
+              {selectedFile ? "Change File" : "Upload File"}
             </label>
             <input
               type="file"
               accept=".pdf,.jpeg,.png,.jpg"
-              {...register('timeTable', {
+              {...register("timeTable", {
                 required: true,
                 validate: {
                   lessThan5MB: (files) =>
-                    !files[0] || files[0].size <= 5000000 || 'File size must be less than 5MB',
+                    !files[0] ||
+                    files[0].size <= 5000000 ||
+                    "File size must be less than 5MB",
                 },
               })}
               className="hidden"
               id="timeTable"
               onChange={(e) => {
                 if (e.target.files[0]?.size > 5000000) {
-                  e.target.value = '';
+                  e.target.value = "";
                   setToastMessage("File size must be less than 5MB");
                   setSelectedFile(null);
                 } else {

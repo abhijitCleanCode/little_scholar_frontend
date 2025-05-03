@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import {
   Search,
@@ -8,14 +7,22 @@ import {
   X,
   Calendar,
   Filter,
-  Trash2
+  Trash2,
 } from "lucide-react";
 
-import Cookies from 'js-cookie'
+import Cookies from "js-cookie";
 import { useSelector, useDispatch } from "react-redux";
-import { setTransactionData, setCurrentPage, setTransactionUpdate } from "../../../../Store/slice";
-import { GetTransactionsByTeacherAPI, FilterTransactionAPI, 
-  DeleteTransactionAPI, GetTeacherExpenseApi } from '../../../../service/api';
+import {
+  setTransactionData,
+  setCurrentPage,
+  setTransactionUpdate,
+} from "../../../../Store/slice";
+import {
+  GetTransactionsByTeacherAPI,
+  FilterTransactionAPI,
+  DeleteTransactionAPI,
+  GetTeacherExpenseApi,
+} from "../../../../service/api";
 import Table from "../../../Components/Elements/Table";
 import Pagination from "../../../Components/Elements/Pagination";
 
@@ -31,29 +38,43 @@ const TeacherFee = (TeacherData) => {
   const [paginationData, setPaginationData] = useState({
     currentPage: 1,
     totalItems: 0,
-    totalPages: 0
+    totalPages: 0,
   });
-  
+
   const transactions = useSelector((state) => state.userData.TransactionData);
-  const user = TeacherData?.TeacherData?.TeacherData
-  const transactionUpdate = useSelector((state) => state.userData.transactionUpdate);
+  const user = TeacherData?.TeacherData?.TeacherData;
+  const transactionUpdate = useSelector(
+    (state) => state.userData.transactionUpdate
+  );
   const dispatch = useDispatch();
   const currentPage = useSelector((state) => state.userData.CurrentPage);
-  const url = import.meta.env.VITE_API_BASE_URL;
-  const token = Cookies.get("token")
+  const url = "https://little-scholar.onrender.com/api/v1/";
+  const token = Cookies.get("token");
 
   useEffect(() => {
     document.title = "All Transactions";
     dispatch(setCurrentPage(1));
-    
+
     // Initialize both selectedMonth and filteredMonth
     const currentDate = new Date();
     setSelectedMonth(currentDate);
     setFilteredMonth(currentDate);
-    
+
     // Set initial display month
-    const monthNames = ["January", "February", "March", "April", "May", "June", 
-                        "July", "August", "September", "October", "November", "December"];
+    const monthNames = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
     setDisplayMonth(monthNames[currentDate.getMonth()]);
   }, []);
 
@@ -62,23 +83,29 @@ const TeacherFee = (TeacherData) => {
       setError("User ID not available");
       return;
     }
-    
+
     try {
       setLoading(true);
-      const month = `${selectedMonth.getFullYear()}-${String(selectedMonth.getMonth() + 1).padStart(2, '0')}`;
+      const month = `${selectedMonth.getFullYear()}-${String(
+        selectedMonth.getMonth() + 1
+      ).padStart(2, "0")}`;
       const response = await GetTeacherExpenseApi(url, user?._id, month);
-      if (response.status === 200 || response.status === 204 || response.status === 201) {
+      if (
+        response.status === 200 ||
+        response.status === 204 ||
+        response.status === 201
+      ) {
         dispatch(setTransactionData(response.data));
         setPaginationData({
           currentPage: response.data.currentPage || 1,
           totalItems: response.data.totalItems || 0,
-          totalPages: response.data.totalPages || 0
+          totalPages: response.data.totalPages || 0,
         });
       } else {
-        if (response.status === 401) {  
-          Cookies.remove('user');
-          Cookies.remove('token');
-          window.location.href = '/user-options';                      
+        if (response.status === 401) {
+          Cookies.remove("user");
+          Cookies.remove("token");
+          window.location.href = "/user-options";
         }
         setError(response.message);
       }
@@ -92,20 +119,29 @@ const TeacherFee = (TeacherData) => {
   const fetchFilteredTransactions = async () => {
     try {
       setLoading(true);
-      const response = await FilterTransactionAPI(url, token, displayMonth, status);
-  
-      if (response.status === 200 || response.status === 204 || response.status === 201) {
+      const response = await FilterTransactionAPI(
+        url,
+        token,
+        displayMonth,
+        status
+      );
+
+      if (
+        response.status === 200 ||
+        response.status === 204 ||
+        response.status === 201
+      ) {
         dispatch(setTransactionData(response.data));
         setPaginationData({
           currentPage: response.data.currentPage || 1,
           totalItems: response.data.totalItems || 0,
-          totalPages: response.data.totalPages || 0
+          totalPages: response.data.totalPages || 0,
         });
       } else {
-        if (response.status === 401) {  
-          Cookies.remove('user');
-          Cookies.remove('token');
-          window.location.href = '/user-options';                      
+        if (response.status === 401) {
+          Cookies.remove("user");
+          Cookies.remove("token");
+          window.location.href = "/user-options";
         }
         setError(response.message);
       }
@@ -117,7 +153,7 @@ const TeacherFee = (TeacherData) => {
   };
 
   useEffect(() => {
-    if(transactionUpdate) {
+    if (transactionUpdate) {
       fetchTransactionsByTeacher();
       dispatch(setTransactionUpdate(false));
     }
@@ -128,15 +164,27 @@ const TeacherFee = (TeacherData) => {
   };
 
   const handleMonthChange = (e) => {
-    const [year, month] = e.target.value.split('-');
+    const [year, month] = e.target.value.split("-");
     const date = new Date(year, month - 1);
     setSelectedMonth(date);
-    
+
     // Update display month
-    const monthNames = ["January", "February", "March", "April", "May", "June", 
-                      "July", "August", "September", "October", "November", "December"];
+    const monthNames = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
     setDisplayMonth(monthNames[parseInt(month) - 1]);
-    
+
     // Note: We DON'T update filteredMonth here - only when filter button is clicked
   };
 
@@ -147,7 +195,7 @@ const TeacherFee = (TeacherData) => {
   const handleFilter = () => {
     // Update the filteredMonth to match the selected month when filter is clicked
     setFilteredMonth(selectedMonth);
-    
+
     if (user?._id) {
       fetchTransactionsByTeacher();
     } else {
@@ -157,15 +205,23 @@ const TeacherFee = (TeacherData) => {
 
   const getFormattedMonth = () => {
     const year = selectedMonth.getFullYear();
-    const month = (selectedMonth.getMonth() + 1).toString().padStart(2, '0');
+    const month = (selectedMonth.getMonth() + 1).toString().padStart(2, "0");
     return `${year}-${month}`;
   };
 
   const handleDeleteTransaction = async (transaction) => {
-    if (window.confirm(`Are you sure you want to delete transaction ${transaction._id}?`)) {
+    if (
+      window.confirm(
+        `Are you sure you want to delete transaction ${transaction._id}?`
+      )
+    ) {
       try {
         setLoading(true);
-        const response = await DeleteTransactionAPI(url, token, transaction._id);
+        const response = await DeleteTransactionAPI(
+          url,
+          token,
+          transaction._id
+        );
         if (response.status === 200) {
           // Refresh transactions after delete
           if (user?._id) {
@@ -189,223 +245,256 @@ const TeacherFee = (TeacherData) => {
     if (!transactions || !transactions.expenses) {
       return [];
     }
-    
+
     // Use filteredMonth instead of selectedMonth for filtering the display
-    const filteredMonthStr = `${filteredMonth.getFullYear()}-${String(filteredMonth.getMonth() + 1).padStart(2, '0')}`;
-    
+    const filteredMonthStr = `${filteredMonth.getFullYear()}-${String(
+      filteredMonth.getMonth() + 1
+    ).padStart(2, "0")}`;
+
     // Filter expenses to only show the filtered month (not the selected month)
-    const filteredExpenses = transactions.expenses.filter(expense => {
+    const filteredExpenses = transactions.expenses.filter((expense) => {
       // Extract YYYY-MM from the expense month string for comparison
       const expenseMonth = expense.month.substring(0, 7);
       return expenseMonth === filteredMonthStr;
     });
-    
+
     // Find the previous month's advance amount (if any)
     const getPreviousMonthAdvance = (expenses, currentMonthExpense) => {
       if (!expenses || expenses.length <= 1) return 0;
-      
+
       const currentMonthDate = new Date(currentMonthExpense.month);
-      
+
       // Find the previous month expense
-      const previousMonth = expenses.find(exp => {
+      const previousMonth = expenses.find((exp) => {
         const expDate = new Date(exp.month);
         // Check if it's exactly one month before
-        return expDate.getMonth() === ((currentMonthDate.getMonth() - 1 + 12) % 12) && 
-              (expDate.getMonth() === 11 ? expDate.getFullYear() === currentMonthDate.getFullYear() - 1 
-                                        : expDate.getFullYear() === currentMonthDate.getFullYear());
+        return (
+          expDate.getMonth() === (currentMonthDate.getMonth() - 1 + 12) % 12 &&
+          (expDate.getMonth() === 11
+            ? expDate.getFullYear() === currentMonthDate.getFullYear() - 1
+            : expDate.getFullYear() === currentMonthDate.getFullYear())
+        );
       });
-      
-      return (previousMonth && previousMonth.advanceAmount && previousMonth.advanceStatus === 'approved') 
-        ? previousMonth.advanceAmount 
+
+      return previousMonth &&
+        previousMonth.advanceAmount &&
+        previousMonth.advanceStatus === "approved"
+        ? previousMonth.advanceAmount
         : 0;
     };
-    
+
     // Transform the data
-    return filteredExpenses.map(expense => {
+    return filteredExpenses.map((expense) => {
       const salaryAmount = transactions.salaryAmount || 0;
       const advanceAmount = expense.advanceAmount || 0;
       const numberOfAbsent = transactions.numberOfAbsent || 0;
-      const previousMonthAdvance = getPreviousMonthAdvance(transactions.expenses, expense);
-      
+      const previousMonthAdvance = getPreviousMonthAdvance(
+        transactions.expenses,
+        expense
+      );
+
       // Calculate total salary
       const totalSalary = Number(salaryAmount) + Number(advanceAmount);
-      
+
       // Calculate salary deduction
-      const absenceDeduction = (Number(numberOfAbsent) * Number(salaryAmount) / 30);
-      const salaryDeduction = Number(absenceDeduction) + Number(previousMonthAdvance);
-      
+      const absenceDeduction =
+        (Number(numberOfAbsent) * Number(salaryAmount)) / 30;
+      const salaryDeduction =
+        Number(absenceDeduction) + Number(previousMonthAdvance);
+
       // Calculate payable salary
       const payableSalary = Number(totalSalary) - Number(salaryDeduction);
-      
+
       // Create a date object for display
-      const expenseDate = new Date(expense.month + '-01');
-      
+      const expenseDate = new Date(expense.month + "-01");
+
       return {
         _id: expense._id,
         monthRaw: expenseDate,
-        month: expenseDate.toLocaleString('default', { month: 'long', year: 'numeric' }),
+        month: expenseDate.toLocaleString("default", {
+          month: "long",
+          year: "numeric",
+        }),
         advanceAmount: advanceAmount,
-        advanceStatus: expense.advanceStatus || 'N/A',
+        advanceStatus: expense.advanceStatus || "N/A",
         advancePayRequest: expense.advancePayRequest || false,
         advanceRequestDate: expense.advanceRequestDate || null,
-        status: expense.status || 'unpaid',
+        status: expense.status || "unpaid",
         numberOfLeaves: transactions.numberOfLeaves || 0,
         numberOfAbsent: numberOfAbsent,
         salaryAmount: salaryAmount,
         totalSalary: totalSalary,
         previousMonthAdvance: previousMonthAdvance,
         salaryDeduction: salaryDeduction,
-        payableSalary: payableSalary
+        payableSalary: payableSalary,
       };
     });
   };
 
   const columns = [
     {
-      field: 'month',
-      headerName: 'Month',
+      field: "month",
+      headerName: "Month",
       renderCell: (row) => (
         <div className="flex items-center gap-2">
-          <span>{row.month || '-'}</span>
+          <span>{row.month || "-"}</span>
         </div>
       ),
     },
     {
-      field: 'numberOfLeaves',
-      headerName: 'Casual Leave',
+      field: "numberOfLeaves",
+      headerName: "Casual Leave",
       renderCell: (row) => (
         <div className="flex items-center gap-2">
-          <span>{row.numberOfLeaves || '0'}</span>
+          <span>{row.numberOfLeaves || "0"}</span>
         </div>
       ),
     },
     {
-      field: 'numberOfAbsent',
-      headerName: 'Days Absent',
+      field: "numberOfAbsent",
+      headerName: "Days Absent",
       renderCell: (row) => (
         <div className="flex items-center gap-2">
-          <span>{row.numberOfAbsent || '0'}</span>
+          <span>{row.numberOfAbsent || "0"}</span>
         </div>
       ),
     },
     {
-      field: 'advancePayRequest',
-      headerName: 'Advance Request',
+      field: "advancePayRequest",
+      headerName: "Advance Request",
       renderCell: (row) => (
         <div className="flex items-center gap-2">
-          <span>{row.advancePayRequest ? 'Yes' : 'No'}</span>
+          <span>{row.advancePayRequest ? "Yes" : "No"}</span>
         </div>
       ),
     },
     {
-      field: 'advanceAmount',
-      headerName: 'Advance Amount',
+      field: "advanceAmount",
+      headerName: "Advance Amount",
       renderCell: (row) => (
         <div className="flex items-center gap-2">
           <IndianRupee size={16} />
-          <span>{row.advanceAmount || '0'}</span>
+          <span>{row.advanceAmount || "0"}</span>
         </div>
       ),
     },
     {
-      field: 'advanceRequestDate',
-      headerName: 'Request Date',
+      field: "advanceRequestDate",
+      headerName: "Request Date",
       renderCell: (row) => (
         <div className="flex items-center gap-2">
-          <span>{row.advanceRequestDate ? new Date(row.advanceRequestDate).toLocaleDateString() : '-'}</span>
-        </div>
-      ),
-    },
-    {
-      field: 'advanceStatus',
-      headerName: 'Advance Status',
-      renderCell: (row) => (
-        <div className="flex items-center gap-2">
-          <span className={`${
-            row.advanceStatus === 'pending' ? 'text-yellow-500' :
-            row.advanceStatus === 'approved' ? 'text-success-500' :
-            row.advanceStatus === 'rejected' ? 'text-danger' : ''
-          }`}>
-            {row.advanceStatus || '-'}
+          <span>
+            {row.advanceRequestDate
+              ? new Date(row.advanceRequestDate).toLocaleDateString()
+              : "-"}
           </span>
         </div>
       ),
     },
     {
-      field: 'status',
-      headerName: 'Salary Status',
+      field: "advanceStatus",
+      headerName: "Advance Status",
       renderCell: (row) => (
         <div className="flex items-center gap-2">
-          <span className={`${
-            row.status === 'unpaid' ? 'text-yellow-500' : 'text-success-500'
-          }`}>
-            {row.status || '-'}
+          <span
+            className={`${
+              row.advanceStatus === "pending"
+                ? "text-yellow-500"
+                : row.advanceStatus === "approved"
+                ? "text-success-500"
+                : row.advanceStatus === "rejected"
+                ? "text-danger"
+                : ""
+            }`}
+          >
+            {row.advanceStatus || "-"}
           </span>
         </div>
       ),
     },
     {
-      field: 'salaryAmount',
-      headerName: 'Base Salary',
+      field: "status",
+      headerName: "Salary Status",
       renderCell: (row) => (
         <div className="flex items-center gap-2">
-          <IndianRupee size={16} />
-          <span>{row.salaryAmount || '0'}</span>
+          <span
+            className={`${
+              row.status === "unpaid" ? "text-yellow-500" : "text-success-500"
+            }`}
+          >
+            {row.status || "-"}
+          </span>
         </div>
       ),
     },
     {
-      field: 'totalSalary',
-      headerName: 'Total Salary',
+      field: "salaryAmount",
+      headerName: "Base Salary",
       renderCell: (row) => (
         <div className="flex items-center gap-2">
           <IndianRupee size={16} />
-          <span>{Number(row.salaryAmount) + Number(row.advanceAmount) || '0'}</span>
+          <span>{row.salaryAmount || "0"}</span>
         </div>
       ),
     },
     {
-      field: 'salaryDeduction',
-      headerName: 'Salary Deduction',
+      field: "totalSalary",
+      headerName: "Total Salary",
       renderCell: (row) => (
         <div className="flex items-center gap-2">
           <IndianRupee size={16} />
-          <span>{row.salaryDeduction.toFixed(2) || '0'}</span>
+          <span>
+            {Number(row.salaryAmount) + Number(row.advanceAmount) || "0"}
+          </span>
         </div>
       ),
     },
     {
-      field: 'payableSalary',
-      headerName: 'Payable Salary',
+      field: "salaryDeduction",
+      headerName: "Salary Deduction",
       renderCell: (row) => (
         <div className="flex items-center gap-2">
           <IndianRupee size={16} />
-          <span className="font-medium text-success-500">{row.payableSalary.toFixed(2) || '0'}</span>
+          <span>{row.salaryDeduction.toFixed(2) || "0"}</span>
         </div>
       ),
     },
     {
-          field: 'updateAt',
-          headerName: 'Last Updated Date',
-          renderCell: (row) => (
-            <div className="flex items-center gap-2">
-              {(row.status === 'paid' || row.advanceStatus === 'approved') ? (
-                <>
-                  <IndianRupee size={16} />
-                  <span className="font-medium text-success-500">{new Date(row.updateAt).toLocaleDateString('en-GB')}</span>
-                  </>
-              ) : (
-                <span>No action taken</span>
-              )}
-            </div>
-          ),
-        },
+      field: "payableSalary",
+      headerName: "Payable Salary",
+      renderCell: (row) => (
+        <div className="flex items-center gap-2">
+          <IndianRupee size={16} />
+          <span className="font-medium text-success-500">
+            {row.payableSalary.toFixed(2) || "0"}
+          </span>
+        </div>
+      ),
+    },
     {
-      field: 'actions',
-      headerName: 'Actions',
+      field: "updateAt",
+      headerName: "Last Updated Date",
+      renderCell: (row) => (
+        <div className="flex items-center gap-2">
+          {row.status === "paid" || row.advanceStatus === "approved" ? (
+            <>
+              <IndianRupee size={16} />
+              <span className="font-medium text-success-500">
+                {new Date(row.updateAt).toLocaleDateString("en-GB")}
+              </span>
+            </>
+          ) : (
+            <span>No action taken</span>
+          )}
+        </div>
+      ),
+    },
+    {
+      field: "actions",
+      headerName: "Actions",
       renderCell: (row) => (
         <div className="flex items-center">
-          <button 
+          <button
             onClick={() => handleDeleteTransaction(row)}
             className="p-1 text-danger hover:   rounded-full transition-colors"
           >
@@ -413,7 +502,7 @@ const TeacherFee = (TeacherData) => {
           </button>
         </div>
       ),
-    }
+    },
   ];
 
   if (loading) {
@@ -437,7 +526,7 @@ const TeacherFee = (TeacherData) => {
           <h2 className="h2 mb-2">Teacher Fee History</h2>
         </div>
         <div className="text-lg font-medium text-gray-700">
-         <strong> Teacher </strong>:{user?.name}
+          <strong> Teacher </strong>:{user?.name}
         </div>
       </div>
 
@@ -447,7 +536,10 @@ const TeacherFee = (TeacherData) => {
           <div className="flex flex-wrap gap-4 p-2">
             {/* Month Selection */}
             <div className="relative">
-              <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2" size={20} />
+              <Calendar
+                className="absolute left-3 top-1/2 transform -translate-y-1/2"
+                size={20}
+              />
               <input
                 type="month"
                 value={getFormattedMonth()}
@@ -469,9 +561,7 @@ const TeacherFee = (TeacherData) => {
 
         {/* Error display */}
         {error && (
-          <div className="p-2 mb-4 text-danger    rounded">
-            {error}
-          </div>
+          <div className="p-2 mb-4 text-danger    rounded">{error}</div>
         )}
 
         {/* Table Component */}

@@ -1,27 +1,44 @@
 import { useState, useEffect } from "react";
 import Cookies from "js-cookie";
 import { X, Plus, Loader } from "lucide-react";
-import { setEventData, setAnnouncementData,setConfirmRequest,setShowConfirmationModel,setStatus, setAddText,setEventsChanged } from "../../Store/slice";
+import {
+  setEventData,
+  setAnnouncementData,
+  setConfirmRequest,
+  setShowConfirmationModel,
+  setStatus,
+  setAddText,
+  setEventsChanged,
+} from "../../Store/slice";
 import { useSelector, useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
-import { toast } from 'react-toastify';
-import { CreateEventAPI, CreateAnnouncementAPI, DeleteEventAPI, DeleteAnnouncementAPI, GetAllEventsAPI, GetAllAnnouncementsAPI } from '../../service/api';
-import Confirmation from "../Components/Elements/ConfirmationModel"
-import EventFormModal from './CreateEvent'
-import AnnouncementFormModal from './CreateAnnouncement'
+import { toast } from "react-toastify";
+import {
+  CreateEventAPI,
+  CreateAnnouncementAPI,
+  DeleteEventAPI,
+  DeleteAnnouncementAPI,
+  GetAllEventsAPI,
+  GetAllAnnouncementsAPI,
+} from "../../service/api";
+import Confirmation from "../Components/Elements/ConfirmationModel";
+import EventFormModal from "./CreateEvent";
+import AnnouncementFormModal from "./CreateAnnouncement";
 
 const Events = () => {
   const token = Cookies.get("token");
-  const url = import.meta.env.VITE_API_BASE_URL;
+  const url = "https://little-scholar.onrender.com/api/v1/";
   const dispatch = useDispatch();
 
   const events = useSelector((state) => state.userData.EventData);
   const announcements = useSelector((state) => state.userData.AnnouncementData);
   const user = useSelector((state) => state.userData.user);
   const eventsChanged = useSelector((state) => state.userData.eventsChanged);
-  const showConfirmation = useSelector((state) => state.userData.showConfirmationModel);
+  const showConfirmation = useSelector(
+    (state) => state.userData.showConfirmationModel
+  );
   const confirmRequest = useSelector((state) => state.userData.confirmRequest);
-  
+
   const [selectedEvents, setSelectedEvents] = useState([]);
   const [selectedAnnouncements, setSelectedAnnouncements] = useState([]);
   const [activeTab, setActiveTab] = useState("events");
@@ -31,32 +48,32 @@ const Events = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showEventForm, setShowEventForm] = useState(false);
   const [showAnnouncementForm, setShowAnnouncementForm] = useState(false);
-  const [deleteType, setDeleteType] = useState('')
+  const [deleteType, setDeleteType] = useState("");
 
-  const { 
-    register: registerEvent, 
-    handleSubmit: handleSubmitEvent, 
+  const {
+    register: registerEvent,
+    handleSubmit: handleSubmitEvent,
     reset: resetEvent,
-    formState: { errors: eventErrors }
+    formState: { errors: eventErrors },
   } = useForm({
     defaultValues: {
       title: "",
       content: "",
       eventDate: "",
-      venue: ""
-    }
+      venue: "",
+    },
   });
 
-  const { 
-    register: registerAnnouncement, 
-    handleSubmit: handleSubmitAnnouncement, 
+  const {
+    register: registerAnnouncement,
+    handleSubmit: handleSubmitAnnouncement,
     reset: resetAnnouncement,
-    formState: { errors: announcementErrors }
+    formState: { errors: announcementErrors },
   } = useForm({
     defaultValues: {
       title: "",
-      description: ""
-    }
+      description: "",
+    },
   });
 
   useEffect(() => {
@@ -79,54 +96,51 @@ const Events = () => {
   }, [showToast, toastMessage, toastType]);
 
   const fetchEvents = async () => {
-  
-      setIsLoading(true);
-      const response = await GetAllEventsAPI(url, token);
-      if (response.status === 200 || response.status === 204 || response.status === 201) {
-        dispatch(setEventData(response.data.events));
-     
+    setIsLoading(true);
+    const response = await GetAllEventsAPI(url, token);
+    if (
+      response.status === 200 ||
+      response.status === 204 ||
+      response.status === 201
+    ) {
+      dispatch(setEventData(response.data.events));
+    } else {
+      setToastMessage(response.message);
+      setToastType("error");
+      setShowToast(true);
 
-      } else {
-        setToastMessage(response.message);
-        setToastType("error");
-        setShowToast(true);
-
-        if (response.status ===401)
-          {
-            Cookies.remove('token');
-            Cookies.remove('user');
-            window.location.href = '/user-options';
-
-        }
+      if (response.status === 401) {
+        Cookies.remove("token");
+        Cookies.remove("user");
+        window.location.href = "/user-options";
       }
+    }
 
-
-      setIsLoading(false);
-  
+    setIsLoading(false);
   };
 
   const fetchAnnouncements = async () => {
     setIsLoading(true);
     const response = await GetAllAnnouncementsAPI(url, token);
-    if (response.status === 200 || response.status === 204 || response.status === 201) {
+    if (
+      response.status === 200 ||
+      response.status === 204 ||
+      response.status === 201
+    ) {
       dispatch(setAnnouncementData(response.data.announcements));
-     
     } else {
       setToastMessage(response.message);
       setToastType("error");
       setShowToast(true);
-      if (response.status === 401)
-        {
-          Cookies.remove('token');
-          Cookies.remove('user');
-          window.location.href = '/user-options';
-
+      if (response.status === 401) {
+        Cookies.remove("token");
+        Cookies.remove("user");
+        window.location.href = "/user-options";
       }
     }
     setIsLoading(false);
   };
 
- 
   const handleEventSelection = (eventId) => {
     setSelectedEvents((prev) =>
       prev.includes(eventId)
@@ -144,112 +158,108 @@ const Events = () => {
   };
 
   const handleDeleteEvents = async () => {
-setDeleteType('events')
-dispatch(setShowConfirmationModel(true));
+    setDeleteType("events");
+    dispatch(setShowConfirmationModel(true));
   };
 
-const DeleteEvents = async()=>{
-  if (selectedEvents.length === 0) return;
- 
-    const response = await DeleteEventAPI(url, { eventIds: selectedEvents }, token);
+  const DeleteEvents = async () => {
+    if (selectedEvents.length === 0) return;
 
-    if (response.status ===200 ||response.status ===201 || response.status ===204 ) {
-      dispatch(setStatus("success"))
-      dispatch(setAddText(response.message))
+    const response = await DeleteEventAPI(
+      url,
+      { eventIds: selectedEvents },
+      token
+    );
+
+    if (
+      response.status === 200 ||
+      response.status === 201 ||
+      response.status === 204
+    ) {
+      dispatch(setStatus("success"));
+      dispatch(setAddText(response.message));
       await fetchEvents();
-          } 
-          
-          else {
-            dispatch(setStatus("error"))
-            dispatch(setAddText(response.message))
-      
-    
-            if(response.status ===401 && response.message ==="Invalid token")
-            {
-              Cookies.remove('token');
-              Cookies.remove('user');
-              window.location.href = '/user-options';
-              
-            }
-          }
-          setTimeout(() => {
-            dispatch(setStatus(''));
-            dispatch(setAddText(''));
-            dispatch(setShowConfirmationModel(false));
-          }, 3000);
-          dispatch(setConfirmRequest(false))
-          setSelectedEvents([])
-}
+    } else {
+      dispatch(setStatus("error"));
+      dispatch(setAddText(response.message));
 
-useEffect( ()=>{
-  if(confirmRequest)
-    {
-      if(deleteType==='events'){
-        DeleteEvents()
-      }
-      else if(deleteType==='announcements'){
-        DeleteAnnouncements()
+      if (response.status === 401 && response.message === "Invalid token") {
+        Cookies.remove("token");
+        Cookies.remove("user");
+        window.location.href = "/user-options";
       }
     }
-},[confirmRequest])
+    setTimeout(() => {
+      dispatch(setStatus(""));
+      dispatch(setAddText(""));
+      dispatch(setShowConfirmationModel(false));
+    }, 3000);
+    dispatch(setConfirmRequest(false));
+    setSelectedEvents([]);
+  };
 
+  useEffect(() => {
+    if (confirmRequest) {
+      if (deleteType === "events") {
+        DeleteEvents();
+      } else if (deleteType === "announcements") {
+        DeleteAnnouncements();
+      }
+    }
+  }, [confirmRequest]);
 
   const handleDeleteAnnouncements = async () => {
-    setDeleteType('announcements')
+    setDeleteType("announcements");
     dispatch(setShowConfirmationModel(true));
-    
   };
-  
-const DeleteAnnouncements = async ()=>{
-  if (selectedAnnouncements.length === 0) return;
 
- 
-    const response = await DeleteAnnouncementAPI(url, { announcementIds: selectedAnnouncements }, token);
-   
-    if (response.status ===200 ||response.status ===201 || response.status ===204 ) {
-      dispatch(setStatus("success"))
-      dispatch(setAddText(` Announcements deleted successfully`))
+  const DeleteAnnouncements = async () => {
+    if (selectedAnnouncements.length === 0) return;
+
+    const response = await DeleteAnnouncementAPI(
+      url,
+      { announcementIds: selectedAnnouncements },
+      token
+    );
+
+    if (
+      response.status === 200 ||
+      response.status === 201 ||
+      response.status === 204
+    ) {
+      dispatch(setStatus("success"));
+      dispatch(setAddText(` Announcements deleted successfully`));
       await fetchAnnouncements();
-          } else {
-            dispatch(setStatus("error"))
-            dispatch(setAddText(response.message))
-      
-    
-               
-            if(response.status ===401 && response.message ==="Invalid token")
-            {
-              Cookies.remove('token');
-              Cookies.remove('user');
-              window.location.href = '/user-options';
-              
-            }
-          }
-          setTimeout(() => {
-            dispatch(setStatus(''));
-            dispatch(setAddText(''));
-            dispatch(setShowConfirmationModel(false));
-          }, 3000);
-          dispatch(setConfirmRequest(false))
-          setSelectedAnnouncements([])
-   
-}
+    } else {
+      dispatch(setStatus("error"));
+      dispatch(setAddText(response.message));
 
-useEffect(() => {
-  if(eventsChanged ==='events'){
-    fetchEvents();
-    dispatch(setEventsChanged(''))
+      if (response.status === 401 && response.message === "Invalid token") {
+        Cookies.remove("token");
+        Cookies.remove("user");
+        window.location.href = "/user-options";
+      }
+    }
+    setTimeout(() => {
+      dispatch(setStatus(""));
+      dispatch(setAddText(""));
+      dispatch(setShowConfirmationModel(false));
+    }, 3000);
+    dispatch(setConfirmRequest(false));
+    setSelectedAnnouncements([]);
+  };
 
-  }
-  else if(eventsChanged ==='announcements')
-  {
-    fetchAnnouncements(); 
-    dispatch(setEventsChanged(''))
+  useEffect(() => {
+    if (eventsChanged === "events") {
+      fetchEvents();
+      dispatch(setEventsChanged(""));
+    } else if (eventsChanged === "announcements") {
+      fetchAnnouncements();
+      dispatch(setEventsChanged(""));
+    }
+  }, [eventsChanged]);
 
-  }
-},[eventsChanged]);
-
-
-if (isLoading) {
+  if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
         <div className="flex items-center justify-center h-96">
@@ -259,12 +269,8 @@ if (isLoading) {
     );
   }
 
-  
-
   return (
     <div className="p-4 relative sm:px-16 px-6 sm:py-16 py-10">
-     
-
       {/* Modals */}
       <div
         className={`
@@ -299,12 +305,12 @@ if (isLoading) {
             `}
           >
             <button
-                onClick={() => setShowEventForm(false)}
+              onClick={() => setShowEventForm(false)}
               className="absolute top-6 right-4 p-2 z-100 rounded-full text-black-300 transition-colors duration-200 transform hover:scale-110"
             >
               <X size={24} />
             </button>
-             <EventFormModal onClose={() => setShowEventForm(false)} />
+            <EventFormModal onClose={() => setShowEventForm(false)} />
           </div>
         )}
       </div>
@@ -341,21 +347,19 @@ if (isLoading) {
             `}
           >
             <button
-                onClick={() => setShowAnnouncementForm(false)}
+              onClick={() => setShowAnnouncementForm(false)}
               className="absolute top-6 right-4 p-2 z-100 rounded-full text-black-300 transition-colors duration-200 transform hover:scale-110 mb-4"
             >
               <X size={24} />
             </button>
-             <AnnouncementFormModal onClose={() => setShowAnnouncementForm(false)} />
+            <AnnouncementFormModal
+              onClose={() => setShowAnnouncementForm(false)}
+            />
           </div>
         )}
       </div>
-     
 
-
-      
-      
-{showConfirmation && (
+      {showConfirmation && (
         <div
           className={`
             fixed inset-0 flex items-center justify-center 
@@ -369,17 +373,17 @@ if (isLoading) {
           `}
           onClick={(e) => {
             if (e.target === e.currentTarget) {
-              dispatch(setShowConfirmationModel(false))
+              dispatch(setShowConfirmationModel(false));
               setSelectedExam(null);
             }
           }}
         >
-          <Confirmation 
+          <Confirmation
             message={`Are you sure you want to delete the ${deleteType}? This action cannot be undone.`}
-            note=""/>
+            note=""
+          />
         </div>
       )}
-
 
       {/* Tabs */}
       <div className="flex mb-4 border-b z-10">
@@ -432,20 +436,14 @@ if (isLoading) {
                   )}
                 </button>
               )}
-{
-  user?.role==='principal'&&(
-
-              <button
-                onClick={() => setShowEventForm(true)}
-                className="flex items-center p-2 bg-success-500 text-white rounded-full transition-colors duration-200 transform hover:scale-105"
-              >
-                <Plus size={20} />
-              </button>
-  )
-}
-
-
-
+              {user?.role === "principal" && (
+                <button
+                  onClick={() => setShowEventForm(true)}
+                  className="flex items-center p-2 bg-success-500 text-white rounded-full transition-colors duration-200 transform hover:scale-105"
+                >
+                  <Plus size={20} />
+                </button>
+              )}
             </div>
           </div>
 
@@ -475,9 +473,16 @@ if (isLoading) {
                       <h3 className="text-lg font-bold text-black-300">
                         {event.title}
                       </h3>
-                      <p className="text-sm text-black-300 mt-1">{event.content}</p>
+                      <p className="text-sm text-black-300 mt-1">
+                        {event.content}
+                      </p>
                       <div className="flex justify-between mt-2 text-sm text-black-300">
-                        <span>{new Date(event.eventDate).toLocaleDateString('en-GB')}</span>                        <span>{event.venue}</span>
+                        <span>
+                          {new Date(event.eventDate).toLocaleDateString(
+                            "en-GB"
+                          )}
+                        </span>{" "}
+                        <span>{event.venue}</span>
                       </div>
                     </div>
                   </div>
@@ -489,8 +494,6 @@ if (isLoading) {
               )}
             </div>
           </div>
-
-
         </div>
 
         {/* Announcements Section */}
@@ -519,22 +522,14 @@ if (isLoading) {
                 </button>
               )}
 
-
-              {
-              user?.role==='principal'&&(
-              
-              <button
-                onClick={() => setShowAnnouncementForm(true)}
-                className="flex items-center p-2 bg-success-500 text-white rounded-full transition-colors duration-200 transform hover:scale-105"
-              >
-                <Plus size={20} />
-              </button>
-              
-              )
-              
-              }
-
-
+              {user?.role === "principal" && (
+                <button
+                  onClick={() => setShowAnnouncementForm(true)}
+                  className="flex items-center p-2 bg-success-500 text-white rounded-full transition-colors duration-200 transform hover:scale-105"
+                >
+                  <Plus size={20} />
+                </button>
+              )}
             </div>
           </div>
 
@@ -557,13 +552,17 @@ if (isLoading) {
                       type="checkbox"
                       className="mr-2 mt-1"
                       checked={selectedAnnouncements.includes(announcement._id)}
-                      onChange={() => handleAnnouncementSelection(announcement._id)}
+                      onChange={() =>
+                        handleAnnouncementSelection(announcement._id)
+                      }
                     />
                     <div className="flex-1 text-left">
                       <h3 className="text-lg font-bold text-black-300">
                         {announcement.title}
                       </h3>
-                      <p className="text-sm text-black-300 mt-1">{announcement.content}</p>
+                      <p className="text-sm text-black-300 mt-1">
+                        {announcement.content}
+                      </p>
                       <div className="flex justify-between mt-2 text-sm text-black-300">
                         <span>{announcement.audience}</span>
                         <span>{announcement.date}</span>
@@ -578,14 +577,6 @@ if (isLoading) {
               )}
             </div>
           </div>
-
-
-
-
-
-
-
-
         </div>
       </div>
     </div>

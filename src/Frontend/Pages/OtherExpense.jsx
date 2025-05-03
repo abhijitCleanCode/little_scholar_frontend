@@ -1,18 +1,28 @@
-
 import { useState, useEffect } from "react";
 import Toast from "../Components/Toast";
 import Cookies from "js-cookie";
-import { X, Plus, Loader, Search, ChevronDown,Calendar } from "lucide-react";
+import { X, Plus, Loader, Search, ChevronDown, Calendar } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
-import { setOtherExpenseData,setShowConfirmationModel,setStatus, setAddText } from "../../Store/slice";
+import {
+  setOtherExpenseData,
+  setShowConfirmationModel,
+  setStatus,
+  setAddText,
+} from "../../Store/slice";
 import { useForm } from "react-hook-form";
-import { AddOtherExpenseAPI, GetOtherExpenseAPI, DeleteOtherExpenseByIDAPI } from '../../service/api';
-import Confirmation from "../Components/Elements/ConfirmationModel"
+import {
+  AddOtherExpenseAPI,
+  GetOtherExpenseAPI,
+  DeleteOtherExpenseByIDAPI,
+} from "../../service/api";
+import Confirmation from "../Components/Elements/ConfirmationModel";
 const OtherExpenses = () => {
   const token = Cookies.get("token");
-  const url = import.meta.env.VITE_API_BASE_URL;
+  const url = "https://little-scholar.onrender.com/api/v1/";
   const dispatch = useDispatch();
-  const showConfirmation = useSelector((state) => state.userData.showConfirmationModel);
+  const showConfirmation = useSelector(
+    (state) => state.userData.showConfirmationModel
+  );
   const confirmRequest = useSelector((state) => state.userData.confirmRequest);
   const expenses = useSelector((state) => state.userData.OtherExpenseData);
 
@@ -31,22 +41,32 @@ const OtherExpenses = () => {
 
   // Months array for filter
   const months = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
   ];
 
   // React Hook Form for Expenses
-  const { 
-    register: registerExpense, 
-    handleSubmit: handleSubmitExpense, 
+  const {
+    register: registerExpense,
+    handleSubmit: handleSubmitExpense,
     reset: resetExpense,
-    formState: { errors: expenseErrors }
+    formState: { errors: expenseErrors },
   } = useForm({
     defaultValues: {
       name: "",
       description: "",
-      amount: ""
-    }
+      amount: "",
+    },
   });
 
   useEffect(() => {
@@ -70,17 +90,20 @@ const OtherExpenses = () => {
 
       // Filter by name if searchTerm exists
       if (searchTerm) {
-        filtered = filtered.filter(expense => 
+        filtered = filtered.filter((expense) =>
           expense.name.toLowerCase().includes(searchTerm.toLowerCase())
         );
       }
 
       // Filter by month if selectedMonth exists
       if (selectedMonth) {
-        const monthIndex = months.findIndex(m => m === selectedMonth);
-        filtered = filtered.filter(expense => {
+        const monthIndex = months.findIndex((m) => m === selectedMonth);
+        filtered = filtered.filter((expense) => {
           const expenseDate = new Date(expense.createdAt);
-          return expenseDate.getMonth() === monthIndex && expenseDate.getFullYear() === currentYear;
+          return (
+            expenseDate.getMonth() === monthIndex &&
+            expenseDate.getFullYear() === currentYear
+          );
         });
       }
 
@@ -95,7 +118,11 @@ const OtherExpenses = () => {
     try {
       setIsLoading(true);
       const response = await GetOtherExpenseAPI(url);
-      if (response.status === 200 || response.status === 204 || response.status === 201) {
+      if (
+        response.status === 200 ||
+        response.status === 204 ||
+        response.status === 201
+      ) {
         dispatch(setOtherExpenseData(response.data.expenses));
       } else {
         setToastMessage(response.message);
@@ -114,24 +141,27 @@ const OtherExpenses = () => {
   const onExpenseSubmit = async (data) => {
     setIsLoading(true);
 
-      const response = await AddOtherExpenseAPI(url, data, token);
-      if (response.status === 200 || response.status === 201 || response.status === 204) {
-        await fetchExpenses();
-        resetExpense();
-        setToastMessage(response.message);
-        setToastIcon("right");
-        setShowExpenseForm(false);
-      } else {
-        setToastMessage(response.message);
-        setToastIcon("wrong");
-        if (response.status === 401) {  
-          Cookies.remove('user');
-          Cookies.remove('token');
-          window.location.href = '/user-options';                      
-        }
+    const response = await AddOtherExpenseAPI(url, data, token);
+    if (
+      response.status === 200 ||
+      response.status === 201 ||
+      response.status === 204
+    ) {
+      await fetchExpenses();
+      resetExpense();
+      setToastMessage(response.message);
+      setToastIcon("right");
+      setShowExpenseForm(false);
+    } else {
+      setToastMessage(response.message);
+      setToastIcon("wrong");
+      if (response.status === 401) {
+        Cookies.remove("user");
+        Cookies.remove("token");
+        window.location.href = "/user-options";
       }
-      setIsLoading(false);
-    
+    }
+    setIsLoading(false);
   };
 
   const handleExpenseSelection = (expenseId) => {
@@ -147,44 +177,38 @@ const OtherExpenses = () => {
     dispatch(setShowConfirmationModel(true));
   };
 
-
   const DeleteExpenses = async () => {
     try {
       // Process one by one since API requires individual expense ID
       for (const expenseId of selectedExpenses) {
         await DeleteOtherExpenseByIDAPI(url, expenseId, token);
       }
-      
+
       await fetchExpenses();
       setSelectedExpenses([]);
-      dispatch(setStatus("success"))
-      dispatch(setAddText(`Expenses deleted successfully`))
-      
+      dispatch(setStatus("success"));
+      dispatch(setAddText(`Expenses deleted successfully`));
     } catch (error) {
-      dispatch(setStatus("error"))
-      dispatch(setAddText(`Failed to  delete Expenses`))
-    } 
-    
-    finally {
+      dispatch(setStatus("error"));
+      dispatch(setAddText(`Failed to  delete Expenses`));
+    } finally {
       setShowToast(true);
       setIsLoading(false);
       setTimeout(() => {
-        dispatch(setStatus(''));
-        dispatch(setAddText(''));
+        dispatch(setStatus(""));
+        dispatch(setAddText(""));
         dispatch(setShowConfirmationModel(false));
       }, 3000);
     }
-  }
+  };
 
-  useEffect( ()=>{
-    if(confirmRequest)
-      {
-      DeleteExpenses()
-      }
-  },[confirmRequest])
+  useEffect(() => {
+    if (confirmRequest) {
+      DeleteExpenses();
+    }
+  }, [confirmRequest]);
 
-
-  const handleMonthSelect = (month) => { 
+  const handleMonthSelect = (month) => {
     setSelectedMonth(month === selectedMonth ? "" : month);
     setShowMonthDropdown(false);
   };
@@ -204,98 +228,127 @@ const OtherExpenses = () => {
   }
 
   // Calculate total expenses for filtered expenses
-  const totalFilteredExpenses = filteredExpenses.length > 0
-    ? filteredExpenses.reduce((sum, expense) => sum + Number(expense.amount), 0)
-    : 0;
+  const totalFilteredExpenses =
+    filteredExpenses.length > 0
+      ? filteredExpenses.reduce(
+          (sum, expense) => sum + Number(expense.amount),
+          0
+        )
+      : 0;
 
-    const ExpenseFormModal = () => {
-      // Clone the showExpenseForm state for animation control
-      const [isVisible, setIsVisible] = useState(false);
-      
-      // Watch for changes in the parent component's showExpenseForm state
-    
-    
-      const handleClose = () => {
-        setShowExpenseForm(false);
-        resetExpense();
-      };
-    
-      return (
-        <div className="min-h-full max-w-3xl flex items-center justify-center p-6">
-      <div className="h-full w-full space-y-12 bg-white">
-           
-              <h2 className="h2 mb-[32px] text-left text-black-300">Add Expense</h2>
-    
-              {/* Expense Form with React Hook Form */}
-              <form onSubmit={handleSubmitExpense(onExpenseSubmit)} className="mb-[16px]">
-                <div className="mb-4 relative w-full sm:w-96 md:w-[24rem] lg:w-[28rem] mx-auto">
-                  <input
-                    type="text"
-                    placeholder="Expense Name"
-                    className={`w-full p-2 rounded bg-transparent border-2 border-black-200 text-black-300 focus:outline ${expenseErrors.name ? 'border-red-500' : ''}`}
-                    {...registerExpense("name", { required: "Name is required" })}
-                  />
-                  {expenseErrors.name && <p className="text-danger text-sm mt-1">{expenseErrors.name.message}</p>}
-                </div>
-                
-                <div className="mb-4 relative w-full sm:w-96 md:w-[24rem] lg:w-[28rem] mx-auto ">
-                  <textarea
-                    placeholder="Description"
-                    className={`w-full h-32 p-2 border-2 rounded bg-transparent border-black-200 text-black-300 focus:outline resize-none ${expenseErrors.description ? 'border-red-500' : ''}`}
-                    {...registerExpense("description", { required: "Description is required" })}
-                  />
-                  {expenseErrors.description && <p className="text-danger text-sm mt-1">{expenseErrors.description.message}</p>}
-                </div>
-                
-                <div className="mb-4 relative w-full sm:w-96 md:w-[24rem] lg:w-[28rem] mx-auto">
-                  <input
-                    type="number"
-                    placeholder="Amount"
-                    className={`w-full p-2 border-2 rounded bg-transparent border-black-200 text-black-300 focus:outline ${expenseErrors.amount ? 'border-red-500' : ''}`}
-                    {...registerExpense("amount", { 
-                      required: "Amount is required",
-                      min: { value: 1, message: "Amount must be greater than 0" }
-                    })}
-                  />
-                  {expenseErrors.amount && <p className="text-danger text-sm mt-1">{expenseErrors.amount.message}</p>}
-                </div>
-                <div className="mb-4 relative w-full sm:w-96 md:w-[24rem] lg:w-[28rem] mx-auto">
-                  <input
-                    type="date"
-                    placeholder="Date"
-                    className={`w-full p-2 border-2 rounded bg-transparent border-black-200 text-black-300 focus:outline [color-scheme:light] ${expenseErrors.date ? 'border-red-500' : ''}`}
-                    {...registerExpense("date", {
-                      required: "Date is required"
-                    })}
-                  />
-                  {expenseErrors.date && <p className="text-danger text-sm mt-1">{expenseErrors.date.message}</p>}
-                </div>
-                
-                <button
-                  type="submit"
-                  className="w-full bg-success-500 text-white p-2 rounded flex items-center justify-center hover:scale-105 transition duration-200"
-                  disabled={isLoading}
-                >
-                  {isLoading ? (
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                  ) : (
-                    "Create Expense"
-                  )}
-                </button>
-              </form>
-            </div>
-     
-        </div>
-      );
+  const ExpenseFormModal = () => {
+    // Clone the showExpenseForm state for animation control
+    const [isVisible, setIsVisible] = useState(false);
+
+    // Watch for changes in the parent component's showExpenseForm state
+
+    const handleClose = () => {
+      setShowExpenseForm(false);
+      resetExpense();
     };
+
+    return (
+      <div className="min-h-full max-w-3xl flex items-center justify-center p-6">
+        <div className="h-full w-full space-y-12 bg-white">
+          <h2 className="h2 mb-[32px] text-left text-black-300">Add Expense</h2>
+
+          {/* Expense Form with React Hook Form */}
+          <form
+            onSubmit={handleSubmitExpense(onExpenseSubmit)}
+            className="mb-[16px]"
+          >
+            <div className="mb-4 relative w-full sm:w-96 md:w-[24rem] lg:w-[28rem] mx-auto">
+              <input
+                type="text"
+                placeholder="Expense Name"
+                className={`w-full p-2 rounded bg-transparent border-2 border-black-200 text-black-300 focus:outline ${
+                  expenseErrors.name ? "border-red-500" : ""
+                }`}
+                {...registerExpense("name", { required: "Name is required" })}
+              />
+              {expenseErrors.name && (
+                <p className="text-danger text-sm mt-1">
+                  {expenseErrors.name.message}
+                </p>
+              )}
+            </div>
+
+            <div className="mb-4 relative w-full sm:w-96 md:w-[24rem] lg:w-[28rem] mx-auto ">
+              <textarea
+                placeholder="Description"
+                className={`w-full h-32 p-2 border-2 rounded bg-transparent border-black-200 text-black-300 focus:outline resize-none ${
+                  expenseErrors.description ? "border-red-500" : ""
+                }`}
+                {...registerExpense("description", {
+                  required: "Description is required",
+                })}
+              />
+              {expenseErrors.description && (
+                <p className="text-danger text-sm mt-1">
+                  {expenseErrors.description.message}
+                </p>
+              )}
+            </div>
+
+            <div className="mb-4 relative w-full sm:w-96 md:w-[24rem] lg:w-[28rem] mx-auto">
+              <input
+                type="number"
+                placeholder="Amount"
+                className={`w-full p-2 border-2 rounded bg-transparent border-black-200 text-black-300 focus:outline ${
+                  expenseErrors.amount ? "border-red-500" : ""
+                }`}
+                {...registerExpense("amount", {
+                  required: "Amount is required",
+                  min: { value: 1, message: "Amount must be greater than 0" },
+                })}
+              />
+              {expenseErrors.amount && (
+                <p className="text-danger text-sm mt-1">
+                  {expenseErrors.amount.message}
+                </p>
+              )}
+            </div>
+            <div className="mb-4 relative w-full sm:w-96 md:w-[24rem] lg:w-[28rem] mx-auto">
+              <input
+                type="date"
+                placeholder="Date"
+                className={`w-full p-2 border-2 rounded bg-transparent border-black-200 text-black-300 focus:outline [color-scheme:light] ${
+                  expenseErrors.date ? "border-red-500" : ""
+                }`}
+                {...registerExpense("date", {
+                  required: "Date is required",
+                })}
+              />
+              {expenseErrors.date && (
+                <p className="text-danger text-sm mt-1">
+                  {expenseErrors.date.message}
+                </p>
+              )}
+            </div>
+
+            <button
+              type="submit"
+              className="w-full bg-success-500 text-white p-2 rounded flex items-center justify-center hover:scale-105 transition duration-200"
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+              ) : (
+                "Create Expense"
+              )}
+            </button>
+          </form>
+        </div>
+      </div>
+    );
+  };
   return (
     <div className="p-4 relative sm:px-16 px-6 sm:py-16 py-10">
-      {showToast && 
+      {showToast && (
         <div className="z-100">
           <Toast message={toastMessage} iconName={toastIcon} />
         </div>
-      }
-
+      )}
 
       <div
         className={`
@@ -330,7 +383,7 @@ const OtherExpenses = () => {
             `}
           >
             <button
-                onClick={() => setShowExpenseForm(false)}
+              onClick={() => setShowExpenseForm(false)}
               className="absolute top-6 right-4 p-2 z-100 rounded-full text-black-300 transition-colors duration-200 transform hover:scale-110"
             >
               <X size={24} />
@@ -340,12 +393,9 @@ const OtherExpenses = () => {
         )}
       </div>
 
-
-
-
       {/* Content */}
       <div className="w-full">
-      <div className="mb-6 text-left text-black-300">
+        <div className="mb-6 text-left text-black-300">
           <h2 className="h2 mb-2 text-left">Other Expenses</h2>
           <div className="flex items-center subtitle-2 text-left">
             <span className="">Accounting / </span>
@@ -369,7 +419,7 @@ const OtherExpenses = () => {
                     onChange={handleSearchChange}
                   />
                   {searchTerm && (
-                    <button 
+                    <button
                       onClick={() => setSearchTerm("")}
                       className="absolute right-3"
                     >
@@ -379,25 +429,27 @@ const OtherExpenses = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className="flex w-full sm:w-auto space-x-4 ">
               {/* Status/Month Filter */}
               <div className="relative w-full sm:w-40">
-                <button 
+                <button
                   className="flex items-center justify-between w-full px-4 py-2  bg-transparent border-2 rounded-lg border-black-200 text-black-300 focus:outline "
                   onClick={() => setShowMonthDropdown(!showMonthDropdown)}
                 >
                   <div className="flex items-center">
                     <Calendar size={16} className="mr-2 text-danger" />
-                    <span className="text-black-200">{selectedMonth || "Month"}</span>
+                    <span className="text-black-200">
+                      {selectedMonth || "Month"}
+                    </span>
                   </div>
                   <ChevronDown size={16} />
                 </button>
-                
+
                 {showMonthDropdown && (
                   <div className="absolute z-10 w-full mt-1 bg-white  text-black-200 border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
                     {selectedMonth && (
-                      <div 
+                      <div
                         className="px-4 py-2 hover:bg-gray-100 cursor-pointer font-medium text-danger"
                         onClick={() => handleMonthSelect("")}
                       >
@@ -405,9 +457,13 @@ const OtherExpenses = () => {
                       </div>
                     )}
                     {months.map((month) => (
-                      <div 
-                        key={month} 
-                        className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${selectedMonth === month ? 'bg-gray-100 font-medium' : ''}`}
+                      <div
+                        key={month}
+                        className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${
+                          selectedMonth === month
+                            ? "bg-gray-100 font-medium"
+                            : ""
+                        }`}
                         onClick={() => handleMonthSelect(month)}
                       >
                         {month}
@@ -416,17 +472,13 @@ const OtherExpenses = () => {
                   </div>
                 )}
               </div>
-              
             </div>
           </div>
         </div>
 
-
-
-{
-showConfirmation && (
-        <div
-          className={`
+        {showConfirmation && (
+          <div
+            className={`
             fixed inset-0 flex items-center justify-center 
             bg-black bg-opacity-50 z-50 
             ${
@@ -436,31 +488,31 @@ showConfirmation && (
             }
             transition-all duration-300 ease-in-out
           `}
-          onClick={(e) => {
-            if (e.target === e.currentTarget) {
-              dispatch(setShowConfirmationModel(false))
-              setSelectedExpenses(null);
-            }
-          }}
-        >
-          <Confirmation 
-            message={`Are you sure you want to delete the selected expenses? This action cannot be undone.`}
-            note=""/>
-        </div>
-      )}
-
-
-
-
+            onClick={(e) => {
+              if (e.target === e.currentTarget) {
+                dispatch(setShowConfirmationModel(false));
+                setSelectedExpenses(null);
+              }
+            }}
+          >
+            <Confirmation
+              message={`Are you sure you want to delete the selected expenses? This action cannot be undone.`}
+              note=""
+            />
+          </div>
+        )}
 
         {/* Expenses Section */}
         <div className="transform transition-all duration-300 translate-x-0 opacity-100">
           {/* Header with Add Button and Delete Button */}
           <div className="flex justify-between items-center mb-4">
-     
-              <h2 className=" text-md lg:text-2xl font-bold text-black-200">{currentYear} {selectedMonth}</h2>
-        
-            <div className=" text-md lg:text-3xl text-black-300 font-bold">₹{totalFilteredExpenses.toFixed(2)}</div>
+            <h2 className=" text-md lg:text-2xl font-bold text-black-200">
+              {currentYear} {selectedMonth}
+            </h2>
+
+            <div className=" text-md lg:text-3xl text-black-300 font-bold">
+              ₹{totalFilteredExpenses.toFixed(2)}
+            </div>
           </div>
 
           {/* Add and Delete Buttons */}
@@ -492,17 +544,17 @@ showConfirmation && (
           <div className="bg-gray-50 rounded-lg p-4 w-full z-10">
             <div className="space-y-4">
               {filteredExpenses.length > 0 ? (
-                filteredExpenses.map((expense,index) => (
+                filteredExpenses.map((expense, index) => (
                   <div
                     key={expense._id}
                     className={`p-4  rounded-lg shadow-sm flex items-center
                        ${
-                      index % 3 === 0
-                        ? "bg-lamaPurpleLight"
-                        : index % 3 === 1
-                        ? "bg-lamaYellowLight"
-                        : "bg-lamaSkyLight"
-                    }
+                         index % 3 === 0
+                           ? "bg-lamaPurpleLight"
+                           : index % 3 === 1
+                           ? "bg-lamaYellowLight"
+                           : "bg-lamaSkyLight"
+                       }
                     
                     `}
                   >
@@ -515,24 +567,55 @@ showConfirmation && (
                     <div className="flex-1">
                       <div className="flex justify-between items-center">
                         <div className="flex items-center">
-                          <div className="size-8 lg:size-10 rounded-full flex items-center justify-center mr-3" style={{ backgroundColor: expense.name.charAt(0).toLowerCase() === 'j' ? '#4CAF50' : expense.name.charAt(0).toLowerCase() === 'm' ? '#F44336' : expense.name.charAt(0).toLowerCase() === 'a' ? '#3F51B5' : '#795548' }}>
-                            <span className="text-white text-xl font-semibold">{expense.name.charAt(0).toUpperCase()}</span>
+                          <div
+                            className="size-8 lg:size-10 rounded-full flex items-center justify-center mr-3"
+                            style={{
+                              backgroundColor:
+                                expense.name.charAt(0).toLowerCase() === "j"
+                                  ? "#4CAF50"
+                                  : expense.name.charAt(0).toLowerCase() === "m"
+                                  ? "#F44336"
+                                  : expense.name.charAt(0).toLowerCase() === "a"
+                                  ? "#3F51B5"
+                                  : "#795548",
+                            }}
+                          >
+                            <span className="text-white text-xl font-semibold">
+                              {expense.name.charAt(0).toUpperCase()}
+                            </span>
                           </div>
                           <div>
                             <h3 className=" text-left text-md lg:text-lg font-bold text-black-300">
                               {expense.name}
                             </h3>
-                          <p className="text-gray-500 text-left">
-                          {expense.description}
-                          </p>
-                        
+                            <p className="text-gray-500 text-left">
+                              {expense.description}
+                            </p>
 
                             <p className="text-left text-gray-500">
-                              {expense.date ? `${new Date(expense.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long' }).split(' ')[0]} ${new Date(expense.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long' }).split(' ')[1]}` : '-'}
-                            </p>                          
-                            </div>
+                              {expense.date
+                                ? `${
+                                    new Date(expense.date)
+                                      .toLocaleDateString("en-GB", {
+                                        day: "numeric",
+                                        month: "long",
+                                      })
+                                      .split(" ")[0]
+                                  } ${
+                                    new Date(expense.createdAt)
+                                      .toLocaleDateString("en-GB", {
+                                        day: "numeric",
+                                        month: "long",
+                                      })
+                                      .split(" ")[1]
+                                  }`
+                                : "-"}
+                            </p>
+                          </div>
                         </div>
-                        <span className="text-md lg:text-xl text-black-300 font-bold flex items-center lg:pr-4 pr-2">₹{expense.amount}</span>
+                        <span className="text-md lg:text-xl text-black-300 font-bold flex items-center lg:pr-4 pr-2">
+                          ₹{expense.amount}
+                        </span>
                       </div>
                     </div>
                   </div>

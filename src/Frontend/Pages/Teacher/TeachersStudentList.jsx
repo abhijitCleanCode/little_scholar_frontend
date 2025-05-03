@@ -1,24 +1,17 @@
 import React, { useState, useEffect } from "react";
-import {
-
-  Loader,
-  GraduationCap
-
-} from "lucide-react";
+import { Loader, GraduationCap } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import { setStudentByClassData, setCurrentPage } from "../../../Store/slice";
-import {GetStudentByClassAPI } from '../../../service/api';
+import { GetStudentByClassAPI } from "../../../service/api";
 import Table from "../../Components/Elements/Table";
 
-
-  const TeachersStudentDetails = () => {
+const TeachersStudentDetails = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const students = useSelector((state) => state.userData.StudentByClassData);
-  const user=useSelector((state) => state.userData.user);
-  const url = import.meta.env.VITE_API_BASE_URL;
+  const user = useSelector((state) => state.userData.user);
+  const url = "https://little-scholar.onrender.com/api/v1/";
   const dispatch = useDispatch();
-
 
   useEffect(() => {
     document.title = "Student Details";
@@ -26,31 +19,31 @@ import Table from "../../Components/Elements/Table";
   }, []);
 
   useEffect(() => {
- const fetchStudents = async () => {
-    setLoading(true)
-    const response = await GetStudentByClassAPI(url, user?.classTeacher);
-    if (response.status === 200 || response.status === 201 || response.status === 204) {
-      dispatch(setStudentByClassData((response.data.students)))
-       
-    } else {
-   setError("No Student Data Available")
+    const fetchStudents = async () => {
+      setLoading(true);
+      const response = await GetStudentByClassAPI(url, user?.classTeacher);
+      if (
+        response.status === 200 ||
+        response.status === 201 ||
+        response.status === 204
+      ) {
+        dispatch(setStudentByClassData(response.data.students));
+      } else {
+        setError("No Student Data Available");
+      }
+      setLoading(false);
+    };
+    if (user?.classTeacher) {
+      fetchStudents();
     }
-    setLoading(false)
-  }
-if(user?.classTeacher){
-    
-    fetchStudents();
-}
-
   }, []);
 
-console.log(students)
-
+  console.log(students);
 
   // Table columns definition
   const columns = [
     {
-      field: 'name',
+      field: "name",
       headerName: "Student's Name",
       renderCell: (row) => (
         <div className="flex items-center gap-3">
@@ -62,8 +55,8 @@ console.log(students)
       ),
     },
     {
-      field: 'email',
-      headerName: 'Email',
+      field: "email",
+      headerName: "Email",
     },
     // {
     //   field: 'studentClass',
@@ -71,18 +64,14 @@ console.log(students)
     //   renderCell: (row) => row.studentClass?.className || "-",
     // },
     {
-      field: 'parentName',
-      headerName: 'Parent Name',
+      field: "parentName",
+      headerName: "Parent Name",
     },
     {
-      field: 'parentContact',
-      headerName: 'Parent Contact',
+      field: "parentContact",
+      headerName: "Parent Contact",
     },
   ];
-
- 
-
-  
 
   if (loading) {
     return (
@@ -113,21 +102,17 @@ console.log(students)
             <span>Student List</span>
           </div>
         </div>
-
       </div>
       <div className="bg-white p-2 rounded-md shadow-lg">
         {/* Table Component */}
-        < Table
+        <Table
           columns={columns}
           data={students || []}
           checkboxSelection={false}
           actions={false}
           extraClasses="m-4"
         />
-      
       </div>
-
-     
     </div>
   );
 };

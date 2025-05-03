@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from "react";
-import {
-  Search,
-  GraduationCap,
-  Plus,
-  Loader,
-  X,
-} from "lucide-react";
+import { Search, GraduationCap, Plus, Loader, X } from "lucide-react";
 import AddTeachers from "../../Pages/Teacher/AddTeacher";
 import { useSelector, useDispatch } from "react-redux";
-import { setTeacherData,setCurrentPage,setTransactionData } from "../../../Store/slice";
-import { GetTeachers,GetTeachersPages, GetTransactionsByTeacherAPI } from '../../../service/api';
+import {
+  setTeacherData,
+  setCurrentPage,
+  setTransactionData,
+} from "../../../Store/slice";
+import {
+  GetTeachers,
+  GetTeachersPages,
+  GetTransactionsByTeacherAPI,
+} from "../../../service/api";
 import Table from "../../Components/Elements/Table";
 import Pagination from "../../Components/Elements/Pagination";
-import SelectDropdown from "../../Components/Elements/SelectDropDown"; 
+import SelectDropdown from "../../Components/Elements/SelectDropDown";
 const AllTransactions = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -22,25 +24,30 @@ const AllTransactions = () => {
   const [paginationData, setPaginationData] = useState({
     currentPage: 1,
     totalItems: 0,
-    totalPages: 0
+    totalPages: 0,
   });
-  const url = import.meta.env.VITE_API_BASE_URL;
+  const url = "https://little-scholar.onrender.com/api/v1/";
   const token = Cookies.get("token");
   const currentpage = useSelector((state) => state.userData.CurrentPage);
   const teachers = useSelector((state) => state.userData.TeacherData);
-  const transactionData = useSelector((state) => state.userData.TransactionData);
+  const transactionData = useSelector(
+    (state) => state.userData.TransactionData
+  );
   const dispatch = useDispatch();
-
 
   useEffect(() => {
     document.title = "Transactions";
-dispatch(setCurrentPage(1));
+    dispatch(setCurrentPage(1));
   }, []);
 
- useEffect(() => {
+  useEffect(() => {
     const fetchTeachers = async () => {
       const response = await GetTeachers(url);
-      if (response.status === 200 || response.status === 204 || response.status === 201) {
+      if (
+        response.status === 200 ||
+        response.status === 204 ||
+        response.status === 201
+      ) {
         dispatch(setTeacherData(response.data.teachers));
       } else {
         setError(response.message);
@@ -51,21 +58,22 @@ dispatch(setCurrentPage(1));
     }
   }, []);
 
-const fetchTransactions = async ()=>{
-  const response = await GetTransactionsByTeacherAPI(url);
-  if (response.status === 200 || response.status === 204 || response.status === 201) {
-    dispatch(setTeacherData(response.data.teachers));
-  } else {
-    setError(response.message);
-  }
-}
+  const fetchTransactions = async () => {
+    const response = await GetTransactionsByTeacherAPI(url);
+    if (
+      response.status === 200 ||
+      response.status === 204 ||
+      response.status === 201
+    ) {
+      dispatch(setTeacherData(response.data.teachers));
+    } else {
+      setError(response.message);
+    }
+  };
 
-useEffect(()=>{
-
-  fetchTransactions()
-
-},[])
-
+  useEffect(() => {
+    fetchTransactions();
+  }, []);
 
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
@@ -78,7 +86,7 @@ useEffect(()=>{
 
   const columns = [
     {
-      field: 'name',
+      field: "name",
       headerName: "Teacher's Name",
       renderCell: (row) => (
         <div className="flex items-center gap-3">
@@ -90,12 +98,12 @@ useEffect(()=>{
       ),
     },
     {
-      field: 'email',
-      headerName: 'Email',
+      field: "email",
+      headerName: "Email",
     },
     {
-      field: 'salary',
-      headerName: 'Salary',
+      field: "salary",
+      headerName: "Salary",
       renderCell: (row) => row.salary || "-",
     },
   ];
@@ -151,7 +159,11 @@ useEffect(()=>{
         className={`
           fixed inset-0 flex items-center justify-center 
           bg-black bg-opacity-50 z-50 
-          ${showAddTeacher ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"}
+          ${
+            showAddTeacher
+              ? "opacity-100 visible"
+              : "opacity-0 invisible pointer-events-none"
+          }
           transition-all duration-300 ease-in-out
         `}
         onClick={(e) => {
@@ -161,14 +173,20 @@ useEffect(()=>{
         }}
       >
         {showAddTeacher && (
-          <div className={`
+          <div
+            className={`
             relative rounded-xl w-auto max-h-[90vh] overflow-y-auto 
             bg-white 
             custom-scrollbar
-            ${showAddTeacher ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 -translate-y-4 pointer-events-none"}
+            ${
+              showAddTeacher
+                ? "opacity-100 scale-100 translate-y-0"
+                : "opacity-0 scale-95 -translate-y-4 pointer-events-none"
+            }
             transition-all duration-300 ease-in-out
             transform origin-center
-          `}>
+          `}
+          >
             <button
               onClick={() => setShowAddTeacher(false)}
               className="absolute top-6 right-4 p-2 bg-white rounded-full text-black-300 hover:text-gray-800 transition-colors duration-200 transform hover:scale-110"

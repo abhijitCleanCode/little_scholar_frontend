@@ -1,14 +1,18 @@
-
 import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
-import { User, ArrowRight, IndianRupee, MessageCircleQuestion } from "lucide-react";
+import {
+  User,
+  ArrowRight,
+  IndianRupee,
+  MessageCircleQuestion,
+} from "lucide-react";
 import Cookies from "js-cookie";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 import { useSelector, useDispatch } from "react-redux";
-import { setTeacherData,setTransactionUpdate } from "../../../Store/slice";
-import { GetAllTeachersAPI,AcceptRejectPayReqAPI } from '../../../service/api';
-import SelectDropdown from "../../Components/Elements/SelectDropDown"; 
-import Input from "../../Components/Elements/Input"; 
+import { setTeacherData, setTransactionUpdate } from "../../../Store/slice";
+import { GetAllTeachersAPI, AcceptRejectPayReqAPI } from "../../../service/api";
+import SelectDropdown from "../../Components/Elements/SelectDropDown";
+import Input from "../../Components/Elements/Input";
 
 const AddTransactions = () => {
   const [loading, setLoading] = useState(false);
@@ -17,27 +21,31 @@ const AddTransactions = () => {
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState("");
   const [error, setError] = useState(null);
-  
+
   // Track both the display format for the input and the month name for the API
-  const [selectedMonthValue, setSelectedMonthValue] = useState(new Date().toISOString().slice(0, 7));
-  const [selectedMonth, setSelectedMonth] = useState(new Date().toLocaleString('default', { month: 'long' }));
-  
+  const [selectedMonthValue, setSelectedMonthValue] = useState(
+    new Date().toISOString().slice(0, 7)
+  );
+  const [selectedMonth, setSelectedMonth] = useState(
+    new Date().toLocaleString("default", { month: "long" })
+  );
+
   const [selectedStatus, setSelectedStatus] = useState("");
   const [advanceStatus, setAdvanceStatus] = useState("");
   const [baseSalary, setBaseSalary] = useState("");
   const teachers = useSelector((state) => state.userData.TeacherData);
 
   const dispatch = useDispatch();
-  const url = import.meta.env.VITE_API_BASE_URL;
+  const url = "https://little-scholar.onrender.com/api/v1/";
   const token = Cookies.get("token");
-  
+
   const statusOptions = [
     { name: "Paid", value: "paid" },
-    { name: "Unpaid", value: "unpaid" }
+    { name: "Unpaid", value: "unpaid" },
   ];
   const AdvstatusOptions = [
     { name: "Approved", value: "approved" },
-    { name: "Rejected", value: "rejected" }
+    { name: "Rejected", value: "rejected" },
   ];
 
   const selectedTeacherData = teachers.find(
@@ -50,33 +58,36 @@ const AddTransactions = () => {
     formState: { errors },
     reset,
     setValue,
-    watch
+    watch,
   } = useForm({
     defaultValues: {
       baseSalary: "",
-    }
+    },
   });
-  
+
   const advancePayChecked = watch("advancePay");
   const salaryPayChecked = watch("salaryPay");
 
   useEffect(() => {
-        if (showToast) {
-            toast[toastType](toastMessage, {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
-        }
-    }, [showToast, toastMessage, toastType]);
-
+    if (showToast) {
+      toast[toastType](toastMessage, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    }
+  }, [showToast, toastMessage, toastType]);
 
   const fetchTeachers = async () => {
     const response = await GetAllTeachersAPI(url);
-    if (response.status === 200 || response.status === 204 || response.status === 201) {
+    if (
+      response.status === 200 ||
+      response.status === 204 ||
+      response.status === 201
+    ) {
       dispatch(setTeacherData(response.data.teachers));
     } else {
       setToastMessage(response.message);
@@ -85,7 +96,7 @@ const AddTransactions = () => {
       setError(response.message);
     }
   };
-  
+
   useEffect(() => {
     if (teachers?.length === 0) {
       fetchTeachers();
@@ -101,42 +112,50 @@ const AddTransactions = () => {
   }, [selectedTeacherData, setValue]);
 
   const onSubmit = async (data) => {
-if (!salaryPayChecked && !advancePayChecked) {
-  setToastMessage("Please select at least one payment type.");
-  setToastType("error");
-  setShowToast(true);
-  return;
-}
+    if (!salaryPayChecked && !advancePayChecked) {
+      setToastMessage("Please select at least one payment type.");
+      setToastType("error");
+      setShowToast(true);
+      return;
+    }
 
     setLoading(true);
     const transactionData = {
       Id: selectedTeacherData?._id,
       month: selectedMonth,
       Salarystatus: selectedStatus,
-      AdvStatus :advanceStatus,
+      AdvStatus: advanceStatus,
       advancePay: data.advancePay === true,
       advanceAmount: data.advancePay ? Number(data.advanceAmount) : 0,
-      baseSalary: Number(data.baseSalary)
+      baseSalary: Number(data.baseSalary),
     };
-    const type = advancePayChecked && salaryPayChecked ? "both" : advancePayChecked ? "adv" : "salary";
+    const type =
+      advancePayChecked && salaryPayChecked
+        ? "both"
+        : advancePayChecked
+        ? "adv"
+        : "salary";
 
-      const response = await AcceptRejectPayReqAPI(url, transactionData,type);
-      
-      if (response.status === 200 || response.status === 201 || response.status === 204) {
-        setToastMessage(response.message);
+    const response = await AcceptRejectPayReqAPI(url, transactionData, type);
+
+    if (
+      response.status === 200 ||
+      response.status === 201 ||
+      response.status === 204
+    ) {
+      setToastMessage(response.message);
       setToastType("success");
       setShowToast(true);
-        reset();
-        dispatch(setTransactionUpdate(true))
-        setSelectedStatus("");
-        setBaseSalary("");
-      } else {
-        setToastMessage(response.message);
-        setToastType("error");
-        setShowToast(true);
-      }
-  
-    
+      reset();
+      dispatch(setTransactionUpdate(true));
+      setSelectedStatus("");
+      setBaseSalary("");
+    } else {
+      setToastMessage(response.message);
+      setToastType("error");
+      setShowToast(true);
+    }
+
     setLoading(false);
     setSelectedTeacher("");
     setSelectedStatus("");
@@ -144,19 +163,19 @@ if (!salaryPayChecked && !advancePayChecked) {
     // Reset month to current month
     const currentDate = new Date();
     setSelectedMonthValue(currentDate.toISOString().slice(0, 7));
-    setSelectedMonth(currentDate.toLocaleString('default', { month: 'long' }));
+    setSelectedMonth(currentDate.toLocaleString("default", { month: "long" }));
   };
 
   const handleMonthChange = (e) => {
-    const dateValue = e.target.value; 
-    setSelectedMonthValue(dateValue); 
+    const dateValue = e.target.value;
+    setSelectedMonthValue(dateValue);
     // This will be in format "2025-03"
     // Keep the original format for the input element
-    
+
     // Extract month name from the date
     const date = new Date(dateValue + "-01"); // Add day to make a valid date
-    const monthName = date.toLocaleString('default', { month: 'long' }); // Gets "March"
-    
+    const monthName = date.toLocaleString("default", { month: "long" }); // Gets "March"
+
     setSelectedMonth(monthName); // Save just the month name for your API
   };
 
@@ -207,7 +226,7 @@ if (!salaryPayChecked && !advancePayChecked) {
               className="w-full p-2 pl-10 bg-transparent border-2 border-black-200 text-black-300 focus:outline rounded-lg transition-all duration-200 [color-scheme:light]"
             />
           </div>
-          
+
           <div className="w-full sm:w-96 md:w-[24rem] lg:w-[28rem] mx-auto">
             <Input
               id="baseSalary"
@@ -229,27 +248,25 @@ if (!salaryPayChecked && !advancePayChecked) {
               {...register("salaryPay")}
               className=" size-3 mr-2"
             />
-            <label htmlFor="salaryPay" className="text-black-300">Salary Pay Status</label>
+            <label htmlFor="salaryPay" className="text-black-300">
+              Salary Pay Status
+            </label>
           </div>
 
-{
-  salaryPayChecked &&(
-
-          <div className="w-full sm:w-96 md:w-[24rem] lg:w-[28rem] mx-auto">
-            <SelectDropdown
-              options={statusOptions}
-              selectedValue={selectedStatus}
-              onSelect={handleStatusChange}
-              displayField="name"
-              valueField="value"
-              placeholder="Select Status"
-              icon={<MessageCircleQuestion size={20} />}
-              required={true}
-            />
-          </div>
-
-  )
-}
+          {salaryPayChecked && (
+            <div className="w-full sm:w-96 md:w-[24rem] lg:w-[28rem] mx-auto">
+              <SelectDropdown
+                options={statusOptions}
+                selectedValue={selectedStatus}
+                onSelect={handleStatusChange}
+                displayField="name"
+                valueField="value"
+                placeholder="Select Status"
+                icon={<MessageCircleQuestion size={20} />}
+                required={true}
+              />
+            </div>
+          )}
 
           <div className="w-full sm:w-96 md:w-[24rem] lg:w-[28rem] mx-auto flex items-center">
             <input
@@ -258,41 +275,40 @@ if (!salaryPayChecked && !advancePayChecked) {
               {...register("advancePay")}
               className="size-3 mr-2"
             />
-            <label htmlFor="advancePay" className="text-black-300">Advance Pay Status</label>
+            <label htmlFor="advancePay" className="text-black-300">
+              Advance Pay Status
+            </label>
           </div>
 
           {/* Only show advance amount field if advancePay is checked */}
           {advancePayChecked && (
             <>
-            <div className="w-full sm:w-96 md:w-[24rem] lg:w-[28rem] mx-auto">
-              <Input
-                id="advanceAmount"
-                name="advanceAmount"
-                type="number"
-                label="Advance Amount"
-                register={register}
-                errors={errors}
-                required={true}
-                icon={IndianRupee}
-              />
-            </div>
-               <div className="w-full sm:w-96 md:w-[24rem] lg:w-[28rem] mx-auto">
-               <SelectDropdown
-                 options={AdvstatusOptions}
-                 selectedValue={advanceStatus}
-                 onSelect={handleAdvanceStatusChange}
-                 displayField="name"
-                 valueField="value"
-                 placeholder="Select Advance Pay Status"
-                 icon={<MessageCircleQuestion size={20} />}
-                 required={true}
-               />
-             </div>
-             </>
-
+              <div className="w-full sm:w-96 md:w-[24rem] lg:w-[28rem] mx-auto">
+                <Input
+                  id="advanceAmount"
+                  name="advanceAmount"
+                  type="number"
+                  label="Advance Amount"
+                  register={register}
+                  errors={errors}
+                  required={true}
+                  icon={IndianRupee}
+                />
+              </div>
+              <div className="w-full sm:w-96 md:w-[24rem] lg:w-[28rem] mx-auto">
+                <SelectDropdown
+                  options={AdvstatusOptions}
+                  selectedValue={advanceStatus}
+                  onSelect={handleAdvanceStatusChange}
+                  displayField="name"
+                  valueField="value"
+                  placeholder="Select Advance Pay Status"
+                  icon={<MessageCircleQuestion size={20} />}
+                  required={true}
+                />
+              </div>
+            </>
           )}
-
-
 
           <div className="w-full sm:w-96 md:w-[24rem] lg:w-[28rem] mx-auto">
             <button

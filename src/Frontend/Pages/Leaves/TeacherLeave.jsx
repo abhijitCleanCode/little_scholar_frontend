@@ -1,12 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { Loader, X, Trash } from "lucide-react";
 import AddLeaves from "./AddLeave";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 import { useSelector, useDispatch } from "react-redux";
-import { setLeaveData, setCurrentPage,setShowConfirmationModel,setConfirmRequest,setStatus, setAddText  } from "../../../Store/slice";
-import { GetAllLeaveTeacherAPI,DeleteLeaveRequestAPI } from '../../../service/api';
+import {
+  setLeaveData,
+  setCurrentPage,
+  setShowConfirmationModel,
+  setConfirmRequest,
+  setStatus,
+  setAddText,
+} from "../../../Store/slice";
+import {
+  GetAllLeaveTeacherAPI,
+  DeleteLeaveRequestAPI,
+} from "../../../service/api";
 import Pagination from "../../Components/Elements/Pagination";
-import Confirmation from "../../Components/Elements/ConfirmationModel"
+import Confirmation from "../../Components/Elements/ConfirmationModel";
 const TeacherLeaves = () => {
   const [loading, setLoading] = useState(true);
   const [showLeave, setShowLeave] = useState(false);
@@ -18,14 +28,16 @@ const TeacherLeaves = () => {
   const [paginationData, setPaginationData] = useState({
     currentPage: 1,
     totalItems: 0,
-    totalPages: 0
+    totalPages: 0,
   });
-  
+
   const user = useSelector((state) => state.userData.user);
   const leaves = useSelector((state) => state.userData.LeaveData);
   const currentPage = useSelector((state) => state.userData.CurrentPage);
-  const url = import.meta.env.VITE_API_BASE_URL;
-  const showConfirmation = useSelector((state) => state.userData.showConfirmationModel);
+  const url = "https://little-scholar.onrender.com/api/v1/";
+  const showConfirmation = useSelector(
+    (state) => state.userData.showConfirmationModel
+  );
   const confirmRequest = useSelector((state) => state.userData.confirmRequest);
   const dispatch = useDispatch();
 
@@ -47,28 +59,31 @@ const TeacherLeaves = () => {
     }
   }, [showToast, toastMessage, toastType]);
 
-
   const fetchLeaves = async () => {
     setLoading(true);
     const response = await GetAllLeaveTeacherAPI(url, user?.id);
-    
-    if (response.status === 200 || response.status === 204 || response.status === 201) {
+
+    if (
+      response.status === 200 ||
+      response.status === 204 ||
+      response.status === 201
+    ) {
       dispatch(setLeaveData(response.data));
-      
+
       // Update pagination data from API response
       setPaginationData({
         currentPage: response.data?.pagination?.currentPage || 1,
         totalItems: response.data?.pagination?.totalItems,
         totalPages: response.data?.pagination?.totalPages,
-        totalItemsPerPage: response.data?.pagination?.studentsPerPage || 10
+        totalItemsPerPage: response.data?.pagination?.studentsPerPage || 10,
       });
     } else {
-      dispatch(setLeaveData([]))
+      dispatch(setLeaveData([]));
       setToastMessage(response.message);
       setToastType("error");
       setShowToast(true);
     }
-    
+
     setLoading(false);
   };
 
@@ -82,15 +97,15 @@ const TeacherLeaves = () => {
   };
 
   // Filter leaves based on status
-  const filteredLeaves = leaves?.filter(leave => 
+  const filteredLeaves = leaves?.filter((leave) =>
     statusFilter === "all" ? true : leave.status === statusFilter
   );
 
   // Handle checkbox selection
   const handleCheckboxChange = (leaveId) => {
-    setSelectedLeaves(prev => {
+    setSelectedLeaves((prev) => {
       if (prev.includes(leaveId)) {
-        return prev.filter(id => id !== leaveId);
+        return prev.filter((id) => id !== leaveId);
       } else {
         return [...prev, leaveId];
       }
@@ -104,50 +119,42 @@ const TeacherLeaves = () => {
       return;
     }
     dispatch(setShowConfirmationModel(true));
-
-    
   };
 
-const DeleteLeaves = async ()=>{
-  if (selectedLeaves.length === 0) return;
+  const DeleteLeaves = async () => {
+    if (selectedLeaves.length === 0) return;
 
+    // Process one by one since API requires individual expense ID
+    for (const leaveId of selectedLeaves) {
+      var response = await DeleteLeaveRequestAPI(url, leaveId);
+    }
+    if (
+      response.status === 200 ||
+      response.status === 201 ||
+      response.status === 204
+    ) {
+      await fetchLeaves();
+      dispatch(setStatus("success"));
+      dispatch(setAddText(response.message));
+    } else {
+      dispatch(setStatus("error"));
+      dispatch(setAddText(response.message));
+    }
+    setLoading(false);
+    setTimeout(() => {
+      dispatch(setStatus(""));
+      dispatch(setAddText(""));
+      dispatch(setShowConfirmationModel(false));
+      dispatch(setConfirmRequest(false));
+    }, 3000);
+    setSelectedLeaves(null);
+  };
 
-       // Process one by one since API requires individual expense ID
-       for (const leaveId of selectedLeaves) {
-        var response = await DeleteLeaveRequestAPI(url, leaveId);
-       }
-       if(response.status===200|| response.status===201||response.status===204)
-       {
-           await fetchLeaves();
-           dispatch(setStatus("success"))
-           dispatch(setAddText(response.message))
-
-       }
-       
-     else  {
-      
-       dispatch(setStatus("error"))
-       dispatch(setAddText(response.message))
-     } 
-       setLoading(false);
-       setTimeout(() => {
-         dispatch(setStatus(''));
-         dispatch(setAddText(''));
-         dispatch(setShowConfirmationModel(false));
-         dispatch(setConfirmRequest(false));
-
-       }, 3000);
-   setSelectedLeaves(null)
-
-}
-
-useEffect( ()=>{
-    if(confirmRequest)
-      {
-      DeleteLeaves()
-      }
-  },[confirmRequest])
-
+  useEffect(() => {
+    if (confirmRequest) {
+      DeleteLeaves();
+    }
+  }, [confirmRequest]);
 
   if (loading) {
     return (
@@ -202,18 +209,16 @@ useEffect( ()=>{
             >
               <X size={24} />
             </button>
-            <AddLeaves 
+            <AddLeaves
               onClose={() => {
                 setShowLeave(false);
-              }} 
+              }}
             />
           </div>
         )}
       </div>
-      
 
-{
-showConfirmation && (
+      {showConfirmation && (
         <div
           className={`
             fixed inset-0 flex items-center justify-center 
@@ -227,18 +232,16 @@ showConfirmation && (
           `}
           onClick={(e) => {
             if (e.target === e.currentTarget) {
-              dispatch(setShowConfirmationModel(false))
-          
+              dispatch(setShowConfirmationModel(false));
             }
           }}
         >
-          <Confirmation 
+          <Confirmation
             message={`Are you sure you want to delete the selected leaves? This action cannot be undone.`}
-            note=""/>
+            note=""
+          />
         </div>
       )}
-
-
 
       {/* Header */}
       <div className="flex flex-col md:flex-row text-black justify-between items-start md:items-center mb-[32px] p-2">
@@ -271,9 +274,7 @@ showConfirmation && (
       {/* Filters */}
       <div className="bg-white p-4 rounded-md shadow-lg mb-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
-          <div className="text-gray-700 mb-2 sm:mb-0">
-            Filter by Status:
-          </div>
+          <div className="text-gray-700 mb-2 sm:mb-0">Filter by Status:</div>
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
@@ -292,8 +293,8 @@ showConfirmation && (
         {filteredLeaves?.length > 0 ? (
           <div className="space-y-4 p-4">
             {filteredLeaves.map((leave, index) => (
-              <div 
-                key={leave._id || index} 
+              <div
+                key={leave._id || index}
                 className={`p-4 rounded-lg text-left flex items-center ${
                   index % 3 === 0
                     ? "bg-lamaPurpleLight"
@@ -303,25 +304,28 @@ showConfirmation && (
                 }`}
               >
                 <input
-  type="checkbox"
-  checked={selectedLeaves.includes(leave._id)}
-  onChange={() => handleCheckboxChange(leave._id)}
-  className="mr-4 appearance-none border-2 border-black-300 rounded-full h-5 w-5 checked:bg-purpleColor checked:border-purpleColor relative flex items-center justify-center transition-all duration-200"
-  style={{
-    backgroundImage: selectedLeaves.includes(leave._id) 
-      ? `url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e")` 
-      : 'none'
-  }}
-/>
+                  type="checkbox"
+                  checked={selectedLeaves.includes(leave._id)}
+                  onChange={() => handleCheckboxChange(leave._id)}
+                  className="mr-4 appearance-none border-2 border-black-300 rounded-full h-5 w-5 checked:bg-purpleColor checked:border-purpleColor relative flex items-center justify-center transition-all duration-200"
+                  style={{
+                    backgroundImage: selectedLeaves.includes(leave._id)
+                      ? `url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e")`
+                      : "none",
+                  }}
+                />
                 <div className=" flex-1 grid grid-cols-1 md:grid-cols-3 gap-4">
-        
                   <div>
                     <p className="text-gray-700">
-                      <span className={`ml-2 px-2 py-1 rounded-full text-xs ${
-                        leave.leaveStatus === "Approved" ? "bg-green-100 text-green-800" :
-                        leave.leaveStatus === "Rejected" ? "bg-red-100 text-red-800" :
-                        "bg-yellow-100 text-yellow-800"
-                      }`}>
+                      <span
+                        className={`ml-2 px-2 py-1 rounded-full text-xs ${
+                          leave.leaveStatus === "Approved"
+                            ? "bg-green-100 text-green-800"
+                            : leave.leaveStatus === "Rejected"
+                            ? "bg-red-100 text-red-800"
+                            : "bg-yellow-100 text-yellow-800"
+                        }`}
+                      >
                         {leave.leaveStatus || "pending"}
                       </span>
                     </p>

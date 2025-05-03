@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { Lock, RefreshCw,LogIn } from "lucide-react";
+import { Lock, RefreshCw, LogIn } from "lucide-react";
 import { useForm } from "react-hook-form";
 import Cookies from "js-cookie";
 import axios from "axios";
 import Toast from "../../Components/Toast";
-import PasswordInput from '../../Components/Elements/PasswordInput';
-import {useSelector} from 'react-redux'
+import PasswordInput from "../../Components/Elements/PasswordInput";
+import { useSelector } from "react-redux";
 const PasswordChange = () => {
   const {
     register,
@@ -18,7 +18,7 @@ const PasswordChange = () => {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [toastIcon, setToastIcon] = useState("");
-  const url = import.meta.env.VITE_API_BASE_URL;
+  const url = "https://little-scholar.onrender.com/api/v1/";
   const user = useSelector((state) => state.userData.user);
   const onSubmit = async (data) => {
     setLoading(true);
@@ -26,40 +26,51 @@ const PasswordChange = () => {
 
     const payload = {
       oldPassword: data.oldPassword,
-      newPassword: data.newPassword
+      newPassword: data.newPassword,
     };
 
     try {
       const token = Cookies.get("token");
-      
+
       if (!token) {
         setError("Authentication required. Please log in again.");
         setLoading(false);
         return;
       }
 
-      const response = await axios.post(`${url}${user?.role}/change-password`, payload, {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+      const response = await axios.post(
+        `${url}${user?.role}/change-password`,
+        payload,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
         }
-      });
+      );
 
-      if (response.status === 200 || response.status === 201 || response.status === 204) {
-        setToastMessage("Password changed successfully!"), setToastIcon("right");
+      if (
+        response.status === 200 ||
+        response.status === 201 ||
+        response.status === 204
+      ) {
+        setToastMessage("Password changed successfully!"),
+          setToastIcon("right");
         setShowToast(true);
         reset();
       } else {
         setToastMessage(response.data.message || "Failed to change password"),
-        setToastIcon("wrong");
+          setToastIcon("wrong");
         setShowToast(true);
       }
     } catch (error) {
-      setToastMessage(error.response?.data?.message || "An error occurred. Please try again."),
-      setToastIcon("wrong");
+      setToastMessage(
+        error.response?.data?.message || "An error occurred. Please try again."
+      ),
+        setToastIcon("wrong");
       setShowToast(true);
     }
-    
+
     setLoading(false);
   };
 
@@ -78,7 +89,7 @@ const PasswordChange = () => {
             </h2>
           </div>
         </div>
-        
+
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="space-y-10">
             <PasswordInput
@@ -88,10 +99,10 @@ const PasswordChange = () => {
               name="oldPassword"
               errors={errors}
               validation={{
-                required: "Current password is required"
+                required: "Current password is required",
               }}
             />
-            
+
             <PasswordInput
               id="newPassword"
               label="New Password"
@@ -102,14 +113,16 @@ const PasswordChange = () => {
                 required: "New password is required",
                 minLength: {
                   value: 8,
-                  message: "Password must be at least 8 characters"
-                }
+                  message: "Password must be at least 8 characters",
+                },
               }}
             />
           </div>
 
           {error && (
-            <div className="text-danger text-base text-center mt-4">{error}</div>
+            <div className="text-danger text-base text-center mt-4">
+              {error}
+            </div>
           )}
 
           <div className="mt-8">
@@ -129,7 +142,6 @@ const PasswordChange = () => {
             </button>
           </div>
         </form>
-        
       </div>
     </div>
   );

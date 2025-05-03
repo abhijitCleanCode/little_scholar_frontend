@@ -12,7 +12,7 @@ import {
   DollarSign,
   IndianRupee,
   CreditCard,
-  UserCircle
+  UserCircle,
 } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -22,12 +22,9 @@ const ProfilePage = () => {
   return (
     <div className="min-h-screen  sm:px-16 px-6 sm:py-16 py-10">
       <div className="max-w-4xl mx-auto main">
-
         {/* Profile Card */}
         <div className="flex flex-col md:flex-row  overflow-hidden mb-6 gap-4 p-2">
-
           <div className="w-full md:w-1/2 p-6 flex md:flex-col flex-col gap-6 bg-blue-100 rounded-lg h-auto">
-
             {/* Avatar and Basic Info */}
             <div className="w-full flex items-center md:items-start gap-6">
               <div className="w-1/5 flex flex-col gap-2">
@@ -52,7 +49,8 @@ const ProfilePage = () => {
                 </div>
                 <div className="flex justify-start text-left gap-2">
                   <p className="text-gray-600 text-sm mb-1 truncate">
-                    {user?.description || "I am glad to be a part of EduCloud"}
+                    {user?.description ||
+                      "I am glad to be a part of Little Scholar Central School."}
                   </p>
                 </div>
               </div>
@@ -61,47 +59,66 @@ const ProfilePage = () => {
             <div className="w-full flex flex-col gap-4">
               <div className="flex items-center gap-2">
                 <Phone className="size-4 text-blue-500" />
-                <span className="text-sm font-medium truncate text-black-300">{user?.contact || user?.phone || user?.parentContact || "987645335"}</span>
+                <span className="text-sm font-medium truncate text-black-300">
+                  {user?.contact ||
+                    user?.phone ||
+                    user?.parentContact ||
+                    "987645335"}
+                </span>
               </div>
               <div className="flex items-center gap-2">
                 <Mail className="size-4 text-blue-500" />
-                <span className="text-sm font-medium truncate text-black-300">{user?.email || "Email"}</span>
+                <span className="text-sm font-medium truncate text-black-300">
+                  {user?.email || "Email"}
+                </span>
               </div>
               {user?.role === "student" && (
                 <div className="flex items-center gap-2">
                   <Calendar className="size-4 text-blue-500" />
-                  <span className="text-sm font-medium truncate text-black-300">{new Date(user?.dob).toLocaleDateString() || "DOB"}</span>
+                  <span className="text-sm font-medium truncate text-black-300">
+                    {new Date(user?.dob).toLocaleDateString() || "DOB"}
+                  </span>
                 </div>
               )}
               {user?.role === "student" && (
                 <div className="flex items-center gap-2">
                   <CreditCard className="size-4 text-blue-500" />
-                  <span className="text-sm font-medium truncate text-black-300">Aadhar: {user?.aadharId || "N/A"}</span>
+                  <span className="text-sm font-medium truncate text-black-300">
+                    Aadhar: {user?.aadharId || "N/A"}
+                  </span>
                 </div>
               )}
               {user?.role === "student" && (
                 <div className="flex items-center gap-2">
                   <MapPin className="size-4 text-blue-500" />
-                  <span className="text-sm font-medium truncate text-black-300">{user?.address || "Address"}</span>
+                  <span className="text-sm font-medium truncate text-black-300">
+                    {user?.address || "Address"}
+                  </span>
                 </div>
               )}
               {user?.role === "student" && (
                 <div className="flex items-center gap-2">
                   <UserCircle className="size-4 text-blue-500" />
-                  <span className="text-sm font-medium truncate text-black-300">Gender: {user?.gender || "N/A"}</span>
+                  <span className="text-sm font-medium truncate text-black-300">
+                    Gender: {user?.gender || "N/A"}
+                  </span>
                 </div>
               )}
 
               {user?.salary && (
                 <div className="flex items-center gap-2">
                   <IndianRupee className="size-4 text-blue-500" />
-                  <span className="text-sm font-medium truncate text-black-300">{user.salary}</span>
+                  <span className="text-sm font-medium truncate text-black-300">
+                    {user.salary}
+                  </span>
                 </div>
               )}
               {user?.yearsOfExperience && (
                 <div className="flex items-center gap-2">
                   <Calendar className="size-4 text-blue-500" />
-                  <span className="text-sm font-medium truncate text-black-300">{user?.yearsOfExperience} years experience</span>
+                  <span className="text-sm font-medium truncate text-black-300">
+                    {user?.yearsOfExperience} years experience
+                  </span>
                 </div>
               )}
             </div>
@@ -116,8 +133,12 @@ const ProfilePage = () => {
                     <Hash className="w-5 h-5 text-blue-500" />
                   </div>
                   <div>
-                    <p className="text-md md:text-lg font-black text-black">{user?.subjects?.length}</p>
-                    <p className="text-xs md:text-sm text-black-200">Subjects</p>
+                    <p className="text-md md:text-lg font-black text-black">
+                      {user?.subjects?.length}
+                    </p>
+                    <p className="text-xs md:text-sm text-black-200">
+                      Subjects
+                    </p>
                   </div>
                 </div>
               </div>
@@ -129,8 +150,12 @@ const ProfilePage = () => {
                     <User className="w-5 h-5 text-blue-500" />
                   </div>
                   <div>
-                    <h3 className="text-md md:text-lg font-black text-black">Class 10 B</h3>
-                    <p className="text-xs md:text-sm text-black-200">Class Teacher</p>
+                    <h3 className="text-md md:text-lg font-black text-black">
+                      Class 10 B
+                    </h3>
+                    <p className="text-xs md:text-sm text-black-200">
+                      Class Teacher
+                    </p>
                   </div>
                 </div>
               </div>

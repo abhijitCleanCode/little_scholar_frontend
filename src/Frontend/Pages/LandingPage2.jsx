@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import Cookies from "js-cookie";
 // Main Landing Page Component
 const SchoolLandingPage = () => {
-const token= Cookies.get("token")
+  const token = Cookies.get("token");
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-gradient-to-b from-blue-50 via-white to-blue-50">
       {/* Enhanced Particle Background - higher z-index but still behind content */}
@@ -15,7 +15,9 @@ const token= Cookies.get("token")
         <div className="container mx-auto sm:px-16 px-6 py-4 flex justify-between items-center">
           <div className="flex items-center">
             <div className="text-black font-bold text-2xl">
-              <span className="text-purpleColor">Edu</span>Cloud
+              <span className="text-purpleColor">
+                Little Scholar Central School
+              </span>
             </div>
           </div>
           <div className="hidden md:flex space-x-8">
@@ -26,10 +28,10 @@ const token= Cookies.get("token")
           </div>
           <div className="flex items-center space-x-4">
             <Link
-             to={token ? "/dashboard" : "/user-options"}
+              to={token ? "/dashboard" : "/user-options"}
               className="border-2 border-purpleColor text-purpleColor px-6 py-2 rounded-full font-medium transition-all  hover:shadow-md"
             >
-             {token?"Dashboard":"Login"} 
+              {token ? "Dashboard" : "Login"}
             </Link>
           </div>
         </div>
@@ -42,18 +44,24 @@ const token= Cookies.get("token")
               Let's Create a Brilliant Future with Our School
             </h1>
             <p className="text-gray-600 mb-8 text-lg animate-slideUp">
-              EduCloud is a technology-first school that is committed to
-              providing high-quality education and employability in real-world
-              contexts.
+              Little Scholar Central School is a technology-first school that is
+              committed to providing high-quality education and employability in
+              real-world contexts.
             </p>
             <div
               className="flex flex-col justify-between sm:flex-row gap-4 animate-slideUp"
               style={{ animationDelay: "0.2s" }}
             >
-              <Link to={token ? "/dashboard" : "/user-options"}className="bg-purpleColor text-white px-8 py-3 rounded-full font-medium transition-all hover:shadow-md hover:scale-105">
+              <Link
+                to={token ? "/dashboard" : "/user-options"}
+                className="bg-purpleColor text-white px-8 py-3 rounded-full font-medium transition-all hover:shadow-md hover:scale-105"
+              >
                 JOIN WITH US
               </Link>
-              <Link to='/know-more'className="border border-purpleColor text-purpleColor px-8 py-3 rounded-full font-medium transition-all hover:bg-blue-50 hover:scale-105">
+              <Link
+                to="/know-more"
+                className="border border-purpleColor text-purpleColor px-8 py-3 rounded-full font-medium transition-all hover:bg-blue-50 hover:scale-105"
+              >
                 Get to know more
               </Link>
             </div>
@@ -128,9 +136,9 @@ const token= Cookies.get("token")
                 </h2>
               </div>
               <p className="text-black-300 mb-8 max-w-lg">
-                EduCloud is a technology-first school management platform that
-                is committed to providing high-quality education through digital
-                means
+                Little Scholar Central School is a technology-first school
+                management platform that is committed to providing high-quality
+                education through digital means
               </p>
             </div>
           </div>
@@ -162,25 +170,34 @@ const token= Cookies.get("token")
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
-              <h3 className="text-xl font-bold mb-4">EduCloud</h3>
+              <h3 className="text-xl font-bold mb-4">
+                Little Scholar Central School
+              </h3>
               <p className="text-gray-400">
                 Technology-first education for a brilliant future.
               </p>
             </div>
-        
+
             <div>
               <h4 className="text-lg font-semibold mb-3">Contact</h4>
               <ul className="space-y-2 text-gray-400">
-                <li>info@educloud.com</li>
-                <li>+919957052223</li>
+                <li>info@littlescholarcentralschool.com</li>
+                <li>+919387886259</li>
                 <li>Assam, India</li>
               </ul>
             </div>
           </div>
           <div className="border-t border-gray-700 mt-8 pt-6 text-center text-gray-500">
-            <p>© {new Date().getFullYear()} EduCloud. All rights reserved.</p>
-            <p>Designed and Developed by SudamaSolutions Technologies and Health Care Pvt Ltd</p>
-          </div>        </div>
+            <p>
+              © {new Date().getFullYear()} Little Scholar Central School. All
+              rights reserved.
+            </p>
+            <p>
+              Designed and Developed by SudamaSolutions Technologies and Health
+              Care Pvt Ltd
+            </p>
+          </div>{" "}
+        </div>
       </footer>
 
       {/* CSS Animations */}

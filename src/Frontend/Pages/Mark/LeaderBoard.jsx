@@ -1,20 +1,24 @@
 import React, { useState, useEffect } from "react";
-import {
-  Loader,
-  Plus,
-  X,School2
-} from "lucide-react";
+import { Loader, Plus, X, School2 } from "lucide-react";
 
 import AddMark from "./AddMark";
 import Cookies from "js-cookie";
-import {setLeaderBoard,setClassData,setIsLeaderBoardUpdate} from '../../../Store/slice'
-import {GetLeaderBoardAPI, GetAllClassesAPI  ,GetStudentByIDAPI} from '../../../service/api'
-import {useSelector, useDispatch} from 'react-redux'
-import SelectDropdown from '../../Components/Elements/SelectDropDown'
-import { toast } from 'react-toastify';
+import {
+  setLeaderBoard,
+  setClassData,
+  setIsLeaderBoardUpdate,
+} from "../../../Store/slice";
+import {
+  GetLeaderBoardAPI,
+  GetAllClassesAPI,
+  GetStudentByIDAPI,
+} from "../../../service/api";
+import { useSelector, useDispatch } from "react-redux";
+import SelectDropdown from "../../Components/Elements/SelectDropDown";
+import { toast } from "react-toastify";
 const LeaderBoard = () => {
   const [selectedClass, setSelectedClass] = useState("");
-  const [loading, setLoading] = useState(true); 
+  const [loading, setLoading] = useState(true);
   const [showAddMark, setShowAddMark] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [studentData, setStudentData] = useState({});
@@ -23,12 +27,16 @@ const LeaderBoard = () => {
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState("");
   const classes = useSelector((state) => state.userData.ClassData);
-  const leaderboardData = useSelector((state) => state.userData.LeaderBoardData);
-  const isLeaderboardUpdate = useSelector((state) => state.userData.isLeaderboardUpdate);
+  const leaderboardData = useSelector(
+    (state) => state.userData.LeaderBoardData
+  );
+  const isLeaderboardUpdate = useSelector(
+    (state) => state.userData.isLeaderboardUpdate
+  );
   const dispatch = useDispatch();
   const studentsPerPage = 6;
 
-  const url = import.meta.env.VITE_API_BASE_URL;
+  const url = "https://little-scholar.onrender.com/api/v1/";
   const token = Cookies.get("token");
 
   useEffect(() => {
@@ -47,81 +55,85 @@ const LeaderBoard = () => {
       });
       setShowToast(false);
     }
-  }, [showToast,toastType,toastMessage]);
-
+  }, [showToast, toastType, toastMessage]);
 
   const fetchClasses = async () => {
     const response = await GetAllClassesAPI(url);
-    if (response.status === 200 || response.status === 204 || response.status === 201) {
+    if (
+      response.status === 200 ||
+      response.status === 204 ||
+      response.status === 201
+    ) {
       dispatch(setClassData(response.data.classes));
       setSelectedClass(response.data?.classes[0]?._id);
     } else {
-      
     }
     setLoading(false);
   };
 
   const fetchStudentData = async (studentId) => {
     const response = await GetStudentByIDAPI(url, studentId);
-    if (response.status === 200 || response.status === 201 || response.status === 204) {
-      setStudentData(prev => ({...prev, [studentId]: response.data.student}));
+    if (
+      response.status === 200 ||
+      response.status === 201 ||
+      response.status === 204
+    ) {
+      setStudentData((prev) => ({
+        ...prev,
+        [studentId]: response.data.student,
+      }));
       // showToastMessage(response.message, "success");
-    }
-    else{
-    
-        dispatch(setLeaderBoard([]));
-        setShowToast(true);
-        setToastMessage(response.message);
-        setToastType("error");
-    
-    }
-  };
-
-useEffect(()=>{
-fetchClasses()
-},)
-  useEffect(()=>{
-    if(classes.length === 0 || leaderboardData.length===0) {
-      setShowFailure(true);
     } else {
-      
-      setShowFailure(false);
+      dispatch(setLeaderBoard([]));
+      setShowToast(true);
+      setToastMessage(response.message);
+      setToastType("error");
     }
-  },[classes, leaderboardData])
-
-
-  const fetchLeaderboard = async () => {
-      setLoading(true);
-      const response = await GetLeaderBoardAPI(url, selectedClass);
-
-      if (response.status === 200 || response.status === 201 || response.status === 204) 
-        {
-        dispatch(setLeaderBoard(response.data));
-        response.data.forEach(item => {
-        fetchStudentData(item.student);
-        });
-    
-      } 
-      
-      else {
-        dispatch(setLeaderBoard([]));
-        setShowToast(true);
-        setToastMessage(response.message);
-        setToastType("error");
-      }
-      setLoading(false);
   };
 
   useEffect(() => {
-    if(selectedClass!=="") { 
+    fetchClasses();
+  });
+  useEffect(() => {
+    if (classes.length === 0 || leaderboardData.length === 0) {
+      setShowFailure(true);
+    } else {
+      setShowFailure(false);
+    }
+  }, [classes, leaderboardData]);
+
+  const fetchLeaderboard = async () => {
+    setLoading(true);
+    const response = await GetLeaderBoardAPI(url, selectedClass);
+
+    if (
+      response.status === 200 ||
+      response.status === 201 ||
+      response.status === 204
+    ) {
+      dispatch(setLeaderBoard(response.data));
+      response.data.forEach((item) => {
+        fetchStudentData(item.student);
+      });
+    } else {
+      dispatch(setLeaderBoard([]));
+      setShowToast(true);
+      setToastMessage(response.message);
+      setToastType("error");
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    if (selectedClass !== "") {
       fetchLeaderboard();
     }
   }, [selectedClass]);
 
   useEffect(() => {
-    if(isLeaderboardUpdate) { 
+    if (isLeaderboardUpdate) {
       fetchLeaderboard();
-      dispatch(setIsLeaderBoardUpdate(!isLeaderboardUpdate))
+      dispatch(setIsLeaderBoardUpdate(!isLeaderboardUpdate));
     }
   }, [isLeaderboardUpdate]);
 
@@ -167,7 +179,7 @@ fetchClasses()
       </div>
 
       <div className="flex flex-col md:flex-row text-black justify-between items-start md:items-center mb-6 p-2">
-      <div className="mb-4 md:mb-0 text-left">
+        <div className="mb-4 md:mb-0 text-left">
           <h2 className="h2 mb-2">Student Leaderboard</h2>
           <div className="flex items-center subtitle-2 text-left">
             <span className="">Students Details / </span>
@@ -178,16 +190,16 @@ fetchClasses()
 
       <div className="bg-white p-2 rounded-md shadow-lg">
         <div className="flex flex-col md:flex-row justify-end items-stretch md:items-center gap-4 mb-6 bg-white">
-        <SelectDropdown
-                options={classes || []}
-                selectedValue={selectedClass}
-                onSelect={setSelectedClass}
-                displayField="className"
-                valueField="_id"
-                placeholder="Select Class"
-                icon={<School2 size={20} />}
-                required={true}
-              />
+          <SelectDropdown
+            options={classes || []}
+            selectedValue={selectedClass}
+            onSelect={setSelectedClass}
+            displayField="className"
+            valueField="_id"
+            placeholder="Select Class"
+            icon={<School2 size={20} />}
+            required={true}
+          />
         </div>
 
         <div className="overflow-x-auto text-black-300 text-base bg-white m-4">
@@ -206,25 +218,35 @@ fetchClasses()
                 leaderboardData?.map((student, index) => (
                   <tr
                     key={student._id}
-                    className="border-b hover:bg-gray-50 transition-colors duration-150 animate-fade-in">
+                    className="border-b hover:bg-gray-50 transition-colors duration-150 animate-fade-in"
+                  >
                     <td className="px-6 py-4 text-left">{index + 1}</td>
-                    <td className="px-6 py-4 text-left">{studentData[student.student]?.name}</td>
-                    <td className="px-6 py-4 text-left">{student.totalObtained}</td>
+                    <td className="px-6 py-4 text-left">
+                      {studentData[student.student]?.name}
+                    </td>
+                    <td className="px-6 py-4 text-left">
+                      {student.totalObtained}
+                    </td>
                     <td className="px-6 py-4 text-left">{student.totalMax}</td>
-                    <td className="px-6 py-4 text-left">{student.percentage.toFixed(2)}%</td>
+                    <td className="px-6 py-4 text-left">
+                      {student.percentage.toFixed(2)}%
+                    </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="5" className="text-center py-8">{selectedClass?'No data found for this class':'Select your class'}</td>
+                  <td colSpan="5" className="text-center py-8">
+                    {selectedClass
+                      ? "No data found for this class"
+                      : "Select your class"}
+                  </td>
                 </tr>
               )}
             </tbody>
           </table>
-       
-        </div>      
-        </div>    
+        </div>
       </div>
+    </div>
   );
 };
 
