@@ -7,13 +7,12 @@ import ConfirmationLogout from "./Frontend/Components/ConfirmationLogout";
 import RegisterPrincipal from "./Frontend/Pages/Principal/RegisterPrincipal";
 import Login from "./Frontend/Pages/Login";
 import UserOption from "./Frontend/Pages/UserOption";
-import { Provider } from "react-redux";
-import { store } from "./Store/store";
 import About from "./Frontend/Pages/About";
 import Test from "./Test";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Cookies from "js-cookie";
+
 function App() {
   const routes = createBrowserRouter([
     {
@@ -536,23 +535,21 @@ function App() {
   ]);
 
   return (
-    <Provider store={store}>
-      <div className="w-full flex flex-col bg overflow-x-hidden">
-        <RouterProvider router={routes} />
-        <ToastContainer
-          position="top-right"
-          autoClose={3000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="light"
-        />
-      </div>
-    </Provider>
+    <div className="w-full flex flex-col bg overflow-x-hidden">
+      <RouterProvider router={routes} />
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+    </div>
   );
 }
 export default App;

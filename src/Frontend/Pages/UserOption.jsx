@@ -14,7 +14,7 @@ const UserOption = () => {
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-100 flex flex-col items-center justify-center p-4">
       <div className="text-center mb-12">
         <h1 className="text-4xl md:text-6xl font-bold text-purpleColor animate-bounce mb-4">
-          Edu<span className="text-black">Cloud</span>
+          Little Scholar Central School
         </h1>
         <p className="text-black-300 max-w-2xl mx-auto animate-fade-in">
           Welcome to Little Scholar Central School - Your comprehensive
@@ -27,6 +27,17 @@ const UserOption = () => {
         <Link
           to="/login"
           onClick={() => dispatch(setRole("principal"))}
+          className="group p-6 bg-white rounded-xl shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300 flex flex-col items-center"
+        >
+          <UserCircle2 className="w-16 h-16 text-purpleColor group-hover:text-purple-500 transition-colors duration-300" />
+          <h2 className="text-xl font-semibold mt-4 text-black">Principal</h2>
+          <p className="text-black-300 text-sm mt-2 text-center">
+            Manage the entire platform and oversee all operations
+          </p>
+        </Link>
+        <Link
+          to="/login"
+          onClick={() => dispatch(setRole("admin"))}
           className="group p-6 bg-white rounded-xl shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300 flex flex-col items-center"
         >
           <UserCircle2 className="w-16 h-16 text-purpleColor group-hover:text-purple-500 transition-colors duration-300" />

@@ -97,6 +97,161 @@ const Sidebar = ({ isOpen, role, onMenuClick }) => {
         ],
       },
 
+      {
+        icon: IndianRupee,
+        label: "Accounting",
+        id: "accounting",
+        submenu: [
+          {
+            label: "Student Finance",
+            id: "student-finance",
+            path: "/student-finance",
+          },
+          {
+            label: "Teacher Finance",
+            id: "all-transactions",
+            path: "/all-transactions",
+          },
+          {
+            label: "Other Expenses",
+            id: "other-expenses",
+            path: "/other-expenses",
+          },
+        ],
+      },
+
+      {
+        icon: School,
+        label: "Academic",
+        id: "academic",
+        submenu: [
+          {
+            label: "All Classes",
+            id: "all-classes",
+            path: "/all-classes",
+          },
+          {
+            icon: Clock,
+            label: "Time table",
+            id: "time-table",
+            path: "/time-table",
+          },
+          {
+            label: "Make Class Teacher",
+            id: "class-teacher",
+            path: "/class-teacher",
+          },
+
+          {
+            label: "Assign classes-Subjects",
+            id: "assign-classes-subjects",
+            path: "/assign-classes-subjects",
+          },
+          {
+            label: "Delete classes-Subjects",
+            id: "delete-classes-subjects",
+            path: "/delete-classes-subjects",
+          },
+          { label: "All Subjects", id: "all-subjects", path: "/all-subjects" },
+        ],
+      },
+
+      {
+        icon: Users,
+        label: "Teachers",
+        id: "teachers",
+        submenu: [
+          { label: "All Teachers", id: "all-teachers", path: "/all-teachers" },
+        ],
+      },
+
+      {
+        icon: FileText,
+        label: "Exam",
+        id: "exam",
+        submenu: [
+          {
+            label: "Grades Upload",
+            id: "grades-upload",
+            path: "/grades-upload",
+          },
+          { label: "All Exams", id: "all-exams", path: "/all-exams" },
+        ],
+      },
+
+      {
+        icon: ShieldAlert,
+        label: "Complaints",
+        id: "complaints",
+        path: "/complaints",
+      },
+      {
+        icon: Calendar,
+        label: "Events and Announcements",
+        id: "events",
+        path: "/events",
+      },
+      // { icon: IndianRupee, label: "Finance", id: "finance", path: "/finance" },
+    ],
+    principal: [
+      { icon: Home, label: "Home", id: "home", path: "/dashboard" },
+      {
+        icon: GraduationCap,
+        label: "Student Details",
+        id: "students",
+        submenu: [
+          { label: "Student List", id: "all-students", path: "/all-students" },
+          {
+            label: " Student Leaderboard",
+            id: "leaderboard",
+            path: "/leaderboard",
+          },
+          {
+            label: " Student Promotion",
+            id: "student-promotion",
+            path: "/student-promotion",
+          },
+        ],
+      },
+      {
+        icon: IdCard,
+        label: "Card Management",
+        id: "card-management",
+        submenu: [
+          { label: "Student ID Card", id: "id-card", path: "/id-card" },
+          {
+            label: "Teacher ID Card",
+            id: "teacher-id-card",
+            path: "/teacher-id-card",
+          },
+          { label: "Certificate", id: "certificate", path: "/certificate" },
+        ],
+      },
+
+      {
+        icon: Hand,
+        label: "Attendance",
+        id: "attendance",
+        submenu: [
+          {
+            label: "Student Attendance",
+            id: "student-attendance",
+            path: "/mark-attendance",
+          },
+          {
+            label: "Teacher Attendance",
+            id: "teacher-attendance",
+            path: "/teacher-attendance",
+          },
+
+          {
+            label: "Leave Records",
+            id: "leave-records",
+            path: "/leave-records",
+          },
+        ],
+      },
+
       // {
       //   icon:IndianRupee,
       //   label:'Accounting',
@@ -353,8 +508,10 @@ const Sidebar = ({ isOpen, role, onMenuClick }) => {
           </h3>
           <ul className="ml-3 flex flex-1 flex-col gap-2">
             {menuItems[
-              role === "principal"
+              role === "admin"
                 ? "admin"
+                : role === "principal"
+                ? "principal"
                 : role === "teacher"
                 ? "teacher"
                 : "student"

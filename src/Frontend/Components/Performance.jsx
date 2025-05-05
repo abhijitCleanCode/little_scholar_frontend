@@ -28,7 +28,7 @@ import {
 const PerformanceDashboard = () => {
   const url = "https://little-scholar.onrender.com/api/v1/";
   const token = Cookies.get("token");
-  const user = useSelector((state) => state.userData.user);
+  const user = useSelector((state) => state.userData.role);
   const [error, setError] = useState("");
   const dispatch = useDispatch();
   const StudentCount = useSelector((state) => state.userData.StudentCount);
@@ -37,6 +37,8 @@ const PerformanceDashboard = () => {
   const [presentCount, setPresentCount] = useState(0);
   const [absentCount, setAbsentCount] = useState(0);
   const [leaveCount, setLeaveCount] = useState(null);
+
+  console.log("performance :: user :: ", user);
 
   const StudentData = [
     { name: "Performance", value: "Under Maintenance", Icon: TrendingUp },
@@ -72,12 +74,12 @@ const PerformanceDashboard = () => {
   const FEMALE_COLOR = "#E9A7C9";
 
   const pieData =
-    user.role === "principal"
+    user === "principal" || user === "admin"
       ? [
           { name: "Male Active", value: GenderRatio?.ratioMale },
           { name: "Female Active", value: GenderRatio?.ratioFemale },
         ]
-      : user.role === "teacher"
+      : user === "teacher"
       ? [
           { name: "Present", value: presentCount },
           { name: "Absent", value: absentCount },
@@ -89,7 +91,7 @@ const PerformanceDashboard = () => {
 
   useEffect(() => {
     document.title = "Dashboard";
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     setIsLoading(true);
@@ -197,13 +199,13 @@ const PerformanceDashboard = () => {
   };
 
   useEffect(() => {
-    if (user?.role === "principal") {
+    if (user === "principal" || user === "admin") {
       fetchStudentsCount();
       fetchTeachersCount();
       fetchGenderRatio();
-    } else if (user?.role === "student") {
+    } else if (user === "student") {
       fetchStudentAttendance();
-    } else if (user?.role === "teacher") {
+    } else if (user === "teacher") {
       fetchTeacherAttendance();
       fetchLeaves();
     }
@@ -224,9 +226,9 @@ const PerformanceDashboard = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 w-full  p-4 ">
-        {(user.role === "principal"
+        {(user === "principal" || "admin"
           ? PrincipalData
-          : user.role === "teacher"
+          : user === "teacher"
           ? TeachData
           : StudentData
         ).map((card, index) => (
@@ -284,9 +286,9 @@ const PerformanceDashboard = () => {
           }}
         >
           <h2 className="h2 text-black-300 mb-4 text-left">
-            {user?.role === "principal"
+            {user === "principal" || user === "admin"
               ? "Student Ratio"
-              : user?.role === "teacher" || user?.role === "student"
+              : user === "teacher" || user === "student"
               ? "Attendance Record"
               : ""}
           </h2>
@@ -307,7 +309,11 @@ const PerformanceDashboard = () => {
                   >
                     <Cell
                       key="active"
-                      fill={user?.role === "principal" ? MALE_COLOR : "#808080"}
+                      fill={
+                        user === "principal" || user === "admin"
+                          ? MALE_COLOR
+                          : "#808080"
+                      }
                       strokeWidth={0}
                     />
                     <Cell key="inactive" fill={FEMALE_COLOR} strokeWidth={0} />
@@ -325,7 +331,11 @@ const PerformanceDashboard = () => {
                   >
                     <Cell
                       key="active"
-                      fill={user?.role === "principal" ? MALE_COLOR : "#808080"}
+                      fill={
+                        user === "principal" || user === "admin"
+                          ? MALE_COLOR
+                          : "#808080"
+                      }
                       strokeWidth={0}
                     />
                     <Cell key="inactive" fill={FEMALE_COLOR} strokeWidth={0} />
@@ -335,7 +345,7 @@ const PerformanceDashboard = () => {
             )}
             <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
               <div className="flex flex-row space-x-4 justify-center items-center">
-                {user?.role === "principal" ? (
+                {user === "principal" || user === "admin" ? (
                   <img className="w-16 h-20" src="/f_m.png" />
                 ) : (
                   <div
@@ -360,7 +370,7 @@ const PerformanceDashboard = () => {
                 {/* Left arrow for Female */}
                 <div className="absolute top-1/2 left-0 transform -translate-y-1/2 flex items-center">
                   <div className="relative">
-                    {user?.role === "principal" && (
+                    {(user === "principal" || user === "admin") && (
                       <>
                         <div className="w-24 h-px bg-gray-400"></div>
                         <div className="absolute left-0 top-0 w-3 h-3 border-t border-l border-gray-400 transform -rotate-45 -translate-y-1/2"></div>
@@ -377,7 +387,9 @@ const PerformanceDashboard = () => {
                             className="text-sm font-medium"
                             style={{ color: FEMALE_COLOR }}
                           >
-                            {user?.role === "principal" ? "Female" : ""}
+                            {user === "principal" || user === "admin"
+                              ? "Female"
+                              : ""}
                           </span>
                         </div>
                         <span
@@ -385,7 +397,7 @@ const PerformanceDashboard = () => {
                           style={{ color: FEMALE_COLOR }}
                         >
                           {
-                            user?.role === "principal"
+                            user === "principal" || user === "admin"
                               ? GenderRatio?.femaleCount
                                 ? `${GenderRatio.femaleCount} (${(
                                     (GenderRatio.femaleCount /
@@ -406,7 +418,7 @@ const PerformanceDashboard = () => {
                 {/* Right arrow for Male */}
                 <div className="absolute top-1/2 right-0 transform -translate-y-1/2 flex items-center">
                   <div className="relative">
-                    {user?.role === "principal" && (
+                    {(user === "principal" || user === "admin") && (
                       <>
                         <div className="w-24 h-px bg-gray-400"></div>
                         <div className="absolute right-0 top-0 w-3 h-3 border-t border-r border-gray-400 transform rotate-45 -translate-y-1/2"></div>
@@ -423,7 +435,9 @@ const PerformanceDashboard = () => {
                             className="text-sm font-medium"
                             style={{ color: MALE_COLOR }}
                           >
-                            {user?.role === "principal" ? "Male" : ""}
+                            {user === "principal" || user === "admin"
+                              ? "Male"
+                              : ""}
                           </span>
                         </div>
                         <span
@@ -431,7 +445,7 @@ const PerformanceDashboard = () => {
                           style={{ color: MALE_COLOR }}
                         >
                           {
-                            user?.role === "principal"
+                            user === "principal" || user === "admin"
                               ? GenderRatio?.maleCount
                                 ? `${GenderRatio.maleCount} (${(
                                     (GenderRatio.maleCount /

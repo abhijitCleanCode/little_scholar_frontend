@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { LogIn, Mail, Lock } from "lucide-react";
 import Cookies from "js-cookie";
 import { useForm } from "react-hook-form";
@@ -9,9 +10,13 @@ import { Link } from "react-router-dom";
 import { LoginUser } from "../../service/api";
 import Input from "../Components/Elements/Input";
 import PasswordInput from "../Components/Elements/PasswordInput";
+import { setLoginStatus } from "../../Store/slice";
 
 const Login = () => {
   const role = useSelector((state) => state.userData.role);
+  const loginStatus = useSelector((state) => state.userData.loginStatus);
+  console.log("login :: role :: ", role);
+  const dispatch = useDispatch();
 
   const {
     register,
@@ -24,6 +29,7 @@ const Login = () => {
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState("");
   const [error, setError] = useState("");
+  const navigate = useNavigate();
   const url = "https://little-scholar.onrender.com/api/v1/";
 
   useEffect(() => {
@@ -65,10 +71,14 @@ const Login = () => {
       Cookies.set("token", response.data.token);
       Cookies.set("user", JSON.stringify(response.data.user), { expires: 7 });
 
+      dispatch(setLoginStatus(true));
+
       setShowToast(true);
       setToastMessage(response.message);
       setToastType("success");
 
+      // Use navigate instead of window.location.href
+      // navigate("/dashboard");
       setTimeout(() => {
         window.location.href = "/dashboard";
       }, 1000);

@@ -1,172 +1,204 @@
-import { createSlice } from '@reduxjs/toolkit'
-import { set } from 'react-hook-form'
+import { createSlice } from "@reduxjs/toolkit";
+import { set } from "react-hook-form";
 
 const dataSlice = createSlice({
-  name: 'userData',
+  name: "userData",
   initialState: {
-    role:'',
-    StudentCount:'',
-    TeacherCount:'',
-    CurrentPage:1,
-    eventsChanged:'',
-    isStudentUpdate:false,
-    isTeacherUpdate:false,
-    isLeaderboardUpdate:false,
-    showLogoutConfirm:false,
-    showConfirmationModel:false,
-    confirmRequest:false,
-    transactionUpdate:false,
-    status:'',
-    addText:'',
-    user:[],
-    LoginData:[],
-    ClassData:[],
-    StudentData:[],
-    StudentByClassData:[],
-    TeacherData:[],
-    SubjectData:[],
-    EventData:[],
-    AnnouncementData:[],
-    LeaderBoardData:[],
-    TransactionData:[],
-    StudentFinanceData:[],
-    OtherExpenseData:[],
-    TeacherAttendanceData:[],
-    StudentAttendanceData:[],
-    GenderRatio:[],
-    LeaveData:[]
-
+    role: null,
+    loginStatus: false,
+    StudentCount: "",
+    TeacherCount: "",
+    CurrentPage: 1,
+    eventsChanged: "",
+    isStudentUpdate: false,
+    isTeacherUpdate: false,
+    isLeaderboardUpdate: false,
+    showLogoutConfirm: false,
+    showConfirmationModel: false,
+    confirmRequest: false,
+    transactionUpdate: false,
+    status: "",
+    addText: "",
+    user: [],
+    LoginData: [],
+    ClassData: [],
+    StudentData: [],
+    StudentByClassData: [],
+    TeacherData: [],
+    SubjectData: [],
+    EventData: [],
+    AnnouncementData: [],
+    LeaderBoardData: [],
+    TransactionData: [],
+    StudentFinanceData: [],
+    OtherExpenseData: [],
+    TeacherAttendanceData: [],
+    StudentAttendanceData: [],
+    GenderRatio: [],
+    LeaveData: [],
   },
   reducers: {
-  
-    setRole: (state,action) => {
+    setRole: (state, action) => {
       // state.id = action.payload.id,
-      state.role = action.payload
+      console.log("role :: ", action.payload);
+      console.log("state :: ", state);
+      state.role = action.payload;
     },
-    setUser:(state,action) => {
-      state.user=action.payload
+    setLoginStatus: (state, action) => {
+      state.loginStatus = action.payload;
     },
-    setIsLeaderBoardUpdate:(state,action)=>{
-state.isLeaderboardUpdate= action.payload
+    setUser: (state, action) => {
+      state.user = action.payload;
     },
-    setLoginData:(state,action) => {
-      state.LoginData=action.payload
+    setIsLeaderBoardUpdate: (state, action) => {
+      state.isLeaderboardUpdate = action.payload;
     },
-    setClassData:(state,action) => {
-      state.ClassData=action.payload
+    setLoginData: (state, action) => {
+      state.LoginData = action.payload;
     },
-    setStudentData:(state,action) => {
-      state.StudentData=action.payload
+    setClassData: (state, action) => {
+      state.ClassData = action.payload;
     },
-    setTeacherData:(state,action) => {
-      state.TeacherData=action.payload
+    setStudentData: (state, action) => {
+      state.StudentData = action.payload;
     },
-    setSubjectData:(state,action) => {
-      state.SubjectData=action.payload
+    setTeacherData: (state, action) => {
+      state.TeacherData = action.payload;
     },
-    setEventData:(state,action) => {
-      state.EventData=action.payload
+    setSubjectData: (state, action) => {
+      state.SubjectData = action.payload;
     },
-    setAnnouncementData:(state,action) => {
-      state.AnnouncementData=action.payload
+    setEventData: (state, action) => {
+      state.EventData = action.payload;
     },
-   setStudentCount:(state,action) => {
-      state.StudentCount=action.payload
+    setAnnouncementData: (state, action) => {
+      state.AnnouncementData = action.payload;
     },
-    setTeacherCount:(state,action) => {
-      state.TeacherCount=action.payload
+    setStudentCount: (state, action) => {
+      state.StudentCount = action.payload;
     },
-    setLeaderBoard:(state,action) => {
-      state.LeaderBoardData=action.payload
+    setTeacherCount: (state, action) => {
+      state.TeacherCount = action.payload;
     },
-    setCurrentPage:(state,action) => {
-      state.CurrentPage=action.payload
+    setLeaderBoard: (state, action) => {
+      state.LeaderBoardData = action.payload;
     },
-    setTransactionData:(state,action) => {
-      state.TransactionData=action.payload
+    setCurrentPage: (state, action) => {
+      state.CurrentPage = action.payload;
     },
-    setStudentFinanceData:(state,action) => {
-      state.StudentFinanceData=action.payload
+    setTransactionData: (state, action) => {
+      state.TransactionData = action.payload;
     },
-    setOtherExpenseData:(state,action) => {
-      state.OtherExpenseData=action.payload
+    setStudentFinanceData: (state, action) => {
+      state.StudentFinanceData = action.payload;
     },
-    setStudentByClassData:(state,action)=>{
-      state.StudentByClassData = action.payload
+    setOtherExpenseData: (state, action) => {
+      state.OtherExpenseData = action.payload;
     },
-    setIsStudentUpdate:(state,action)=>{
-      state.isStudentUpdate=action.payload
+    setStudentByClassData: (state, action) => {
+      state.StudentByClassData = action.payload;
     },
-    setIsTeacherUpdate:(state,action)=>{
-      state.isTeacherUpdate=action.payload
+    setIsStudentUpdate: (state, action) => {
+      state.isStudentUpdate = action.payload;
     },
-    setTeacherAttendanceData:(state,action)=>{
-      state.TeacherAttendanceData = action.payload
+    setIsTeacherUpdate: (state, action) => {
+      state.isTeacherUpdate = action.payload;
     },
-    setStudentAttendanceData:(state,action)=>{
-      state.StudentAttendanceData =action.payload
+    setTeacherAttendanceData: (state, action) => {
+      state.TeacherAttendanceData = action.payload;
+    },
+    setStudentAttendanceData: (state, action) => {
+      state.StudentAttendanceData = action.payload;
     },
     updateStudentAttendance: (state, action) => {
       const { studentId, status } = action.payload;
-      
+
       // Find existing student attendance
       const existingIndex = state.StudentAttendanceData.findIndex(
         (item) => item.student === studentId
       );
-      
+
       if (existingIndex !== -1) {
         // Update existing student's status
-        state.StudentAttendanceData[existingIndex] = { 
-          ...state.StudentAttendanceData[existingIndex], 
-          status 
+        state.StudentAttendanceData[existingIndex] = {
+          ...state.StudentAttendanceData[existingIndex],
+          status,
         };
       } else {
         // Add new student attendance
-        state.StudentAttendanceData.push({ 
-          student: studentId, 
-          status 
+        state.StudentAttendanceData.push({
+          student: studentId,
+          status,
         });
       }
     },
-    
-setGenderRatio:(state,action)=>{
-      state.GenderRatio = action.payload
-},
 
-setShowLogoutConfirm:(state,action) =>{
-  state.showLogoutConfirm=action.payload
-},
-setShowConfirmationModel:(state,action) =>{
-  state.showConfirmationModel=action.payload
-},
-setStatus:(state,action) =>{
-  state.status=action.payload
-},
-setAddText:(state,action) =>{
-  state.addText=action.payload
-},
-setConfirmRequest:(state,action) =>{
-  state.confirmRequest=action.payload
-},
-setLeaveData:(state,action) =>{
-  state.LeaveData=action.payload
-},
-setEventsChanged:(state,action) =>{
-  state.eventsChanged=action.payload
-},
-setTransactionUpdate:(state,action) =>{
-  state.transactionUpdate=action.payload
-},
+    setGenderRatio: (state, action) => {
+      state.GenderRatio = action.payload;
+    },
 
-}
-})
+    setShowLogoutConfirm: (state, action) => {
+      state.showLogoutConfirm = action.payload;
+    },
+    setShowConfirmationModel: (state, action) => {
+      state.showConfirmationModel = action.payload;
+    },
+    setStatus: (state, action) => {
+      state.status = action.payload;
+    },
+    setAddText: (state, action) => {
+      state.addText = action.payload;
+    },
+    setConfirmRequest: (state, action) => {
+      state.confirmRequest = action.payload;
+    },
+    setLeaveData: (state, action) => {
+      state.LeaveData = action.payload;
+    },
+    setEventsChanged: (state, action) => {
+      state.eventsChanged = action.payload;
+    },
+    setTransactionUpdate: (state, action) => {
+      state.transactionUpdate = action.payload;
+    },
+  },
+});
 
-export const {setRole,setUser,setLoginData,setClassData,setStudentData,setTeacherData,setSubjectData,
-  setEventData,setAnnouncementData,setStudentCount,setTeacherCount,
-  setLeaderBoard,setCurrentPage,setTransactionData,setStudentFinanceData,
-  setOtherExpenseData,setStudentByClassData,setIsStudentUpdate,setIsTeacherUpdate,setTeacherAttendanceData,
-  setStudentAttendanceData ,updateStudentAttendance,setIsLeaderBoardUpdate,setGenderRatio,setShowLogoutConfirm,
-  setShowConfirmationModel,setStatus,setAddText,setConfirmRequest,setLeaveData,
-  setEventsChanged,setTransactionUpdate}
- = dataSlice.actions
-export default dataSlice.reducer
+// export individually for the use of components
+export const {
+  setRole,
+  setLoginStatus,
+  setUser,
+  setLoginData,
+  setClassData,
+  setStudentData,
+  setTeacherData,
+  setSubjectData,
+  setEventData,
+  setAnnouncementData,
+  setStudentCount,
+  setTeacherCount,
+  setLeaderBoard,
+  setCurrentPage,
+  setTransactionData,
+  setStudentFinanceData,
+  setOtherExpenseData,
+  setStudentByClassData,
+  setIsStudentUpdate,
+  setIsTeacherUpdate,
+  setTeacherAttendanceData,
+  setStudentAttendanceData,
+  updateStudentAttendance,
+  setIsLeaderBoardUpdate,
+  setGenderRatio,
+  setShowLogoutConfirm,
+  setShowConfirmationModel,
+  setStatus,
+  setAddText,
+  setConfirmRequest,
+  setLeaveData,
+  setEventsChanged,
+  setTransactionUpdate,
+} = dataSlice.actions;
+
+export default dataSlice.reducer;

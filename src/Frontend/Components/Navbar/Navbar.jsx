@@ -1,10 +1,8 @@
-import React, { useEffect, useState } from "react";
-import Cookies from "js-cookie";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { setUser, setShowLogoutConfirm } from "../../../Store/slice";
 import Sidebar from "./Sidebar";
-import educloud from "../../../assets/LSCS.jpg";
 import {
   PerformanceDashboard,
   Events,
@@ -55,26 +53,7 @@ import {
   TeacherFinance,
 } from "../../Pages/index";
 
-import {
-  Home,
-  User,
-  Users,
-  BookOpen,
-  Calendar,
-  ChevronDown,
-  X,
-  Award,
-  FileText,
-  Clock,
-  School,
-  GraduationCap,
-  LogOut,
-  ChevronRight,
-  IndianRupee,
-  ShieldAlert,
-  Hand,
-  IdCard,
-} from "lucide-react";
+import { User, ChevronRight } from "lucide-react";
 
 const themeColors = {
   admin: "bg-purpleColor",
@@ -133,17 +112,19 @@ const Nav = ({ children, path }) => {
     (state) => state.userData.showLogoutConfirm
   );
   const dispatch = useDispatch();
-  const user =
-    JSON?.parse(Cookies.get("user" || "student" || "teacher")) || "{}";
-  if (user !== null || user !== undefined) {
-    dispatch(setUser(user));
-  }
+  const user = useSelector((state) => state.userData.role);
+  console.log("navabr :: user: ", user);
+  const userData = useSelector((state) => state.userData);
+  console.log("navabr :: userData: ", userData);
+  // if (user !== null || user !== undefined) {
+  //   dispatch(setUser(user));
+  // }
   const [sidebarOpen, setSidebarOpen] = useState(false);
   return (
     <div className="w-full flex flex-col overflow-auto custom-scrollbar">
       <Sidebar
         isOpen={sidebarOpen}
-        role={user.role}
+        role={user}
         onMenuClick={() => setSidebarOpen(!sidebarOpen)}
       />
 

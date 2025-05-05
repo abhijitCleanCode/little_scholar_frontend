@@ -1,23 +1,22 @@
-import React from 'react';
-import StudentDetails from './Frontend/Components/Classes/AllStudents';
-import RegisterClass from './Frontend/Pages/Classes/RegisterClass';
-import MyAttendance from './Frontend/Pages/Student/MyAttendance'
-import SchoolLandingPage from './Frontend/Pages/LandingPage2'
-import AttendanceSystem from './Frontend/Components/AttendanceSystem/MarkAttendanceByClass'
-import CertificateGenerator from './Frontend/Components/Cards/Certificate'
-import IDCardGenerator from './Frontend/Components/Cards/IDCard'
-import CustomCalendar from './Frontend/Components/Elements/CustomCalander'
-import AddTransactions from './Frontend/Pages/Transaction/AddTransaction'
+import React from "react";
+import StudentDetails from "./Frontend/Components/Classes/AllStudents";
+import RegisterClass from "./Frontend/Pages/Classes/RegisterClass";
+import MyAttendance from "./Frontend/Pages/Student/MyAttendance";
+import SchoolLandingPage from "./Frontend/Pages/LandingPage2";
+import AttendanceSystem from "./Frontend/Components/AttendanceSystem/MarkAttendanceByClass";
+import CertificateGenerator from "./Frontend/Components/Cards/Certificate";
+import IDCardGenerator from "./Frontend/Components/Cards/IDCard";
+import CustomCalendar from "./Frontend/Components/Elements/CustomCalander";
+import AddTransactions from "./Frontend/Pages/Transaction/AddTransaction";
 const Test = () => {
-    return (
-        <div>
-            <AddTransactions/>
-        </div>
-    );
+  return (
+    <div>
+      <AddTransactions />
+    </div>
+  );
 };
 
 export default Test;
-
 
 // import { useState, useEffect } from 'react';
 // import { Search, ChevronDown, Star, Heart } from 'lucide-react';
@@ -39,89 +38,89 @@ export default Test;
 // export default function NFTMarketplace() {
 //   // Mock NFT collection data with appropriate images
 //   const collections: NFTCollection[] = [
-//     { 
-//       id: "tff-001", 
-//       name: "Transdimensional Fox Federation", 
-//       icon: "🦊", 
-//       category: "Art", 
-//       verified: true, 
+//     {
+//       id: "tff-001",
+//       name: "Transdimensional Fox Federation",
+//       icon: "🦊",
+//       category: "Art",
+//       verified: true,
 //       featured: true,
 //       items: 10000,
 //       floor: 0.25,
 //       image: "/api/placeholder/600/400" // Digital fox art
 //     },
-//     { 
-//       id: "tl-002", 
-//       name: "Tomorrowland: A Letter from the Universe", 
-//       icon: "🌌", 
-//       category: "Photography", 
-//       verified: true, 
+//     {
+//       id: "tl-002",
+//       name: "Tomorrowland: A Letter from the Universe",
+//       icon: "🌌",
+//       category: "Photography",
+//       verified: true,
 //       featured: false,
 //       items: 5000,
 //       floor: 0.5,
 //       image: "/api/placeholder/600/400" // Space photography
 //     },
-//     { 
-//       id: "tw-003", 
-//       name: "TOPIA Worlds", 
-//       icon: "📦", 
-//       category: "Virtual Worlds", 
-//       verified: true, 
+//     {
+//       id: "tw-003",
+//       name: "TOPIA Worlds",
+//       icon: "📦",
+//       category: "Virtual Worlds",
+//       verified: true,
 //       featured: true,
 //       items: 2500,
 //       floor: 1.2,
 //       image: "/api/placeholder/600/400" // Virtual world
 //     },
-//     { 
-//       id: "tn-004", 
-//       name: "TrekkiNFT", 
-//       icon: "🚀", 
-//       category: "Collectibles", 
-//       verified: false, 
+//     {
+//       id: "tn-004",
+//       name: "TrekkiNFT",
+//       icon: "🚀",
+//       category: "Collectibles",
+//       verified: false,
 //       featured: false,
 //       items: 8000,
 //       floor: 0.1,
 //       image: "/api/placeholder/600/400" // Space collectibles
 //     },
-//     { 
-//       id: "tc-005", 
-//       name: "Timeless Characters", 
-//       icon: "👾", 
-//       category: "Gaming", 
-//       verified: true, 
+//     {
+//       id: "tc-005",
+//       name: "Timeless Characters",
+//       icon: "👾",
+//       category: "Gaming",
+//       verified: true,
 //       featured: false,
 //       items: 12000,
 //       floor: 0.3,
 //       image: "/api/placeholder/600/400" // Gaming characters
 //     },
-//     { 
-//       id: "td-006", 
-//       name: "Tribe Diamonds", 
-//       icon: "💎", 
-//       category: "Jewelry", 
-//       verified: true, 
+//     {
+//       id: "td-006",
+//       name: "Tribe Diamonds",
+//       icon: "💎",
+//       category: "Jewelry",
+//       verified: true,
 //       featured: true,
 //       items: 1000,
 //       floor: 2.5,
 //       image: "/api/placeholder/600/400" // Diamond jewelry
 //     },
-//     { 
-//       id: "cd-007", 
-//       name: "Cyber Dreamers", 
-//       icon: "🤖", 
-//       category: "Sci-Fi", 
-//       verified: false, 
+//     {
+//       id: "cd-007",
+//       name: "Cyber Dreamers",
+//       icon: "🤖",
+//       category: "Sci-Fi",
+//       verified: false,
 //       featured: false,
 //       items: 7500,
 //       floor: 0.15,
 //       image: "/api/placeholder/600/400" // Cyberpunk art
 //     },
-//     { 
-//       id: "mm-008", 
-//       name: "Mystic Menagerie", 
-//       icon: "🐉", 
-//       category: "Fantasy", 
-//       verified: true, 
+//     {
+//       id: "mm-008",
+//       name: "Mystic Menagerie",
+//       icon: "🐉",
+//       category: "Fantasy",
+//       verified: true,
 //       featured: false,
 //       items: 4200,
 //       floor: 0.45,
@@ -140,7 +139,7 @@ export default Test;
 //     // Find a random featured collection to highlight
 //     const featured = collections.filter(c => c.featured);
 //     setFeaturedCollection(featured[Math.floor(Math.random() * featured.length)]);
-    
+
 //     // Filter collections based on search term
 //     const filtered = collections.filter(collection =>
 //       collection.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -167,7 +166,7 @@ export default Test;
 //       {/* Header with search */}
 //       <header className="px-4 py-6 md:px-8 lg:px-16">
 //         <div className="max-w-7xl mx-auto">
-//           <motion.div 
+//           <motion.div
 //             initial={{ opacity: 0, y: -20 }}
 //             animate={{ opacity: 1, y: 0 }}
 //             transition={{ duration: 0.5 }}
@@ -188,9 +187,9 @@ export default Test;
 //                 className="w-full bg-gray-800/50 backdrop-blur-sm text-white border border-gray-700 rounded-xl py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
 //               />
 //               <Search className="absolute left-3 top-3.5 text-gray-400" size={18} />
-              
+
 //               {selectedCollection && (
-//                 <button 
+//                 <button
 //                   onClick={clearSelectedCollection}
 //                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
 //                 >
@@ -198,9 +197,9 @@ export default Test;
 //                 </button>
 //               )}
 //             </div>
-            
+
 //             {searchTerm && showDropdown && (
-//               <motion.div 
+//               <motion.div
 //                 initial={{ opacity: 0, y: 10 }}
 //                 animate={{ opacity: 1, y: 0 }}
 //                 className="absolute w-full mt-2 bg-gray-800/80 backdrop-blur-md rounded-xl border border-gray-700 overflow-hidden z-50"
@@ -216,9 +215,9 @@ export default Test;
 //                     </button>
 //                   ))}
 //                 </div>
-                
+
 //                 <AnimatePresence>
-//                   <motion.div 
+//                   <motion.div
 //                     initial={{ opacity: 0 }}
 //                     animate={{ opacity: 1 }}
 //                     exit={{ opacity: 0 }}
@@ -252,7 +251,7 @@ export default Test;
 //                         </div>
 //                       </motion.div>
 //                     ))}
-                    
+
 //                     {filteredCollections.length === 0 && (
 //                       <div className="p-4 text-center text-gray-400 italic">
 //                         No matches found for "{searchTerm}"
@@ -265,13 +264,13 @@ export default Test;
 //           </motion.div>
 //         </div>
 //       </header>
-      
+
 //       {/* Main content */}
 //       <main className="flex-1 px-4 md:px-8 lg:px-16 py-8">
 //         <div className="max-w-7xl mx-auto">
 //           {/* Selected collection view */}
 //           {selectedCollection && (
-//             <motion.div 
+//             <motion.div
 //               initial={{ opacity: 0, y: 20 }}
 //               animate={{ opacity: 1, y: 0 }}
 //               transition={{ delay: 0.2, duration: 0.7 }}
@@ -286,12 +285,12 @@ export default Test;
 //                   Back to All Collections
 //                 </button>
 //               </div>
-              
+
 //               <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-purple-800/50 to-indigo-900/50 backdrop-blur-md border border-gray-700">
 //                 <div className="absolute inset-0 bg-[url('/api/placeholder/1200/400')] opacity-20 mix-blend-overlay"></div>
 //                 <div className="p-6 md:p-8 relative z-10">
 //                   <div className="flex flex-wrap items-center gap-6">
-//                     <motion.div 
+//                     <motion.div
 //                       whileHover={{ scale: 1.05 }}
 //                       className="w-24 h-24 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-4xl shadow-xl"
 //                     >
@@ -321,7 +320,7 @@ export default Test;
 //                       </div>
 //                     </div>
 //                     <div className="ml-auto">
-//                       <motion.button 
+//                       <motion.button
 //                         whileHover={{ scale: 1.05 }}
 //                         whileTap={{ scale: 0.95 }}
 //                         className="bg-gradient-to-r from-purple-500 to-pink-600 text-white px-6 py-3 rounded-xl font-medium shadow-lg hover:shadow-purple-500/20"
@@ -332,7 +331,7 @@ export default Test;
 //                   </div>
 //                 </div>
 //               </div>
-              
+
 //               {/* Collection's items grid */}
 //               <div className="mt-8">
 //                 <h3 className="text-xl font-bold mb-4">Collection Items</h3>
@@ -347,10 +346,10 @@ export default Test;
 //                       className="bg-gray-800/60 backdrop-blur-sm rounded-xl border border-gray-700 overflow-hidden"
 //                     >
 //                       <div className="relative h-52 overflow-hidden">
-//                         <img 
-//                           src={selectedCollection.image} 
-//                           alt={`${selectedCollection.name} item ${index + 1}`} 
-//                           className="w-full h-full object-cover" 
+//                         <img
+//                           src={selectedCollection.image}
+//                           alt={`${selectedCollection.name} item ${index + 1}`}
+//                           className="w-full h-full object-cover"
 //                         />
 //                         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3">
 //                           <div className="text-sm font-medium">#{index + 1001}</div>
@@ -375,10 +374,10 @@ export default Test;
 //               </div>
 //             </motion.div>
 //           )}
-          
+
 //           {/* Featured collection spotlight */}
 //           {!selectedCollection && featuredCollection && !searchTerm && (
-//             <motion.div 
+//             <motion.div
 //               initial={{ opacity: 0, y: 20 }}
 //               animate={{ opacity: 1, y: 0 }}
 //               transition={{ delay: 0.2, duration: 0.7 }}
@@ -389,7 +388,7 @@ export default Test;
 //                 <div className="absolute inset-0 bg-[url('/api/placeholder/1200/400')] opacity-20 mix-blend-overlay"></div>
 //                 <div className="p-6 md:p-8 relative z-10">
 //                   <div className="flex flex-wrap items-center gap-6">
-//                     <motion.div 
+//                     <motion.div
 //                       whileHover={{ scale: 1.05 }}
 //                       className="w-24 h-24 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-4xl shadow-xl"
 //                     >
@@ -419,7 +418,7 @@ export default Test;
 //                       </div>
 //                     </div>
 //                     <div className="ml-auto">
-//                       <motion.button 
+//                       <motion.button
 //                         whileHover={{ scale: 1.05 }}
 //                         whileTap={{ scale: 0.95 }}
 //                         className="bg-gradient-to-r from-purple-500 to-pink-600 text-white px-6 py-3 rounded-xl font-medium shadow-lg hover:shadow-purple-500/20"
@@ -433,7 +432,7 @@ export default Test;
 //               </div>
 //             </motion.div>
 //           )}
-          
+
 //           {/* Collections grid */}
 //           {!selectedCollection && (
 //             <div>
@@ -446,7 +445,7 @@ export default Test;
 //                   </button>
 //                 )}
 //               </div>
-              
+
 //               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
 //                 <AnimatePresence>
 //                   {(searchTerm ? filteredCollections : collections).map((collection, index) => (
@@ -461,13 +460,13 @@ export default Test;
 //                       onClick={() => handleCollectionSelect(collection)}
 //                     >
 //                       <div className="relative h-40 overflow-hidden">
-//                         <img 
-//                           src={collection.image} 
-//                           alt={collection.name} 
-//                           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
+//                         <img
+//                           src={collection.image}
+//                           alt={collection.name}
+//                           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
 //                         />
 //                         <div className="absolute top-2 right-2 flex space-x-2">
-//                           <button 
+//                           <button
 //                             className="bg-black/40 backdrop-blur-sm p-2 rounded-full hover:bg-black/60"
 //                             onClick={(e) => {
 //                               e.stopPropagation();
@@ -512,10 +511,10 @@ export default Test;
 //                   ))}
 //                 </AnimatePresence>
 //               </div>
-              
+
 //               {searchTerm && filteredCollections.length === 0 && (
 //                 <div className="text-center py-12">
-//                   <motion.div 
+//                   <motion.div
 //                     initial={{ opacity: 0 }}
 //                     animate={{ opacity: 1 }}
 //                     className="inline-block p-4 rounded-full bg-gray-800/60 mb-4"
@@ -530,7 +529,7 @@ export default Test;
 //           )}
 //         </div>
 //       </main>
-      
+
 //       {/* Footer */}
 //       <footer className="px-4 md:px-8 lg:px-16 py-6 border-t border-gray-800">
 //         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center">
